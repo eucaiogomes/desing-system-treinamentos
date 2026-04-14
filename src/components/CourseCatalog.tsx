@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Search, ChevronUp, ChevronDown, Settings, CheckCircle2 } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export const CourseCatalog: React.FC = () => {
   const [selectedTurmaId, setSelectedTurmaId] = useState<number>(1);
   const [activeTab, setActiveTab] = useState<string>('conteudos');
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const turmas = [
     {
@@ -151,12 +152,30 @@ export const CourseCatalog: React.FC = () => {
               2º CURSO DE EXTENSÃO EM TEORIA GERAL DO DIREITO: FORMAÇÃO DO PENSAMENTO INTELECTUAL BRASILEIRO
             </h1>
 
-            <div className="prose prose-sm text-gray-600 max-w-none">
-              <p className="leading-relaxed text-sm">
-                Este curso propõe uma análise profunda das bases do pensamento intelectual brasileiro através da Teoria Geral do Direito. 
-                Exploramos as conexões entre a formação jurídica e o desenvolvimento social do país, abordando temas fundamentais 
-                para a compreensão da nossa estrutura institucional contemporânea.
-              </p>
+            <div className="relative">
+              <motion.div 
+                initial={false}
+                animate={{ height: isExpanded ? 'auto' : '4.5em' }}
+                className="overflow-hidden relative"
+              >
+                <div className="prose prose-sm text-gray-600 max-w-none">
+                  <p className="leading-relaxed text-sm">
+                    Este curso propõe uma análise profunda das bases do pensamento intelectual brasileiro através da Teoria Geral do Direito. 
+                    Exploramos as conexões entre a formação jurídica e o desenvolvimento social do país, abordando temas fundamentais 
+                    para a compreensão da nossa estrutura institucional contemporânea.
+                  </p>
+                </div>
+                {!isExpanded && (
+                  <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+                )}
+              </motion.div>
+              
+              <button 
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="mt-1 text-[9.5px] font-bold text-gray-400 uppercase tracking-[0.2em] hover:text-brand transition-colors cursor-pointer"
+              >
+                {isExpanded ? 'Ver menos' : 'Ver mais'}
+              </button>
             </div>
 
             {/* Minimalist interactive tabs below description */}
