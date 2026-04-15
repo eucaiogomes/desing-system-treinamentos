@@ -112,7 +112,7 @@ export default function TrainingView() {
   ];
 
   return (
-    <div className="flex h-screen bg-ice overflow-hidden font-sans relative">
+    <div className="flex h-full bg-ice overflow-hidden font-sans relative">
       {/* Sidebar */}
       <AnimatePresence initial={false}>
         {isSidebarOpen && (
@@ -124,11 +124,11 @@ export default function TrainingView() {
             className="flex-none flex flex-col border-r border-gray-100 bg-gray-50/30 overflow-hidden"
           >
             {/* Sidebar Header */}
-            <div className="p-5 bg-[#003366] text-white relative">
+            <div className="p-5 bg-white border-b border-gray-100 text-[#003366] relative">
               <div className="flex items-center gap-3 mb-4">
                 <button 
                   onClick={() => setIsSidebarOpen(false)}
-                  className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20 transition-all cursor-pointer"
+                  className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center hover:bg-gray-100 transition-all cursor-pointer text-gray-400"
                 >
                   <Menu size={18} />
                 </button>
@@ -137,21 +137,21 @@ export default function TrainingView() {
               
               <div className="space-y-3">
                 <div>
-                  <div className="flex justify-between text-[9.5px] font-bold uppercase mb-1">
+                  <div className="flex justify-between text-[9.5px] font-bold uppercase mb-1 text-gray-400">
                     <span>Progresso</span>
-                    <span>21.43%</span>
+                    <span className="text-[#003366]">21.43%</span>
                   </div>
-                  <div className="h-1 bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
                     <div className="h-full bg-brand w-[21.43%] transition-all duration-500" />
                   </div>
                 </div>
                 
                 <div>
-                  <div className="flex justify-between text-[9.5px] font-bold uppercase mb-1">
+                  <div className="flex justify-between text-[9.5px] font-bold uppercase mb-1 text-gray-400">
                     <span>Aproveitamento</span>
-                    <span>100%</span>
+                    <span className="text-[#003366]">100%</span>
                   </div>
-                  <div className="h-1 bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
                     <div className="h-full bg-brand w-full transition-all duration-500" />
                   </div>
                 </div>
@@ -246,7 +246,7 @@ export default function TrainingView() {
               <div className="flex items-center gap-2">
                 <button 
                   onClick={() => setIsSidebarOpen(true)}
-                  className="w-10 h-10 rounded-xl bg-[#003366] text-white flex items-center justify-center hover:bg-[#002244] transition-all shadow-lg shadow-blue-900/20 cursor-pointer"
+                  className="w-10 h-10 rounded-xl bg-white border border-gray-100 text-gray-400 flex items-center justify-center hover:bg-gray-50 transition-all shadow-sm cursor-pointer"
                 >
                   <Menu size={20} />
                 </button>
@@ -275,38 +275,54 @@ export default function TrainingView() {
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-hidden flex flex-col">
-          <div className="max-w-6xl mx-auto w-full flex-1 flex flex-col p-4 lg:p-6">
+        <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
+          <div className="max-w-6xl mx-auto w-full flex-1 flex flex-col p-4 lg:p-6 pb-32">
             {/* Video Player Container */}
             <div className="relative mb-4 flex-1 flex items-center justify-center min-h-0">
               {/* Navigation Arrows - Outside the video container */}
-              <div className="absolute left-[-60px] top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
-                <button 
-                  onClick={() => activeLessonId > 1 && setActiveLessonId(activeLessonId - 1)}
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-xl transition-all active:scale-95 ${
-                    activeLessonId > 1 
-                      ? 'bg-brand text-white shadow-brand/20 hover:scale-110 cursor-pointer' 
-                      : 'bg-gray-100 text-gray-300 cursor-not-allowed'
-                  }`}
-                >
-                  <ChevronLeft size={24} />
-                </button>
-                <span className="text-[8.5px] font-bold text-gray-400 uppercase tracking-tighter">Anterior</span>
-              </div>
-              
-              <div className="absolute right-[-60px] top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
-                <button 
-                  onClick={() => activeLessonId < lessons.length && setActiveLessonId(activeLessonId + 1)}
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-xl transition-all active:scale-95 ${
-                    activeLessonId < lessons.length 
-                      ? 'bg-brand text-white shadow-brand/20 hover:scale-110 cursor-pointer' 
-                      : 'bg-gray-100 text-gray-300 cursor-not-allowed'
-                  }`}
-                >
-                  <ChevronRight size={24} />
-                </button>
-                <span className="text-[8.5px] font-bold text-gray-400 uppercase tracking-tighter">Próximo</span>
-              </div>
+              <AnimatePresence>
+                {!isSidebarOpen && (
+                  <>
+                    <motion.div 
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                      className="absolute left-[-60px] top-1/2 -translate-y-1/2 flex flex-col items-center gap-1"
+                    >
+                      <button 
+                        onClick={() => activeLessonId && activeLessonId > 1 && setActiveLessonId(activeLessonId - 1)}
+                        className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-xl transition-all active:scale-95 ${
+                          activeLessonId && activeLessonId > 1 
+                            ? 'bg-brand text-white shadow-brand/20 hover:scale-110 cursor-pointer' 
+                            : 'bg-gray-100 text-gray-300 cursor-not-allowed'
+                        }`}
+                      >
+                        <ChevronLeft size={24} />
+                      </button>
+                      <span className="text-[8.5px] font-bold text-gray-400 uppercase tracking-tighter">Anterior</span>
+                    </motion.div>
+                    
+                    <motion.div 
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      className="absolute right-[-60px] top-1/2 -translate-y-1/2 flex flex-col items-center gap-1"
+                    >
+                      <button 
+                        onClick={() => activeLessonId && activeLessonId < lessons.length && setActiveLessonId(activeLessonId + 1)}
+                        className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-xl transition-all active:scale-95 ${
+                          activeLessonId && activeLessonId < lessons.length 
+                            ? 'bg-brand text-white shadow-brand/20 hover:scale-110 cursor-pointer' 
+                            : 'bg-gray-100 text-gray-300 cursor-not-allowed'
+                        }`}
+                      >
+                        <ChevronRight size={24} />
+                      </button>
+                      <span className="text-[8.5px] font-bold text-gray-400 uppercase tracking-tighter">Próximo</span>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
 
               {/* Video Placeholder */}
               <div className="w-full max-h-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl relative flex items-center justify-center">

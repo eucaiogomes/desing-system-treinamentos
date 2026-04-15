@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { CourseCatalog } from './components/CourseCatalog';
+import { TrilhaCatalog } from './components/TrilhaCatalog';
 import TrainingView from './components/TrainingView';
 import { DesignSystem } from './components/DesignSystem';
 import { BookOpen, Play, Box } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState<'catalog' | 'view' | 'design'>('catalog');
+  const [currentScreen, setCurrentScreen] = useState<'catalog' | 'view' | 'design' | 'trilha'>('catalog');
   const [activeColor, setActiveColor] = useState('#c00000');
 
   const colors = [
@@ -23,7 +24,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-slate-50">
       {/* Minimalist Color Switcher */}
       <div className="fixed top-6 right-6 flex gap-2 z-[60]">
         {colors.map((color) => (
@@ -39,43 +40,6 @@ export default function App() {
         ))}
       </div>
 
-      {/* Simple Navigation for Demo */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-xl border border-gray-100 rounded-full p-1 shadow-2xl flex gap-1 z-50">
-        <button 
-          onClick={() => setCurrentScreen('catalog')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full text-[10.5px] font-bold transition-all ${
-            currentScreen === 'catalog' 
-              ? 'bg-brand text-white shadow-lg shadow-brand/20' 
-              : 'text-gray-400 hover:text-gray-600'
-          }`}
-        >
-          <BookOpen size={14} />
-          Catálogo
-        </button>
-        <button 
-          onClick={() => setCurrentScreen('view')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full text-[10.5px] font-bold transition-all ${
-            currentScreen === 'view' 
-              ? 'bg-brand text-white shadow-lg shadow-brand/20' 
-              : 'text-gray-400 hover:text-gray-600'
-          }`}
-        >
-          <Play size={14} />
-          Visualização
-        </button>
-        <button 
-          onClick={() => setCurrentScreen('design')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full text-[10.5px] font-bold transition-all ${
-            currentScreen === 'design' 
-              ? 'bg-brand text-white shadow-lg shadow-brand/20' 
-              : 'text-gray-400 hover:text-gray-600'
-          }`}
-        >
-          <Box size={14} />
-          Design
-        </button>
-      </div>
-
       {/* Main Content */}
       <AnimatePresence mode="wait">
         <motion.main 
@@ -84,13 +48,62 @@ export default function App() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -10 }}
           transition={{ duration: 0.2 }}
-          className="pb-20"
+          className={currentScreen === 'view' ? 'h-[100dvh] overflow-hidden' : 'min-h-[100dvh]'}
         >
-          {currentScreen === 'catalog' && <CourseCatalog />}
+          {currentScreen === 'catalog' && <div className="pb-32"><CourseCatalog /></div>}
+          {currentScreen === 'trilha' && <div className="pb-32"><TrilhaCatalog /></div>}
           {currentScreen === 'view' && <TrainingView />}
-          {currentScreen === 'design' && <DesignSystem />}
+          {currentScreen === 'design' && <div className="pb-32"><DesignSystem /></div>}
         </motion.main>
       </AnimatePresence>
+
+      {/* Simple Navigation for Demo - Moved to bottom for better stacking context */}
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white/80 backdrop-blur-md border border-white/20 rounded-full p-2 shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex gap-2 z-[100]">
+        <button 
+          onClick={() => setCurrentScreen('catalog')}
+          title="Catálogo de Treinamento"
+          className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold transition-all duration-300 cursor-pointer ${
+            currentScreen === 'catalog' 
+              ? 'bg-brand text-white shadow-lg shadow-brand/20 scale-110' 
+              : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100'
+          }`}
+        >
+          1
+        </button>
+        <button 
+          onClick={() => setCurrentScreen('view')}
+          title="Visualização"
+          className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold transition-all duration-300 cursor-pointer ${
+            currentScreen === 'view' 
+              ? 'bg-brand text-white shadow-lg shadow-brand/20 scale-110' 
+              : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100'
+          }`}
+        >
+          2
+        </button>
+        <button 
+          onClick={() => setCurrentScreen('design')}
+          title="Design"
+          className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold transition-all duration-300 cursor-pointer ${
+            currentScreen === 'design' 
+              ? 'bg-brand text-white shadow-lg shadow-brand/20 scale-110' 
+              : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100'
+          }`}
+        >
+          3
+        </button>
+        <button 
+          onClick={() => setCurrentScreen('trilha')}
+          title="Catálogo de Trilha"
+          className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold transition-all duration-300 cursor-pointer ${
+            currentScreen === 'trilha' 
+              ? 'bg-brand text-white shadow-lg shadow-brand/20 scale-110' 
+              : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100'
+          }`}
+        >
+          4
+        </button>
+      </div>
     </div>
   );
 }

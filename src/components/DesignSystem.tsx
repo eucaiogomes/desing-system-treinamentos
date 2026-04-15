@@ -313,14 +313,14 @@ export const DesignSystem: React.FC = () => {
       <Section title="05. Exemplos Reais">
         <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm overflow-hidden">
           <div className="border border-gray-100 rounded-xl overflow-hidden mb-8">
-            <div className="bg-[#003366] p-4 flex items-center justify-between">
+            <div className="bg-white p-4 flex items-center justify-between border-b border-gray-100">
               <div className="flex items-center gap-2">
-                <Menu size={16} className="text-white/70" />
-                <span className="text-[10.5px] font-bold text-white uppercase tracking-tight">Miniatura de Sidebar</span>
+                <Menu size={16} className="text-gray-400" />
+                <span className="text-[10.5px] font-bold text-[#003366] uppercase tracking-tight">Miniatura de Sidebar</span>
               </div>
               <div className="w-2 h-2 rounded-full bg-brand" />
             </div>
-            <div className="p-4 space-y-2">
+            <div className="p-4 space-y-2 bg-gray-50/30">
               <div className="flex items-center justify-between p-2 bg-brand/5 rounded border-l-2 border-brand">
                 <span className="text-[10.5px] font-bold text-brand">Aula Ativa</span>
                 <ChevronDown size={12} className="text-brand rotate-180" />
