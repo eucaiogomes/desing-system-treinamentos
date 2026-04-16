@@ -1,22 +1,40 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ChevronRight, Folder, PlaySquare, FileText, Video, Users, MonitorPlay, Box, UploadCloud, CheckSquare, Star, Award, Layers, Calendar, AlertCircle, RefreshCw } from 'lucide-react';
+import { ChevronDown, ChevronUp, ChevronRight, Folder, PlaySquare, FileText, Video, Users, MonitorPlay, Box, UploadCloud, CheckSquare, Star, Award, Layers, Calendar, AlertCircle, RefreshCw, CreditCard } from 'lucide-react';
 import { CustomFieldsModal } from './CustomFieldsModal';
+import { PaymentModal } from './PaymentModal';
 
 export const TrilhaCatalog: React.FC = () => {
   const [selectedTurmaId, setSelectedTurmaId] = useState<number>(1);
   const [activeTab, setActiveTab] = useState<string>('conteudos');
   const [isExpanded, setIsExpanded] = useState(false);
-  const [enrollmentStatus, setEnrollmentStatus] = useState<'default' | 'rejected' | 'pending'>('default');
+  const [enrollmentStatus, setEnrollmentStatus] = useState<'default' | 'payment' | 'rejected' | 'pending'>('default');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   
   // Accordion state: stores the IDs of expanded items (etapas or treinamentos)
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({
     'etapa-1': true // Expand the first one by default
   });
 
-  const toggleItem = (id: string) => {
-    setExpandedItems(prev => ({ ...prev, [id]: !prev[id] }));
+  const toggleItem = (id: string, isEtapa: boolean = false) => {
+    setExpandedItems(prev => {
+      const newState = { ...prev };
+      
+      // If we are opening this item, close others of the same type
+      if (!prev[id]) {
+        Object.keys(newState).forEach(key => {
+          if (isEtapa && key.startsWith('etapa-')) {
+            newState[key] = false;
+          } else if (!isEtapa && !key.startsWith('etapa-')) {
+            newState[key] = false;
+          }
+        });
+      }
+      
+      newState[id] = !prev[id];
+      return newState;
+    });
   };
 
   const turmas = [
@@ -94,7 +112,7 @@ export const TrilhaCatalog: React.FC = () => {
         {etapas.map(etapa => (
           <div key={etapa.id} className="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm flex flex-col">
             <button 
-              onClick={() => toggleItem(etapa.id)}
+              onClick={() => toggleItem(etapa.id, true)}
               className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors border-b border-gray-100 cursor-pointer z-10"
             >
               <span className="text-xs font-bold text-[#003366] uppercase tracking-wide">{etapa.title}</span>
@@ -125,7 +143,7 @@ export const TrilhaCatalog: React.FC = () => {
                           // Treinamento Accordion
                           <div className="flex flex-col bg-brand/5">
                             <button 
-                              onClick={() => toggleItem(content.id)}
+                              onClick={() => toggleItem(content.id, false)}
                               className="w-full flex items-center px-4 py-3 hover:bg-brand/10 transition-colors group cursor-pointer"
                             >
                               <div className="flex items-center gap-3 w-[240px] flex-shrink-0">
@@ -241,6 +259,11 @@ export const TrilhaCatalog: React.FC = () => {
               </div>
             </div>
 
+            <div className="flex flex-col gap-1 pb-4 border-b border-gray-100">
+              <span className="text-[9.5px] font-bold text-gray-400 uppercase tracking-widest">Carga Horária</span>
+              <span className="text-xs font-semibold text-[#003366]">120 horas e 00 minuto</span>
+            </div>
+
             {/* Compact Turmas List below photo */}
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
@@ -303,7 +326,7 @@ export const TrilhaCatalog: React.FC = () => {
                 {enrollmentStatus === 'default' && (
                   <>
                     <button 
-                      onClick={() => setEnrollmentStatus('rejected')}
+                      onClick={() => setEnrollmentStatus('payment')}
                       className="w-full bg-brand text-white py-3.5 rounded-xl text-[11.5px] font-bold uppercase tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
                     >
                       Fazer inscrição
@@ -312,6 +335,16 @@ export const TrilhaCatalog: React.FC = () => {
                       Registrar interesse
                     </button>
                   </>
+                )}
+
+                {enrollmentStatus === 'payment' && (
+                  <button 
+                    onClick={() => setIsPaymentModalOpen(true)}
+                    className="w-full bg-brand text-white py-3.5 rounded-xl text-[11.5px] font-bold uppercase tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <CreditCard size={14} />
+                    Efetuar pagamento
+                  </button>
                 )}
 
                 <AnimatePresence mode="wait">
@@ -352,11 +385,6 @@ export const TrilhaCatalog: React.FC = () => {
                 )}
               </div>
             </div>
-
-            <div className="flex flex-col gap-1 pt-4 border-t border-gray-50">
-              <span className="text-[9.5px] font-bold text-gray-400 uppercase tracking-widest">Carga Horária</span>
-              <span className="text-xs font-semibold text-[#003366]">120 horas e 00 minuto</span>
-            </div>
           </div>
 
           {/* Right Content */}
@@ -392,9 +420,13 @@ export const TrilhaCatalog: React.FC = () => {
               
               <button 
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="mt-1 text-[9.5px] font-bold text-gray-400 uppercase tracking-[0.2em] hover:text-brand transition-colors cursor-pointer"
+                className="mt-2 flex items-center gap-1 text-[10.5px] font-bold text-brand uppercase tracking-[0.15em] hover:text-brand-dark transition-colors cursor-pointer"
               >
-                {isExpanded ? 'Ver menos' : 'Ver mais'}
+                {isExpanded ? (
+                  <>Ver menos <ChevronUp size={14} /></>
+                ) : (
+                  <>Ver mais <ChevronDown size={14} /></>
+                )}
               </button>
             </div>
 
@@ -446,6 +478,17 @@ export const TrilhaCatalog: React.FC = () => {
           setIsModalOpen(false);
           setEnrollmentStatus('pending');
         }} 
+      />
+
+      <PaymentModal 
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        itemName="TRILHA DE FORMAÇÃO: LIDERANÇA DO FUTURO"
+        itemPrice={1200.00}
+        onSuccess={() => {
+          setIsPaymentModalOpen(false);
+          setEnrollmentStatus('rejected'); // Simulate the error state after payment for testing
+        }}
       />
     </motion.div>
   );

@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { Search, ChevronUp, ChevronDown, CheckCircle2, Folder, PlaySquare, FileText, Video, Users, MonitorPlay, Box, UploadCloud, CheckSquare, Star, Award, Calendar, AlertCircle, RefreshCw } from 'lucide-react';
+import { Search, ChevronUp, ChevronDown, CheckCircle2, Folder, PlaySquare, FileText, Video, Users, MonitorPlay, Box, UploadCloud, CheckSquare, Star, Award, Calendar, AlertCircle, RefreshCw, CreditCard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CustomFieldsModal } from './CustomFieldsModal';
+import { PaymentModal } from './PaymentModal';
 
 export const CourseCatalog: React.FC = () => {
   const [selectedTurmaId, setSelectedTurmaId] = useState<number>(1);
   const [activeTab, setActiveTab] = useState<string>('conteudos');
   const [isExpanded, setIsExpanded] = useState(false);
-  const [enrollmentStatus, setEnrollmentStatus] = useState<'default' | 'rejected' | 'pending'>('default');
+  const [enrollmentStatus, setEnrollmentStatus] = useState<'default' | 'payment' | 'rejected' | 'pending'>('default');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   const turmas = [
     {
@@ -135,6 +137,11 @@ export const CourseCatalog: React.FC = () => {
               </div>
             </div>
 
+            <div className="flex flex-col gap-1 pb-4 border-b border-gray-100">
+              <span className="text-[9.5px] font-bold text-gray-400 uppercase tracking-widest">Carga Horária</span>
+              <span className="text-xs font-semibold text-[#003366]">36 horas e 00 minuto</span>
+            </div>
+
             {/* Compact Turmas List below photo */}
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
@@ -197,7 +204,7 @@ export const CourseCatalog: React.FC = () => {
                 {enrollmentStatus === 'default' && (
                   <>
                     <button 
-                      onClick={() => setEnrollmentStatus('rejected')}
+                      onClick={() => setEnrollmentStatus('payment')}
                       className="w-full bg-brand text-white py-3.5 rounded-xl text-[11.5px] font-bold uppercase tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
                     >
                       Fazer inscrição
@@ -206,6 +213,16 @@ export const CourseCatalog: React.FC = () => {
                       Registrar interesse
                     </button>
                   </>
+                )}
+
+                {enrollmentStatus === 'payment' && (
+                  <button 
+                    onClick={() => setIsPaymentModalOpen(true)}
+                    className="w-full bg-brand text-white py-3.5 rounded-xl text-[11.5px] font-bold uppercase tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <CreditCard size={14} />
+                    Efetuar pagamento
+                  </button>
                 )}
 
                 <AnimatePresence mode="wait">
@@ -246,11 +263,6 @@ export const CourseCatalog: React.FC = () => {
                 )}
               </div>
             </div>
-
-            <div className="flex flex-col gap-1 pt-4 border-t border-gray-50">
-              <span className="text-[9.5px] font-bold text-gray-400 uppercase tracking-widest">Carga Horária</span>
-              <span className="text-xs font-semibold text-[#003366]">36 horas e 00 minuto</span>
-            </div>
           </div>
 
           {/* Right Content */}
@@ -286,9 +298,13 @@ export const CourseCatalog: React.FC = () => {
               
               <button 
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="mt-1 text-[9.5px] font-bold text-gray-400 uppercase tracking-[0.2em] hover:text-brand transition-colors cursor-pointer"
+                className="mt-2 flex items-center gap-1 text-[10.5px] font-bold text-brand uppercase tracking-[0.15em] hover:text-brand-dark transition-colors cursor-pointer"
               >
-                {isExpanded ? 'Ver menos' : 'Ver mais'}
+                {isExpanded ? (
+                  <>Ver menos <ChevronUp size={14} /></>
+                ) : (
+                  <>Ver mais <ChevronDown size={14} /></>
+                )}
               </button>
             </div>
 
@@ -340,6 +356,17 @@ export const CourseCatalog: React.FC = () => {
           setIsModalOpen(false);
           setEnrollmentStatus('pending');
         }} 
+      />
+
+      <PaymentModal 
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        itemName="TEORIA GERAL DO DIREITO"
+        itemPrice={10.00}
+        onSuccess={() => {
+          setIsPaymentModalOpen(false);
+          setEnrollmentStatus('rejected'); // Simulate the error state after payment for testing
+        }}
       />
     </motion.div>
   );
