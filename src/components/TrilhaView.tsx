@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PerformanceDashboard } from './PerformanceDashboard';
 import { MaterialExplorer } from './MaterialExplorer';
+import { TutorList } from './TutorList';
 import { 
   Menu, X, ChevronLeft, ChevronRight, Play, FileText, Video, 
   HelpCircle, MonitorPlay, MessageSquare, ChevronDown, Check,
   Target, Layers, BookOpen, Star, ArrowLeft, CheckCircle2, Circle,
-  Info, BarChart3, Paperclip, User
+  Info, BarChart3, Paperclip, User, Users
 } from 'lucide-react';
 import { SidebarContentIndicator, ContentTypeLabel } from './SidebarContentIndicator';
 
@@ -147,6 +148,7 @@ export const TrilhaView: React.FC<{ completedTrainings?: string[], onNavigateToT
     { id: 'desempenho', label: 'Desempenho', icon: <BarChart3 size={14} /> },
     { id: 'resumo', label: 'Resumo', icon: <BookOpen size={14} /> },
     { id: 'material', label: 'Material Complementar', icon: <Paperclip size={14} /> },
+    { id: 'tutores', label: 'Tutores', icon: <Users size={14} /> },
     { id: 'autor', label: 'Autor', icon: <User size={14} /> },
   ];
 
@@ -502,6 +504,9 @@ export const TrilhaView: React.FC<{ completedTrainings?: string[], onNavigateToT
                     )}
                     {activeTab === 'material' && (
                       <MaterialExplorer />
+                    )}
+                    {activeTab === 'tutores' && (
+                      <TutorList />
                     )}
                     {activeTab === 'autor' && (
                       <div className="prose prose-sm max-w-none text-gray-600 italic text-xs">

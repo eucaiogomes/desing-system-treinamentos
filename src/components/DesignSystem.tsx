@@ -8,6 +8,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { PerformanceDashboard } from './PerformanceDashboard';
 import { MaterialExplorer } from './MaterialExplorer';
+import { TutorList } from './TutorList';
 import { CircularProgress } from './CircularProgress';
 import { CustomFieldsModal } from './CustomFieldsModal';
 import { PaymentModal } from './PaymentModal';
@@ -322,6 +323,15 @@ export const DesignSystem: React.FC = () => {
             </div>
             <div className="w-full text-[10px] text-gray-400 italic">
               Regras: Sidebar de pastas à esquerda com indicador dinâmico. Grid de arquivos à direita com metadados e botão de download secundário.
+            </div>
+          </ComponentBox>
+
+          <ComponentBox title="Listagem de Tutores" description="Cards de contato direto com instrutores e especialistas.">
+            <div className="w-full bg-ice p-6 rounded-2xl">
+              <TutorList />
+            </div>
+            <div className="w-full text-[10px] text-gray-400 italic">
+              Regras: Avatar circular com borda da marca e indicador de status (Online/Offline). Botão de ação secundário com ícone de chat.
             </div>
           </ComponentBox>
 

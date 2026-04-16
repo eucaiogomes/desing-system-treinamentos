@@ -13,6 +13,7 @@ import {
   BookOpen,
   Paperclip,
   User,
+  Users,
   Info,
   Menu,
   X
@@ -21,6 +22,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { SidebarContentIndicator, ContentTypeLabel } from './SidebarContentIndicator';
 import { PerformanceDashboard } from './PerformanceDashboard';
 import { MaterialExplorer } from './MaterialExplorer';
+import { TutorList } from './TutorList';
 
 interface Lesson {
   id: number;
@@ -111,6 +113,7 @@ export default function TrainingView() {
     { id: 'desempenho', label: 'Desempenho', icon: <BarChart3 size={14} /> },
     { id: 'resumo', label: 'Resumo', icon: <BookOpen size={14} /> },
     { id: 'material', label: 'Material Complementar', icon: <Paperclip size={14} /> },
+    { id: 'tutores', label: 'Tutores', icon: <Users size={14} /> },
     { id: 'autor', label: 'Autor', icon: <User size={14} /> },
   ];
 
@@ -434,6 +437,9 @@ export default function TrainingView() {
                         )}
                         {activeTab === 'material' && (
                           <MaterialExplorer />
+                        )}
+                        {activeTab === 'tutores' && (
+                          <TutorList />
                         )}
                         {activeTab === 'autor' && (
                           <div className="prose prose-sm max-w-none text-gray-600 italic text-xs">
