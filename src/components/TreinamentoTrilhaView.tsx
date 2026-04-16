@@ -17,8 +17,9 @@ import {
   Menu,
   X
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { SidebarContentIndicator, ContentTypeLabel } from './SidebarContentIndicator';
+import { PerformanceDashboard } from './PerformanceDashboard';
 
 interface Lesson {
   id: number;
@@ -394,7 +395,7 @@ export default function TreinamentoTrilhaView({ onReturn }: { onReturn?: () => v
               </div>
 
               {/* Tab Content */}
-              <div className="h-12 overflow-y-auto custom-scrollbar">
+              <div className="min-h-[400px] overflow-y-auto custom-scrollbar">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activeTab}
@@ -402,22 +403,39 @@ export default function TreinamentoTrilhaView({ onReturn }: { onReturn?: () => v
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -5 }}
                     transition={{ duration: 0.2 }}
-                    className="prose prose-sm max-w-none text-gray-600 italic text-xs"
                   >
                     {activeTab === 'descricao' && (
-                      <p>Uma visão geral de todas as funcionalidades que vamos cobrir.</p>
+                      <div className="prose prose-sm max-w-none text-gray-600 italic text-xs">
+                        <p>Uma visão geral de todas as funcionalidades que vamos cobrir.</p>
+                      </div>
                     )}
                     {activeTab === 'desempenho' && (
-                      <p>Seu desempenho nesta aula foi excelente. Continue assim!</p>
+                      <PerformanceDashboard 
+                        type="trilha" 
+                        status="aprovado"
+                        data={[
+                          { name: 'Etapa 1', value: 100 },
+                          { name: 'Etapa 2', value: 100 },
+                          { name: 'Etapa 3', value: 100 },
+                          { name: 'Etapa 4', value: 100 },
+                          { name: 'Etapa 5', value: 0 },
+                        ]}
+                      />
                     )}
                     {activeTab === 'resumo' && (
-                      <p>Resumo dos pontos principais abordados nesta lição.</p>
+                      <div className="prose prose-sm max-w-none text-gray-600 italic text-xs">
+                        <p>Resumo dos pontos principais abordados nesta lição.</p>
+                      </div>
                     )}
                     {activeTab === 'material' && (
-                      <p>Arquivos e links úteis para aprofundar seu conhecimento.</p>
+                      <div className="prose prose-sm max-w-none text-gray-600 italic text-xs">
+                        <p>Arquivos e links úteis para aprofundar seu conhecimento.</p>
+                      </div>
                     )}
                     {activeTab === 'autor' && (
-                      <p>Informações sobre o instrutor responsável por este conteúdo.</p>
+                      <div className="prose prose-sm max-w-none text-gray-600 italic text-xs">
+                        <p>Informações sobre o instrutor responsável por este conteúdo.</p>
+                      </div>
                     )}
                   </motion.div>
                 </AnimatePresence>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
+import { PerformanceDashboard } from './PerformanceDashboard';
 import { 
   Menu, X, ChevronLeft, ChevronRight, Play, FileText, Video, 
   HelpCircle, MonitorPlay, MessageSquare, ChevronDown, Check,
@@ -466,7 +467,7 @@ export const TrilhaView: React.FC<{ completedTrainings?: string[], onNavigateToT
               </div>
 
               {/* Tab Content */}
-              <div className="h-12 overflow-y-auto custom-scrollbar">
+              <div className="min-h-[400px] overflow-y-auto custom-scrollbar">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activeTab}
@@ -474,22 +475,39 @@ export const TrilhaView: React.FC<{ completedTrainings?: string[], onNavigateToT
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -5 }}
                     transition={{ duration: 0.2 }}
-                    className="prose prose-sm max-w-none text-gray-600 italic text-xs"
                   >
                     {activeTab === 'descricao' && (
-                      <p>Nesta etapa importante da Trilha, você aprenderá o conceito aprofundado por trás de cada fluxo de aprovação da nossa matriz.</p>
+                      <div className="prose prose-sm max-w-none text-gray-600 italic text-xs">
+                        <p>Nesta etapa importante da Trilha, você aprenderá o conceito aprofundado por trás de cada fluxo de aprovação da nossa matriz.</p>
+                      </div>
                     )}
                     {activeTab === 'desempenho' && (
-                      <p>Seu progresso global na trilha está em 21.43%. Continue sua jornada!</p>
+                      <PerformanceDashboard 
+                        type="trilha" 
+                        status="andamento"
+                        data={[
+                          { name: 'Módulo 1', value: 100 },
+                          { name: 'Módulo 2', value: 85 },
+                          { name: 'Módulo 3', value: 90 },
+                          { name: 'Módulo 4', value: 21, isAlt: true },
+                          { name: 'Módulo 5', value: 0 },
+                        ]}
+                      />
                     )}
                     {activeTab === 'resumo' && (
-                      <p>Os 3 pilares da trilha: Liderança, Empatia e Gerenciamento Ágil.</p>
+                      <div className="prose prose-sm max-w-none text-gray-600 italic text-xs">
+                        <p>Os 3 pilares da trilha: Liderança, Empatia e Gerenciamento Ágil.</p>
+                      </div>
                     )}
                     {activeTab === 'material' && (
-                      <p>Acesse aqui a biblioteca digital para materiais adicionais da Etapa 2.</p>
+                      <div className="prose prose-sm max-w-none text-gray-600 italic text-xs">
+                        <p>Acesse aqui a biblioteca digital para materiais adicionais da Etapa 2.</p>
+                      </div>
                     )}
                     {activeTab === 'autor' && (
-                      <p>Instrutora Sênior: Mariana Lemos — Especialista em Gestão de Pessoas.</p>
+                      <div className="prose prose-sm max-w-none text-gray-600 italic text-xs">
+                        <p>Instrutora Sênior: Mariana Lemos — Especialista em Gestão de Pessoas.</p>
+                      </div>
                     )}
                   </motion.div>
                 </AnimatePresence>

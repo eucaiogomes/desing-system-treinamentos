@@ -5,7 +5,8 @@ import {
   Layout, GraduationCap, Search, Settings, Maximize2, Video, ClipboardCheck, 
   Award, List, MessageSquare, AlertCircle, RefreshCw, CreditCard, QrCode, Tag, Loader2, UploadCloud
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
+import { PerformanceDashboard } from './PerformanceDashboard';
 import { CircularProgress } from './CircularProgress';
 import { CustomFieldsModal } from './CustomFieldsModal';
 import { PaymentModal } from './PaymentModal';
@@ -292,6 +293,25 @@ export const DesignSystem: React.FC = () => {
             </div>
             <div className="w-full text-[10px] text-gray-400 italic">
               Regra: bg-brand no fundo, textos brancos e ícones com background de baixa opacidade (white/10).
+            </div>
+          </ComponentBox>
+
+          <ComponentBox title="Painel de Desempenho (Analytics)" description="Dashboard completo para visualização de métricas e status do aluno.">
+            <div className="w-full bg-ice p-6 rounded-2xl">
+              <PerformanceDashboard 
+                type="trilha" 
+                status="andamento"
+                data={[
+                  { name: 'Jan', value: 40 },
+                  { name: 'Fev', value: 65 },
+                  { name: 'Mar', value: 30 },
+                  { name: 'Abr', value: 90 },
+                  { name: 'Mai', value: 20, isAlt: true },
+                ]}
+              />
+            </div>
+            <div className="w-full text-[10px] text-gray-400 italic">
+              Regras: Top Cards com borda colorida dinâmica. Gráfico de barras com gradiente brand. Resumo de tempo com barras horizontais.
             </div>
           </ComponentBox>
 
