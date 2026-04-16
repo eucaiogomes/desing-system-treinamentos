@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { X, QrCode, CreditCard, Check, Copy, Tag, AlertCircle, Loader2 } from 'lucide-react';
 
 interface PaymentModalProps {
@@ -89,7 +89,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+          className="absolute inset-0 bg-slate-900/10"
         />
 
         {/* Modal Card */}

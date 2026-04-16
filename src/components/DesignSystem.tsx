@@ -560,6 +560,16 @@ export const DesignSystem: React.FC = () => {
             </button>
           </div>
         </div>
+
+        <div className="mt-8 bg-brand/5 border border-brand/10 p-4 rounded-xl">
+          <h4 className="text-[10px] font-black text-brand uppercase tracking-widest mb-2 flex items-center gap-2">
+            <Info size={12} /> Padrão de Overlay (Fundo)
+          </h4>
+          <p className="text-[10.5px] text-brand/70 leading-relaxed font-medium">
+            Todos os modais devem utilizar o fundo semi-transparente <code className="bg-white/50 px-1 rounded">bg-slate-900/10</code> <strong>sem efeito de desfoque (blur)</strong>. 
+            Isso garante leveza visual e mantém o contexto do conteúdo de fundo nítido, seguindo a diretriz de "Clareza e Precisão" do sistema.
+          </p>
+        </div>
       </Section>
 
       <footer className="mt-20 pt-8 border-t border-gray-100 text-center">
