@@ -274,7 +274,7 @@ export const CourseCatalog: React.FC = () => {
             <div className="relative">
               <motion.div 
                 initial={false}
-                animate={{ height: isExpanded ? 'auto' : '18em' }}
+                animate={{ height: isExpanded ? 'auto' : '13.5em' }}
                 className="overflow-hidden relative"
               >
                 <div className="prose prose-sm text-gray-600 max-w-none">
@@ -285,6 +285,12 @@ export const CourseCatalog: React.FC = () => {
                   </p>
                   <p className="leading-relaxed text-sm mb-4">
                     Durante os encontros, debateremos as obras dos principais juristas e sociólogos que moldaram a compreensão do Estado brasileiro. A metodologia inclui análise de jurisprudência histórica, debates guiados e seminários de pesquisa, exigindo do aluno uma postura ativa e crítica em relação ao material bibliográfico.
+                  </p>
+                  <p className="leading-relaxed text-sm mb-4">
+                    Além disso, o programa aborda a evolução do pensamento constitucional e as transformações nas relações entre o poder público e a sociedade civil. Serão analisados documentos históricos inéditos e textos clássicos sob uma nova ótica, permitindo que os participantes desenvolvam competências de interpretação sistêmica e argumentação jurídica sofisticada.
+                  </p>
+                  <p className="leading-relaxed text-sm mb-4">
+                    O curso também se propõe a ser um espaço de troca de experiências entre profissionais de diferentes áreas, enriquecendo o debate com perspectivas multidisciplinares sobre a eficácia das normas e o papel do jurista na contemporaneidade brasileira.
                   </p>
                   <img src="https://picsum.photos/seed/law/800/400" alt="Biblioteca jurídica" className="w-full rounded-lg my-6 object-cover max-h-[300px]" referrerPolicy="no-referrer" />
                   <p className="leading-relaxed text-sm">

@@ -401,7 +401,7 @@ export const TrilhaCatalog: React.FC = () => {
             <div className="relative">
               <motion.div 
                 initial={false}
-                animate={{ height: isExpanded ? 'auto' : '18em' }}
+                animate={{ height: isExpanded ? 'auto' : '13.5em' }}
                 className="overflow-hidden relative"
               >
                 <div className="prose prose-sm text-gray-600 max-w-none">
@@ -412,6 +412,12 @@ export const TrilhaCatalog: React.FC = () => {
                   </p>
                   <p className="leading-relaxed text-sm mb-4">
                     A liderança contemporânea exige mais do que apenas conhecimento técnico; exige empatia, visão estratégica e a capacidade de inspirar pessoas. Neste programa, mergulharemos profundamente nas metodologias ágeis de gestão de pessoas, explorando casos reais e simulando cenários desafiadores que os gestores enfrentam no dia a dia corporativo.
+                  </p>
+                  <p className="leading-relaxed text-sm mb-4">
+                    A trilha também foca no desenvolvimento da inteligência emocional e na capacidade de adaptação a mudanças constantes. Discutiremos como construir redes de confiança dentro das equipes e como promover uma cultura de inovação e aprendizado contínuo, elementos vitais para a sustentabilidade organizacional a longo prazo.
+                  </p>
+                  <p className="leading-relaxed text-sm mb-4">
+                    Através de dinâmicas de grupo e sessões de mentoria, os participantes serão incentivados a refletir sobre seu próprio estilo de liderança, identificando pontos de melhoria e fortalecendo suas habilidades de comunicação e influência.
                   </p>
                   <img src="https://picsum.photos/seed/teamwork/800/400" alt="Equipe colaborando" className="w-full rounded-lg my-6 object-cover max-h-[300px]" referrerPolicy="no-referrer" />
                   <p className="leading-relaxed text-sm">
