@@ -176,7 +176,7 @@ export default function TrainingView() {
                     key={lesson.id}
                     onClick={() => handleToggleLesson(lesson.id)}
                     className={`w-full text-left p-4 border-b border-gray-100/50 transition-all relative group cursor-pointer ${
-                      isActive ? 'bg-brand/5' : 'hover:bg-gray-100/50'
+                      isActive ? 'bg-brand/5' : isCompleted ? 'bg-green-50/50' : 'hover:bg-gray-100/50'
                     }`}
                   >
                     {isActive && (
@@ -197,29 +197,33 @@ export default function TrainingView() {
                         {isCompleted ? <CheckCircle2 size={16} /> : <Circle size={16} />}
                       </button>
                       
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2 mb-1">
-                          <div className="flex items-center gap-2">
-                            <span className={`text-[8.5px] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-tighter ${
-                              isCompleted ? 'bg-green-50 text-green-600' : 
-                              isActive ? 'bg-brand/10 text-brand' : 
-                              'bg-gray-100 text-gray-400'
-                            }`}>
-                              {isCompleted ? 'Concluído' : isActive ? 'Em andamento' : 'Não visualizado'}
-                            </span>
-                            <SidebarContentIndicator type={lesson.type} />
-                          </div>
+                      <div className="flex-1 min-w-0 relative h-full flex flex-col justify-between">
+                        <div className="flex justify-between items-start gap-2 mb-1">
+                          <h3 className={`text-[11.5px] font-bold leading-tight break-words line-clamp-2 ${
+                            isActive ? 'text-brand' : 'text-[#003366]'
+                          }`}>
+                            {lesson.title}
+                          </h3>
                           <ChevronDown 
                             size={14} 
                             strokeWidth={3}
-                            className={`transition-transform duration-300 ${isActive ? 'rotate-180 text-brand' : 'text-gray-500'}`} 
+                            className={`flex-none mt-0.5 transition-transform duration-300 ${isActive ? 'rotate-180 text-brand' : 'text-gray-400'}`} 
                           />
                         </div>
-                        <h3 className={`text-[11.5px] font-bold leading-tight break-words ${
-                          isActive ? 'text-brand' : 'text-[#003366]'
-                        }`}>
-                          {lesson.title}
-                        </h3>
+
+                        <div className="flex items-end justify-between gap-2 mt-1">
+                          <div className="flex items-center gap-1 opacity-60">
+                            <SidebarContentIndicator type={lesson.type} />
+                          </div>
+                          
+                          <span className={`text-[8.5px] font-black uppercase tracking-tight ${
+                            isCompleted ? 'text-green-600' : 
+                            isActive ? 'text-brand' : 
+                            'text-gray-400'
+                          }`}>
+                            {isCompleted ? 'Concluído' : isActive ? 'Em andamento' : 'Não visualizado'}
+                          </span>
+                        </div>
                         
                         <AnimatePresence>
                           {isActive && (

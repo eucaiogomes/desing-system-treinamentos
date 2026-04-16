@@ -90,7 +90,7 @@ export const DesignSystem: React.FC = () => {
             color="bg-brand" 
             name="Brand Primary" 
             hex="var(--brand-color)" 
-            usage="Cor principal de destaque e cabeçalhos de sidebar (White Label)." 
+            usage="Cor principal de destaque, botões primários e estados ativos." 
           />
           <ColorSwatch 
             color="bg-[#003366]" 
@@ -168,6 +168,46 @@ export const DesignSystem: React.FC = () => {
       {/* SEÇÃO 2 — COMPONENTES */}
       <Section title="02. Componentes Básicos">
         <div className="grid grid-cols-1 gap-8">
+          <ComponentBox title="Item de Conteúdo (Sidebar)" description="Novo padrão vertical com título (max 2 linhas), tipo e status.">
+            <div className="w-full max-w-sm bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+              {/* Item Não Concluído */}
+              <div className="flex items-start gap-3 p-4 border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer">
+                <Circle size={16} className="mt-1 text-gray-400 flex-none" />
+                <div className="flex-1 min-w-0 flex flex-col justify-between">
+                  <div className="flex justify-between items-start gap-2 mb-1">
+                    <h3 className="text-[11.5px] font-bold text-[#003366] leading-tight line-clamp-2">Introdução aos Processos de Atendimento ao Cliente</h3>
+                    <ChevronDown size={14} className="text-gray-400 mt-0.5 flex-none" />
+                  </div>
+                  <div className="flex items-end justify-between gap-2 mt-1">
+                    <div className="flex items-center gap-1 opacity-60">
+                      <Play size={10} /> <span className="text-[9px] font-bold uppercase">Vídeos</span>
+                    </div>
+                    <span className="text-[8.5px] font-black text-gray-400 uppercase tracking-tight">Não visualizado</span>
+                  </div>
+                </div>
+              </div>
+              {/* Item Concluído */}
+              <div className="flex items-start gap-3 p-4 bg-green-50/50 transition-colors cursor-pointer">
+                <CheckCircle2 size={16} className="mt-1 text-green-500 flex-none" />
+                <div className="flex-1 min-w-0 flex flex-col justify-between">
+                  <div className="flex justify-between items-start gap-2 mb-1">
+                    <h3 className="text-[11.5px] font-bold text-[#003366] leading-tight line-clamp-2">Boas-vindas</h3>
+                    <ChevronDown size={14} className="text-gray-400 mt-0.5 flex-none" />
+                  </div>
+                  <div className="flex items-end justify-between gap-2 mt-1">
+                    <div className="flex items-center gap-1 opacity-60">
+                      <Play size={10} /> <span className="text-[9px] font-bold uppercase">Vídeos</span>
+                    </div>
+                    <span className="text-[8.5px] font-black text-green-600 uppercase tracking-tight">Concluído</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="w-full text-[10px] text-gray-400 italic">
+              Regras: Título em Negrito (line-clamp-2). Tipo de conteúdo abaixo do título. Status no canto inferior direito. Fundo verde claro para concluídos.
+            </div>
+          </ComponentBox>
+
           <ComponentBox title="Accordions (Menu de Etapas)" description="Padrão de navegação por etapas com setas à esquerda.">
             <div className="w-full max-w-md bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
               {/* Item Fechado */}
