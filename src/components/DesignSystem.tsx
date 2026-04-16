@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CircularProgress } from './CircularProgress';
 import { CustomFieldsModal } from './CustomFieldsModal';
 import { PaymentModal } from './PaymentModal';
+import { SidebarContentIndicator, ContentTypeLabel } from './SidebarContentIndicator';
 
 const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <section className="mb-16">
@@ -243,6 +244,16 @@ export const DesignSystem: React.FC = () => {
             <span className="text-[9.5px] text-white/70 uppercase tracking-[0.2em] bg-[#003366] px-2 py-1 rounded">
               Curso de Extensão
             </span>
+          </ComponentBox>
+
+          <ComponentBox title="Indicadores de Tipo de Conteúdo" description="Micro-ícones sutis utilizados na barra lateral para indicar o formato do material.">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 w-full p-4 bg-gray-50 rounded-xl border border-gray-100">
+              {(['Tópico', 'Vídeos', 'Documentos', 'Gravado', 'Aula presencial', 'Webconferência', 'Scorm', 'Entrega de atividade', 'Avaliação', 'Avaliação de reação/pesquisa', 'Certificado', 'Treinamento'] as ContentTypeLabel[]).map(type => (
+                <div key={type} className="flex items-center gap-2">
+                  <SidebarContentIndicator type={type} />
+                </div>
+              ))}
+            </div>
           </ComponentBox>
 
           <ComponentBox title="Inputs & Formulários" description="Campos de texto, upload e cupons.">

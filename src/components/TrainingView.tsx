@@ -18,24 +18,25 @@ import {
   X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { SidebarContentIndicator, ContentTypeLabel } from './SidebarContentIndicator';
 
 interface Lesson {
   id: number;
   title: string;
   status: 'completed' | 'current' | 'locked';
-  type: string;
+  type: ContentTypeLabel;
   duration: string;
 }
 
 const lessons: Lesson[] = [
-  { id: 1, title: 'Boas-vindas', status: 'completed', type: 'Vídeo', duration: '02:30' },
-  { id: 2, title: 'Visão Geral', status: 'current', type: 'Vídeo', duration: '12:00' },
-  { id: 3, title: 'Manual de Trilhas', status: 'locked', type: 'Documento', duration: '15 min' },
-  { id: 4, title: 'Treinamento de Fluxos', status: 'locked', type: 'Vídeo', duration: '45:00' },
+  { id: 1, title: 'Boas-vindas', status: 'completed', type: 'Vídeos', duration: '02:30' },
+  { id: 2, title: 'Visão Geral', status: 'current', type: 'Vídeos', duration: '12:00' },
+  { id: 3, title: 'Manual de Trilhas', status: 'locked', type: 'Documentos', duration: '15 min' },
+  { id: 4, title: 'Treinamento de Fluxos', status: 'locked', type: 'Vídeos', duration: '45:00' },
   { id: 5, title: 'Criando Artigos', status: 'locked', type: 'Scorm', duration: '20:00' },
   { id: 6, title: 'Contrato Presencial', status: 'locked', type: 'Aula presencial', duration: '01:30h' },
   { id: 7, title: 'Avaliação de Desempenho', status: 'locked', type: 'Avaliação', duration: '30:00' },
-  { id: 8, title: 'Gravação da Mentoria', status: 'locked', type: 'Vídeo', duration: '02:00h' },
+  { id: 8, title: 'Gravação da Mentoria', status: 'locked', type: 'Vídeos', duration: '02:00h' },
 ];
 
 const MiniCircularProgress = ({ percentage, label, color = "var(--brand-color)" }: { percentage: number, label: string, color?: string }) => {
@@ -192,13 +193,16 @@ export default function TrainingView() {
                       
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2 mb-1">
-                          <span className={`text-[8.5px] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-tighter ${
-                            isCompleted ? 'bg-green-50 text-green-600' : 
-                            isActive ? 'bg-brand/10 text-brand' : 
-                            'bg-gray-100 text-gray-400'
-                          }`}>
-                            {isCompleted ? 'Concluído' : isActive ? 'Em andamento' : 'Não visualizado'}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-[8.5px] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-tighter ${
+                              isCompleted ? 'bg-green-50 text-green-600' : 
+                              isActive ? 'bg-brand/10 text-brand' : 
+                              'bg-gray-100 text-gray-400'
+                            }`}>
+                              {isCompleted ? 'Concluído' : isActive ? 'Em andamento' : 'Não visualizado'}
+                            </span>
+                            <SidebarContentIndicator type={lesson.type} />
+                          </div>
                           <ChevronDown 
                             size={14} 
                             strokeWidth={3}

@@ -6,9 +6,10 @@ import {
   Target, Layers, BookOpen, Star, ArrowLeft, CheckCircle2, Circle,
   Info, BarChart3, Paperclip, User
 } from 'lucide-react';
+import { SidebarContentIndicator, ContentTypeLabel } from './SidebarContentIndicator';
 
 // --- Types for our nested structure ---
-type ContentType = 'video' | 'pdf' | 'scorm' | 'quiz' | 'live' | 'forum';
+type ContentType = ContentTypeLabel;
 
 interface ContentItem {
   id: string;
@@ -19,7 +20,7 @@ interface ContentItem {
 
 interface TrainingItem {
   id: string;
-  type: 'training';
+  type: 'Treinamento';
   title: string;
   completed: boolean;
   contents: ContentItem[];
@@ -42,8 +43,8 @@ const mockTrilha: Etapa[] = [
     title: 'INTRODUÇÃO',
     progress: 100,
     items: [
-      { id: 'c1', type: 'video', title: 'Vídeo de Boas-vindas', completed: true },
-      { id: 'c2', type: 'pdf', title: 'Guia do Aluno', completed: true },
+      { id: 'c1', type: 'Vídeos', title: 'Vídeo de Boas-vindas', completed: true },
+      { id: 'c2', type: 'Documentos', title: 'Guia do Aluno', completed: true },
     ]
   },
   {
@@ -52,19 +53,19 @@ const mockTrilha: Etapa[] = [
     title: 'APROVAÇÃO DE TICKETS',
     progress: 85,
     items: [
-      { id: 'c3', type: 'scorm', title: 'Módulo Interativo', completed: true },
+      { id: 'c3', type: 'Scorm', title: 'Módulo Interativo', completed: true },
       { 
         id: 't1', 
-        type: 'training', 
+        type: 'Treinamento', 
         title: 'Treinamento de Fluxos', 
         completed: false,
         contents: [
-          { id: 'tc1', type: 'pdf', title: 'Documento de Referência', completed: true },
-          { id: 'tc2', type: 'video', title: 'Vídeo da Aula', completed: false },
-          { id: 'tc3', type: 'live', title: 'Live de Dúvidas', completed: false },
+          { id: 'tc1', type: 'Documentos', title: 'Documento de Referência', completed: true },
+          { id: 'tc2', type: 'Vídeos', title: 'Vídeo da Aula', completed: false },
+          { id: 'tc3', type: 'Webconferência', title: 'Live de Dúvidas', completed: false },
         ]
       },
-      { id: 'c4', type: 'quiz', title: 'Teste de Conhecimento', completed: false },
+      { id: 'c4', type: 'Avaliação', title: 'Teste de Conhecimento', completed: false },
     ]
   },
   {
@@ -73,8 +74,8 @@ const mockTrilha: Etapa[] = [
     title: 'BASE DE CONHECIMENTO',
     progress: 90,
     items: [
-      { id: 'c5', type: 'video', title: 'Como pesquisar artigos', completed: true },
-      { id: 'c6', type: 'forum', title: 'Fórum de Discussão', completed: true },
+      { id: 'c5', type: 'Vídeos', title: 'Como pesquisar artigos', completed: true },
+      { id: 'c6', type: 'Tópico', title: 'Fórum de Discussão', completed: true },
     ]
   },
   {
@@ -83,8 +84,8 @@ const mockTrilha: Etapa[] = [
     title: 'CONTRATO DE HORAS',
     progress: 21,
     items: [
-      { id: 'c7', type: 'pdf', title: 'Leitura Obrigatória', completed: false },
-      { id: 'c8', type: 'video', title: 'Aula Prática', completed: false },
+      { id: 'c7', type: 'Documentos', title: 'Leitura Obrigatória', completed: false },
+      { id: 'c8', type: 'Vídeos', title: 'Aula Prática', completed: false },
     ]
   }
 ];
@@ -158,7 +159,7 @@ export const TrilhaView: React.FC = () => {
     for (const etapa of mockTrilha) {
       for (const item of etapa.items) {
         if (item.id === activeContentId) return item;
-        if (item.type === 'training') {
+        if (item.type === 'Treinamento') {
           for (const sub of (item as TrainingItem).contents) {
             if (sub.id === activeContentId) return sub;
           }
@@ -209,13 +210,16 @@ export const TrilhaView: React.FC = () => {
           
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-2 mb-1">
-              <span className={`text-[8.5px] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-tighter ${
-                isCompleted ? 'bg-green-50 text-green-600' : 
-                isActive ? 'bg-brand/10 text-brand' : 
-                'bg-gray-100 text-gray-400'
-              }`}>
-                {isCompleted ? 'Concluído' : isActive ? 'Em andamento' : 'Não visualizado'}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className={`text-[8.5px] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-tighter ${
+                  isCompleted ? 'bg-green-50 text-green-600' : 
+                  isActive ? 'bg-brand/10 text-brand' : 
+                  'bg-gray-100 text-gray-400'
+                }`}>
+                  {isCompleted ? 'Concluído' : isActive ? 'Em andamento' : 'Não visualizado'}
+                </span>
+                <SidebarContentIndicator type={lesson.type} />
+              </div>
               <ChevronDown 
                 size={14} 
                 strokeWidth={3}
@@ -331,7 +335,7 @@ export const TrilhaView: React.FC = () => {
                         className="overflow-hidden bg-white"
                       >
                         {etapa.items.map((item) => {
-                          if (item.type === 'training') {
+                          if (item.type === 'Treinamento') {
                             const training = item as TrainingItem;
                             return (
                               <div key={item.id} className="border-b border-gray-100/50 last:border-b-0">
@@ -343,6 +347,7 @@ export const TrilhaView: React.FC = () => {
                                   <div className="flex items-center gap-2">
                                     <Target size={14} className="text-brand" />
                                     <span className="text-[11px] font-bold text-[#003366] uppercase tracking-wider">{item.title}</span>
+                                    <SidebarContentIndicator type="Treinamento" className="ml-2 opacity-70 hidden sm:flex" />
                                   </div>
                                   <ChevronDown size={14} className={`text-gray-400 transition-transform duration-300 ${expandedTrainings[item.id] ? 'rotate-180' : ''}`} />
                                 </button>
