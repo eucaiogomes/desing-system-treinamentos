@@ -18,15 +18,7 @@ interface ContentItem {
   completed: boolean;
 }
 
-interface TrainingItem {
-  id: string;
-  type: 'Treinamento';
-  title: string;
-  completed: boolean;
-  contents: ContentItem[];
-}
-
-type EtapaItem = ContentItem | TrainingItem;
+type EtapaItem = ContentItem;
 
 interface Etapa {
   id: string;
@@ -54,17 +46,7 @@ const mockTrilha: Etapa[] = [
     progress: 85,
     items: [
       { id: 'c3', type: 'Scorm', title: 'Módulo Interativo', completed: true },
-      { 
-        id: 't1', 
-        type: 'Treinamento', 
-        title: 'Treinamento de Fluxos', 
-        completed: false,
-        contents: [
-          { id: 'tc1', type: 'Documentos', title: 'Documento de Referência', completed: true },
-          { id: 'tc2', type: 'Vídeos', title: 'Vídeo da Aula', completed: false },
-          { id: 'tc3', type: 'Webconferência', title: 'Live de Dúvidas', completed: false },
-        ]
-      },
+      { id: 't1', type: 'Treinamento', title: 'Treinamento de Fluxos', completed: false },
       { id: 'c4', type: 'Avaliação', title: 'Teste de Conhecimento', completed: false },
     ]
   },
@@ -141,32 +123,19 @@ export const TrilhaView: React.FC = () => {
     'e2': true,
   });
 
-  const [expandedTrainings, setExpandedTrainings] = useState<Record<string, boolean>>({
-    't1': true,
-  });
-
-  const [activeContentId, setActiveContentId] = useState('tc2');
+  const [activeContentId, setActiveContentId] = useState('t1');
 
   const toggleEtapa = (id: string) => {
     setExpandedEtapas(prev => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  const toggleTraining = (id: string) => {
-    setExpandedTrainings(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
   const getActiveContent = () => {
     for (const etapa of mockTrilha) {
       for (const item of etapa.items) {
         if (item.id === activeContentId) return item;
-        if (item.type === 'Treinamento') {
-          for (const sub of (item as TrainingItem).contents) {
-            if (sub.id === activeContentId) return sub;
-          }
-        }
       }
     }
-    return { title: 'Vídeo da Aula', completed: false };
+    return { title: 'Conteúdo', completed: false };
   };
 
   const activeLesson = getActiveContent();
@@ -334,45 +303,7 @@ export const TrilhaView: React.FC = () => {
                         exit={{ height: 0 }}
                         className="overflow-hidden bg-white"
                       >
-                        {etapa.items.map((item) => {
-                          if (item.type === 'Treinamento') {
-                            const training = item as TrainingItem;
-                            return (
-                              <div key={item.id} className="border-b border-gray-100/50 last:border-b-0">
-                                {/* Training Wrapper (Level 2) */}
-                                <button 
-                                  onClick={() => toggleTraining(item.id)}
-                                  className="w-full flex items-center justify-between p-4 hover:bg-brand/5 transition-colors cursor-pointer"
-                                >
-                                  <div className="flex items-center gap-2">
-                                    <Target size={14} className="text-brand" />
-                                    <span className="text-[11px] font-bold text-[#003366] uppercase tracking-wider">{item.title}</span>
-                                    <SidebarContentIndicator type="Treinamento" className="ml-2 opacity-70 hidden sm:flex" />
-                                  </div>
-                                  <ChevronDown size={14} className={`text-gray-400 transition-transform duration-300 ${expandedTrainings[item.id] ? 'rotate-180' : ''}`} />
-                                </button>
-
-                                {/* Internal Lessons (Level 3) */}
-                                <AnimatePresence initial={false}>
-                                  {expandedTrainings[item.id] && (
-                                    <motion.div
-                                      initial={{ height: 0 }}
-                                      animate={{ height: 'auto' }}
-                                      exit={{ height: 0 }}
-                                      className="overflow-hidden border-t border-gray-100/50 bg-gray-50/20"
-                                    >
-                                      <div className="border-l-2 border-brand/10 ml-2">
-                                        {training.contents.map(subItem => renderContentItem(subItem, true))}
-                                      </div>
-                                    </motion.div>
-                                  )}
-                                </AnimatePresence>
-                              </div>
-                            );
-                          } else {
-                            return renderContentItem(item as ContentItem, false);
-                          }
-                        })}
+                        {etapa.items.map((item) => renderContentItem(item, false))}
                       </motion.div>
                     )}
                   </AnimatePresence>
