@@ -120,10 +120,10 @@ export const TrilhaCatalog: React.FC = () => {
               onClick={() => toggleItem(etapa.id, true)}
               className="w-full flex items-center gap-3 p-4 bg-gray-50 hover:bg-gray-100 transition-colors border-b border-gray-100 cursor-pointer z-10"
             >
-              <span className="text-xs font-bold text-[#003366] tracking-tight">{etapa.title}</span>
-              <div className="w-5 h-5 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm">
+              <div className="w-5 h-5 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm flex-shrink-0">
                 {expandedItems[etapa.id] ? <ChevronUp size={12} className="text-gray-500" /> : <ChevronDown size={12} className="text-gray-500" />}
               </div>
+              <span className="text-xs font-bold text-[#003366] tracking-tight">{etapa.title}</span>
             </button>
             
             <AnimatePresence initial={false}>
@@ -157,11 +157,11 @@ export const TrilhaCatalog: React.FC = () => {
                                 </div>
                                 <span className="text-[11px] font-bold text-brand uppercase tracking-wide truncate">{content.type}</span>
                               </div>
-                              <div className="flex-1 flex items-center justify-between pl-4">
-                                <span className="text-xs font-bold text-gray-800 group-hover:text-brand transition-colors text-left line-clamp-1">{content.title}</span>
-                                <div className="w-5 h-5 rounded-full bg-white/50 flex items-center justify-center text-brand flex-shrink-0 ml-2">
+                              <div className="flex-1 flex items-center gap-2 pl-4">
+                                <div className="w-5 h-5 rounded-full bg-white/50 flex items-center justify-center text-brand flex-shrink-0">
                                   {expandedItems[content.id] ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                                 </div>
+                                <span className="text-xs font-bold text-gray-800 group-hover:text-brand transition-colors text-left line-clamp-1">{content.title}</span>
                               </div>
                             </button>
                             
