@@ -264,19 +264,41 @@ export const DesignSystem: React.FC = () => {
                         />
                         <button 
                           onClick={handleApplyCoupon}
-                          disabled={!couponCode.trim() || couponState === 'loading'}
-                          className="bg-brand text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-brand-dark transition-colors disabled:opacity-50 flex items-center gap-2"
+                          disabled={!couponCode || couponState === 'loading'}
+                          className="bg-gray-900 hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 text-white px-4 rounded-lg text-sm font-bold transition-colors w-24 flex items-center justify-center cursor-pointer disabled:cursor-not-allowed"
                         >
                           {couponState === 'loading' ? <Loader2 size={16} className="animate-spin" /> : 'Aplicar'}
                         </button>
                       </div>
-                      {couponState === 'error' && (
-                        <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-red-500 font-medium flex items-center gap-1 mt-1">
-                          <AlertCircle size={12} /> Cupom inválido.
-                        </motion.span>
-                      )}
+                      {couponState === 'error' && <span className="text-xs text-red-500 font-medium ml-1 flex items-center gap-1 mt-1"><AlertCircle size={12} /> Cupom inválido</span>}
                     </div>
                   )}
+                </div>
+              </div>
+
+              {/* Sidebar Navigation Interaction */}
+              <div className="col-span-1 md:col-span-2 mt-4 pt-6 border-t border-gray-100">
+                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-4">Navegação Lateral (Sidebar Toggle)</label>
+                <div className="flex flex-wrap items-center gap-8">
+                  <div className="flex flex-col items-center gap-3">
+                    <button className="w-10 h-10 rounded-xl bg-white border border-gray-100 text-gray-400 flex items-center justify-center hover:bg-gray-50 transition-all shadow-sm cursor-pointer">
+                      <Menu size={20} />
+                    </button>
+                    <div className="text-center">
+                      <span className="text-[10.5px] font-bold text-gray-600 block">Abrir Sidebar</span>
+                      <span className="text-[9px] text-gray-400">Botão no header</span>
+                    </div>
+                  </div>
+                  <div className="w-8 h-px bg-gray-200 hidden sm:block"></div>
+                  <div className="flex flex-col items-center gap-3">
+                    <button className="w-8 h-8 rounded-lg bg-gray-50 text-gray-400 flex items-center justify-center hover:bg-gray-100 transition-all cursor-pointer">
+                      <X size={18} />
+                    </button>
+                    <div className="text-center">
+                      <span className="text-[10.5px] font-bold text-gray-600 block">Fechar Sidebar</span>
+                      <span className="text-[9px] text-gray-400">Ícone X dentro da sidebar</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

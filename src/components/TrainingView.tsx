@@ -130,7 +130,7 @@ export default function TrainingView() {
                   onClick={() => setIsSidebarOpen(false)}
                   className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center hover:bg-gray-100 transition-all cursor-pointer text-gray-400"
                 >
-                  <Menu size={18} />
+                  <X size={18} />
                 </button>
                 <h2 className="text-[11.5px] font-bold uppercase tracking-tight">Configurando o seu Movidesk</h2>
               </div>
