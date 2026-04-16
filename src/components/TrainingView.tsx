@@ -20,6 +20,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { SidebarContentIndicator, ContentTypeLabel } from './SidebarContentIndicator';
 import { PerformanceDashboard } from './PerformanceDashboard';
+import { MaterialExplorer } from './MaterialExplorer';
 
 interface Lesson {
   id: number;
@@ -432,9 +433,7 @@ export default function TrainingView() {
                           </div>
                         )}
                         {activeTab === 'material' && (
-                          <div className="prose prose-sm max-w-none text-gray-600 italic text-xs">
-                            <p>Arquivos e links úteis para aprofundar seu conhecimento.</p>
-                          </div>
+                          <MaterialExplorer />
                         )}
                         {activeTab === 'autor' && (
                           <div className="prose prose-sm max-w-none text-gray-600 italic text-xs">

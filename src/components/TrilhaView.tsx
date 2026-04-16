@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PerformanceDashboard } from './PerformanceDashboard';
+import { MaterialExplorer } from './MaterialExplorer';
 import { 
   Menu, X, ChevronLeft, ChevronRight, Play, FileText, Video, 
   HelpCircle, MonitorPlay, MessageSquare, ChevronDown, Check,
@@ -500,9 +501,7 @@ export const TrilhaView: React.FC<{ completedTrainings?: string[], onNavigateToT
                       </div>
                     )}
                     {activeTab === 'material' && (
-                      <div className="prose prose-sm max-w-none text-gray-600 italic text-xs">
-                        <p>Acesse aqui a biblioteca digital para materiais adicionais da Etapa 2.</p>
-                      </div>
+                      <MaterialExplorer />
                     )}
                     {activeTab === 'autor' && (
                       <div className="prose prose-sm max-w-none text-gray-600 italic text-xs">

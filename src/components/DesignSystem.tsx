@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PerformanceDashboard } from './PerformanceDashboard';
+import { MaterialExplorer } from './MaterialExplorer';
 import { CircularProgress } from './CircularProgress';
 import { CustomFieldsModal } from './CustomFieldsModal';
 import { PaymentModal } from './PaymentModal';
@@ -312,6 +313,15 @@ export const DesignSystem: React.FC = () => {
             </div>
             <div className="w-full text-[10px] text-gray-400 italic">
               Regras: Top Cards com borda colorida dinâmica. Gráfico de barras com gradiente brand. Resumo de tempo com barras horizontais.
+            </div>
+          </ComponentBox>
+
+          <ComponentBox title="Explorador de Arquivos (Bibliotecas)" description="Split layout para navegação de materiais complementares e documentos.">
+            <div className="w-full bg-ice p-6 rounded-2xl">
+              <MaterialExplorer />
+            </div>
+            <div className="w-full text-[10px] text-gray-400 italic">
+              Regras: Sidebar de pastas à esquerda com indicador dinâmico. Grid de arquivos à direita com metadados e botão de download secundário.
             </div>
           </ComponentBox>
 
