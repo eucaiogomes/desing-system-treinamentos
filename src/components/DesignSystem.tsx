@@ -1,34 +1,14 @@
 import React, { useState } from 'react';
 import { 
-  Play, 
-  CheckCircle2, 
-  Circle, 
-  Clock, 
-  ChevronLeft, 
-  ChevronRight, 
-  ChevronDown,
-  ArrowLeft,
-  FileText,
-  BarChart3,
-  BookOpen,
-  Paperclip,
-  User,
-  Info,
-  Menu,
-  X,
-  Layout,
-  GraduationCap,
-  Search,
-  Settings,
-  Maximize2,
-  Video,
-  ClipboardCheck,
-  Award,
-  List,
-  MessageSquare
+  Play, CheckCircle2, Circle, Clock, ChevronLeft, ChevronRight, ChevronDown, ChevronUp,
+  ArrowLeft, FileText, BarChart3, BookOpen, Paperclip, User, Info, Menu, X, 
+  Layout, GraduationCap, Search, Settings, Maximize2, Video, ClipboardCheck, 
+  Award, List, MessageSquare, AlertCircle, RefreshCw, CreditCard, QrCode, Tag, Loader2, UploadCloud
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CircularProgress } from './CircularProgress';
+import { CustomFieldsModal } from './CustomFieldsModal';
+import { PaymentModal } from './PaymentModal';
 
 const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <section className="mb-16">
@@ -67,6 +47,20 @@ const ComponentBox: React.FC<{ title: string; description: string; children: Rea
 
 export const DesignSystem: React.FC = () => {
   const [activeTab, setActiveTab] = useState('conteudos');
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isCustomFieldsModalOpen, setIsCustomFieldsModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [couponCode, setCouponCode] = useState('');
+  const [couponState, setCouponState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  const handleApplyCoupon = () => {
+    if (!couponCode.trim()) return;
+    setCouponState('loading');
+    setTimeout(() => {
+      if (couponCode.toUpperCase() === 'DESCONTO') setCouponState('success');
+      else setCouponState('error');
+    }, 800);
+  };
 
   return (
     <div className="min-h-screen bg-ice p-8 lg:p-12 font-sans max-w-7xl mx-auto">
@@ -83,7 +77,7 @@ export const DesignSystem: React.FC = () => {
         </div>
         <p className="text-sm text-gray-500 max-w-2xl leading-relaxed">
           Este guia documenta a linguagem visual e os componentes reutilizáveis da plataforma. 
-          O objetivo é garantir a consistência estética e funcional em todas as telas do sistema.
+          O objetivo é garantir a consistência estética e funcional em todas as telas do sistema, incluindo os novos fluxos de pagamento e formulários.
         </p>
       </header>
 
@@ -170,21 +164,39 @@ export const DesignSystem: React.FC = () => {
       </Section>
 
       {/* SEÇÃO 2 — COMPONENTES */}
-      <Section title="02. Componentes">
+      <Section title="02. Componentes Básicos">
         <div className="grid grid-cols-1 gap-8">
-          <ComponentBox title="Botões" description="Variações de botões para diferentes hierarquias de ação.">
+          <ComponentBox title="Botões & Ações" description="Variações de botões para diferentes hierarquias de ação.">
             <button className="bg-brand text-white px-6 py-3 rounded-xl text-[11.5px] font-bold uppercase tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95">
               Primário
             </button>
             <button className="bg-white text-brand px-6 py-3 rounded-xl text-[11.5px] font-bold border border-brand/20 hover:bg-brand/5 transition-all active:scale-95 uppercase tracking-[0.1em]">
               Secundário
             </button>
-            <button className="w-10 h-10 rounded-xl bg-[#003366] text-white flex items-center justify-center hover:bg-[#002244] transition-all shadow-lg shadow-blue-900/20">
-              <Play size={18} />
+            <button disabled className="bg-gray-200 text-gray-400 px-6 py-3 rounded-xl text-[11.5px] font-bold uppercase tracking-[0.15em] cursor-not-allowed">
+              Desabilitado
             </button>
-            <button className="w-8 h-8 rounded-lg bg-gray-100 text-gray-400 flex items-center justify-center hover:bg-gray-200 transition-all">
-              <Settings size={16} />
+            <button className="bg-brand text-white px-6 py-3 rounded-xl text-[11.5px] font-bold uppercase tracking-[0.15em] flex items-center gap-2 shadow-lg shadow-brand/10">
+              <CreditCard size={14} /> Com Ícone
             </button>
+            
+            <div className="w-full h-px bg-gray-100 my-2" />
+            
+            <div className="w-full flex items-center gap-8">
+              <div>
+                <span className="text-[9.5px] text-gray-400 uppercase font-bold block mb-2">Botão de Expansão (Ver mais)</span>
+                <button 
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="flex items-center gap-1 text-[10.5px] font-bold text-brand uppercase tracking-[0.15em] hover:text-brand-dark transition-colors cursor-pointer"
+                >
+                  {isExpanded ? (
+                    <>Ver menos <ChevronUp size={14} /></>
+                  ) : (
+                    <>Ver mais <ChevronDown size={14} /></>
+                  )}
+                </button>
+              </div>
+            </div>
           </ComponentBox>
 
           <ComponentBox title="Badges / Status" description="Indicadores de estado para conteúdos e processos.">
@@ -202,146 +214,159 @@ export const DesignSystem: React.FC = () => {
             </span>
           </ComponentBox>
 
-          <ComponentBox title="Tabs" description="Navegação interna de seções.">
-            <div className="flex items-center gap-6 text-[10.5px] font-bold uppercase tracking-[0.1em]">
-              <button 
-                onClick={() => setActiveTab('conteudos')}
-                className={`transition-all cursor-pointer relative py-2 flex items-center gap-2 ${activeTab === 'conteudos' ? 'text-brand' : 'text-gray-400 hover:text-gray-600'}`}
-              >
-                <List size={14} />
-                Conteúdos
-                {activeTab === 'conteudos' && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand rounded-full" />}
-              </button>
-              <button 
-                onClick={() => setActiveTab('desempenho')}
-                className={`transition-all cursor-pointer relative py-2 flex items-center gap-2 ${activeTab === 'desempenho' ? 'text-brand' : 'text-gray-400 hover:text-gray-600'}`}
-              >
-                <BarChart3 size={14} />
-                Desempenho
-                {activeTab === 'desempenho' && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand rounded-full" />}
-              </button>
-            </div>
-          </ComponentBox>
+          <ComponentBox title="Inputs & Formulários" description="Campos de texto, upload e cupons.">
+            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Standard Input */}
+              <div>
+                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Nome Completo</label>
+                <input type="text" placeholder="Digite seu nome" className="w-full bg-white border border-gray-200 focus:border-brand focus:ring-4 focus:ring-brand/20 rounded-lg px-3 py-2.5 text-sm outline-none transition-all" />
+              </div>
 
-          <ComponentBox title="Progress Indicators" description="Gráficos circulares e barras de progresso.">
-            <div className="flex items-center gap-12">
-              <CircularProgress percentage={75} size={80} strokeWidth={8} label="Progresso" />
-              <div className="w-48 space-y-4">
-                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-brand w-[60%] transition-all" />
+              {/* File Upload */}
+              <div>
+                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Upload de Documento</label>
+                <div className="flex items-center justify-center w-full">
+                  <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-200 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <UploadCloud size={20} className="text-gray-400 mb-2" />
+                      <p className="text-xs text-gray-500"><span className="font-semibold text-brand">Clique para enviar</span> ou arraste</p>
+                    </div>
+                  </label>
                 </div>
-                <div className="h-1 bg-brand/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-brand w-[30%] transition-all" />
+              </div>
+
+              {/* Coupon Input */}
+              <div className="col-span-1 md:col-span-2">
+                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Cupom de Desconto (Simulação)</label>
+                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 max-w-md">
+                  {couponState === 'success' ? (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                      className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg p-3"
+                    >
+                      <div className="flex items-center gap-2 text-green-700">
+                        <Tag size={16} />
+                        <span className="text-sm font-bold">{couponCode.toUpperCase()}</span>
+                      </div>
+                      <button onClick={() => { setCouponCode(''); setCouponState('idle'); }} className="text-green-600 hover:text-green-800 p-1">
+                        <X size={14} />
+                      </button>
+                    </motion.div>
+                  ) : (
+                    <div className="flex flex-col gap-1">
+                      <div className="flex gap-2">
+                        <input 
+                          type="text"
+                          placeholder="Tente 'DESCONTO'"
+                          value={couponCode}
+                          onChange={(e) => { setCouponCode(e.target.value); if (couponState === 'error') setCouponState('idle'); }}
+                          className={`flex-1 bg-white border ${couponState === 'error' ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' : 'border-gray-200 focus:border-brand focus:ring-brand/20'} rounded-lg px-3 py-2 text-sm outline-none focus:ring-4 transition-all uppercase`}
+                        />
+                        <button 
+                          onClick={handleApplyCoupon}
+                          disabled={!couponCode.trim() || couponState === 'loading'}
+                          className="bg-brand text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-brand-dark transition-colors disabled:opacity-50 flex items-center gap-2"
+                        >
+                          {couponState === 'loading' ? <Loader2 size={16} className="animate-spin" /> : 'Aplicar'}
+                        </button>
+                      </div>
+                      {couponState === 'error' && (
+                        <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-red-500 font-medium flex items-center gap-1 mt-1">
+                          <AlertCircle size={12} /> Cupom inválido.
+                        </motion.span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           </ComponentBox>
 
-          <ComponentBox title="Cards" description="Containers para agrupamento de informações.">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-              <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                <h4 className="text-[10.5px] font-bold text-[#003366] uppercase tracking-widest mb-4">Card Informativo</h4>
-                <p className="text-xs text-gray-500">Exemplo de card padrão com borda suave e sombra leve.</p>
+          <ComponentBox title="Feedback & Alertas" description="Estados de erro, sucesso e processamento.">
+            <div className="w-full space-y-4 max-w-md">
+              {/* Error Alert */}
+              <div className="bg-red-50 border border-red-100 p-3.5 rounded-xl flex items-start gap-3">
+                <AlertCircle size={16} className="text-red-500 flex-shrink-0 mt-0.5" />
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-bold text-red-700 uppercase tracking-wide">Matrícula Recusada</span>
+                  <span className="text-[11px] text-red-600 leading-relaxed font-medium">
+                    Sua matrícula não foi aprovada pelo gestor. Verifique os dados e tente novamente.
+                  </span>
+                </div>
               </div>
-              <div className="bg-gray-50/50 p-6 rounded-xl border border-gray-100 border-dashed">
-                <h4 className="text-[10.5px] font-bold text-gray-400 uppercase tracking-widest mb-4">Card Secundário</h4>
-                <p className="text-xs text-gray-400 italic">Usado para áreas de menor destaque ou placeholders.</p>
+
+              {/* Info Alert */}
+              <div className="bg-blue-50 border border-blue-100 p-3.5 rounded-xl flex items-start gap-3">
+                <Info size={16} className="text-blue-500 flex-shrink-0 mt-0.5" />
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-bold text-blue-700 uppercase tracking-wide">Aguardando Aprovação</span>
+                  <span className="text-[11px] text-blue-600 leading-relaxed font-medium">
+                    Seus dados foram enviados e estão em análise.
+                  </span>
+                </div>
               </div>
             </div>
           </ComponentBox>
         </div>
       </Section>
 
-      {/* SEÇÃO 3 — ÍCONES */}
-      <Section title="03. Iconografia">
-        <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
-          <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-8">
-            {[
-              Play, CheckCircle2, Circle, Clock, ChevronLeft, ChevronRight, ChevronDown, 
-              ArrowLeft, FileText, BarChart3, BookOpen, Paperclip, User, Info, Menu, X, 
-              Layout, GraduationCap, Search, Settings, Maximize2, Video, ClipboardCheck, 
-              Award, List, MessageSquare
-            ].map((Icon, i) => (
-              <div key={i} className="flex flex-col items-center gap-2 group">
-                <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-brand/5 group-hover:text-brand transition-all">
-                  <Icon size={20} />
-                </div>
-                <span className="text-[8.5px] font-mono text-gray-300 uppercase">{Icon.name}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Section>
-
-      {/* SEÇÃO 4 — PADRÕES DE INTERAÇÃO */}
-      <Section title="04. Padrões de Interação">
+      {/* SEÇÃO 3 — MODAIS E FLUXOS COMPLEXOS */}
+      <Section title="03. Modais & Fluxos Complexos">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
-            <h3 className="text-xs font-bold text-[#003366] uppercase tracking-widest mb-6">Estados de Hover & Active</h3>
-            <div className="space-y-4">
-              <div className="p-4 rounded-xl border border-gray-100 bg-gray-50/30 hover:bg-brand/5 hover:border-brand/20 transition-all cursor-pointer group">
-                <p className="text-xs font-bold text-gray-600 group-hover:text-brand">Hover State Example</p>
-                <p className="text-[10.5px] text-gray-400">Clique para ver o efeito de escala.</p>
-              </div>
-              <div className="p-4 rounded-xl border border-brand bg-brand/5 transition-all cursor-pointer">
-                <p className="text-xs font-bold text-brand">Active / Selected State</p>
-                <p className="text-[10.5px] text-brand/60">Indicador lateral e cor da marca aplicados.</p>
-              </div>
+          <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm flex flex-col items-center justify-center text-center gap-4">
+            <div className="w-16 h-16 bg-brand/10 rounded-full flex items-center justify-center text-brand mb-2">
+              <FileText size={24} />
             </div>
-          </div>
-          <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
-            <h3 className="text-xs font-bold text-[#003366] uppercase tracking-widest mb-6">Transições & Feedback</h3>
-            <div className="space-y-6">
-              <div className="flex items-center gap-4">
-                <div className="w-8 h-8 rounded-full border-2 border-brand/20 border-t-brand animate-spin" />
-                <span className="text-xs text-gray-500 font-medium">Loading Spinner Pattern</span>
-              </div>
-              <div className="flex items-center gap-4 text-green-600">
-                <CheckCircle2 size={20} />
-                <span className="text-xs font-bold uppercase tracking-wider">Sucesso / Confirmação</span>
-              </div>
-              <div className="flex items-center gap-4 text-brand">
-                <Info size={20} />
-                <span className="text-xs font-bold uppercase tracking-wider">Informação / Atenção</span>
-              </div>
+            <div>
+              <h3 className="text-sm font-bold text-[#003366] uppercase tracking-widest mb-1">Campos Personalizados</h3>
+              <p className="text-[10.5px] text-gray-400 mb-6 max-w-xs mx-auto">Modal para coleta de dados adicionais e upload de documentos antes da matrícula.</p>
             </div>
+            <button 
+              onClick={() => setIsCustomFieldsModalOpen(true)}
+              className="bg-brand text-white px-6 py-3 rounded-xl text-[11.5px] font-bold uppercase tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95"
+            >
+              Abrir Modal de Campos
+            </button>
           </div>
-        </div>
-      </Section>
 
-      {/* SEÇÃO 5 — EXEMPLOS REAIS */}
-      <Section title="05. Exemplos Reais">
-        <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm overflow-hidden">
-          <div className="border border-gray-100 rounded-xl overflow-hidden mb-8">
-            <div className="bg-white p-4 flex items-center justify-between border-b border-gray-100">
-              <div className="flex items-center gap-2">
-                <Menu size={16} className="text-gray-400" />
-                <span className="text-[10.5px] font-bold text-[#003366] uppercase tracking-tight">Miniatura de Sidebar</span>
-              </div>
-              <div className="w-2 h-2 rounded-full bg-brand" />
+          <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm flex flex-col items-center justify-center text-center gap-4">
+            <div className="w-16 h-16 bg-brand/10 rounded-full flex items-center justify-center text-brand mb-2">
+              <CreditCard size={24} />
             </div>
-            <div className="p-4 space-y-2 bg-gray-50/30">
-              <div className="flex items-center justify-between p-2 bg-brand/5 rounded border-l-2 border-brand">
-                <span className="text-[10.5px] font-bold text-brand">Aula Ativa</span>
-                <ChevronDown size={12} className="text-brand rotate-180" />
-              </div>
-              <div className="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
-                <span className="text-[10.5px] font-bold text-gray-400">Aula Pendente</span>
-                <ChevronDown size={12} className="text-gray-300" />
-              </div>
+            <div>
+              <h3 className="text-sm font-bold text-[#003366] uppercase tracking-widest mb-1">Checkout / Pagamento</h3>
+              <p className="text-[10.5px] text-gray-400 mb-6 max-w-xs mx-auto">Modal de pagamento com suporte a Pix, Cartão de Crédito e Cupons de Desconto.</p>
             </div>
+            <button 
+              onClick={() => setIsPaymentModalOpen(true)}
+              className="bg-brand text-white px-6 py-3 rounded-xl text-[11.5px] font-bold uppercase tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95"
+            >
+              Abrir Modal de Pagamento
+            </button>
           </div>
-          <p className="text-[10.5px] text-gray-400 italic text-center">
-            Estes exemplos utilizam exatamente os mesmos componentes e classes Tailwind aplicados nas telas de produção.
-          </p>
         </div>
       </Section>
 
       <footer className="mt-20 pt-8 border-t border-gray-100 text-center">
         <p className="text-[10.5px] font-bold text-gray-300 uppercase tracking-[0.3em]">
-          © 2026 Plataforma de Treinamento • Design System v1.0
+          © 2026 Plataforma de Treinamento • Design System v2.0
         </p>
       </footer>
+
+      {/* Render Modals for Demo */}
+      <CustomFieldsModal 
+        isOpen={isCustomFieldsModalOpen} 
+        onClose={() => setIsCustomFieldsModalOpen(false)} 
+        onConfirm={() => setIsCustomFieldsModalOpen(false)} 
+      />
+
+      <PaymentModal 
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        itemName="CURSO DE DESIGN SYSTEM AVANÇADO"
+        itemPrice={150.00}
+        onSuccess={() => setIsPaymentModalOpen(false)}
+      />
     </div>
   );
 };
