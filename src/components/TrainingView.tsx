@@ -125,35 +125,41 @@ export default function TrainingView() {
             className="flex-none flex flex-col border-r border-gray-100 bg-gray-50/30 overflow-hidden"
           >
             {/* Sidebar Header */}
-            <div className="p-5 bg-white border-b border-gray-100 text-[#003366] relative">
+            <div className="p-5 bg-brand text-white relative border-b border-white/10">
               <div className="flex items-center gap-3 mb-4">
                 <button 
                   onClick={() => setIsSidebarOpen(false)}
-                  className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center hover:bg-gray-100 transition-all cursor-pointer text-gray-400"
+                  className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20 transition-all cursor-pointer text-white"
                 >
                   <X size={18} />
                 </button>
                 <h2 className="text-[11.5px] font-bold uppercase tracking-tight">Configurando o seu Movidesk</h2>
               </div>
               
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div>
-                  <div className="flex justify-between text-[9.5px] font-bold uppercase mb-1 text-gray-400">
+                  <div className="flex justify-between text-[9.5px] font-bold uppercase mb-1.5 text-white/70">
                     <span>Progresso</span>
-                    <span className="text-[#003366]">21.43%</span>
+                    <span className="text-white tracking-wider">21.43%</span>
                   </div>
-                  <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-brand w-[21.43%] transition-all duration-500" />
+                  <div className="h-1.5 bg-black/10 rounded-full overflow-hidden relative border border-white/10 shadow-[inset_0_1px_1px_rgba(0,0,0,0.1)]">
+                    <div 
+                      className="h-full bg-gradient-to-r from-white/90 via-white to-white/90 rounded-full transition-all duration-1000" 
+                      style={{ width: '21.43%' }}
+                    />
                   </div>
                 </div>
                 
                 <div>
-                  <div className="flex justify-between text-[9.5px] font-bold uppercase mb-1 text-gray-400">
+                  <div className="flex justify-between text-[9.5px] font-bold uppercase mb-1.5 text-white/70">
                     <span>Aproveitamento</span>
-                    <span className="text-[#003366]">100%</span>
+                    <span className="text-white tracking-wider">100%</span>
                   </div>
-                  <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-brand w-full transition-all duration-500" />
+                  <div className="h-1.5 bg-black/10 rounded-full overflow-hidden relative border border-white/10 shadow-[inset_0_1px_1px_rgba(0,0,0,0.1)]">
+                    <div 
+                      className="h-full bg-gradient-to-r from-white/90 via-white to-white/90 rounded-full transition-all duration-1000" 
+                      style={{ width: '100%' }}
+                    />
                   </div>
                 </div>
               </div>

@@ -90,7 +90,7 @@ export const DesignSystem: React.FC = () => {
             color="bg-brand" 
             name="Brand Primary" 
             hex="var(--brand-color)" 
-            usage="Cor principal de destaque, botões primários e estados ativos." 
+            usage="Cor principal de destaque e cabeçalhos de sidebar (White Label)." 
           />
           <ColorSwatch 
             color="bg-[#003366]" 
@@ -168,6 +168,93 @@ export const DesignSystem: React.FC = () => {
       {/* SEÇÃO 2 — COMPONENTES */}
       <Section title="02. Componentes Básicos">
         <div className="grid grid-cols-1 gap-8">
+          <ComponentBox title="Accordions (Menu de Etapas)" description="Padrão de navegação por etapas com setas à esquerda.">
+            <div className="w-full max-w-md bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+              {/* Item Fechado */}
+              <div className="border-b border-gray-100">
+                <button className="w-full flex items-center gap-3 p-4 bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer">
+                  <div className="w-5 h-5 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm flex-shrink-0">
+                    <ChevronDown size={12} className="text-gray-500" />
+                  </div>
+                  <span className="text-xs font-bold text-[#003366] tracking-tight uppercase">Etapa 2: Gestão de Equipes (Fechado)</span>
+                </button>
+              </div>
+              {/* Item Aberto */}
+              <div>
+                <button className="w-full flex items-center gap-3 p-4 bg-gray-50 transition-colors border-b border-gray-100 cursor-default">
+                  <div className="w-5 h-5 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm flex-shrink-0">
+                    <ChevronUp size={12} className="text-gray-500" />
+                  </div>
+                  <span className="text-xs font-bold text-[#003366] tracking-tight uppercase">Etapa 1: Fundamentos (Aberto)</span>
+                </button>
+                <div className="p-4 bg-white space-y-3">
+                  <div className="flex items-center gap-2 pl-4">
+                    <div className="w-5 h-5 rounded-full bg-brand/10 flex items-center justify-center text-brand flex-shrink-0">
+                      <ChevronDown size={14} />
+                    </div>
+                    <span className="text-xs font-bold text-gray-800">Treinamento de Fluxos</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="w-full text-[10px] text-gray-400 italic">
+              Regra: Seta sempre à esquerda do título. [ ^ ] para aberto, [ v ] para fechado.
+            </div>
+          </ComponentBox>
+
+          <ComponentBox title="Barras de Progresso (White Label)" description="Indicadores dinâmicos adaptáveis à cor do cliente.">
+            <div className="w-full max-w-sm p-6 bg-brand rounded-2xl shadow-xl shadow-brand/20">
+              <div className="space-y-4">
+                <div>
+                  <div className="flex justify-between text-[9px] font-bold uppercase mb-1.5 text-white/70 tracking-widest">
+                    <span>Progresso</span>
+                    <span className="text-white">21.43%</span>
+                  </div>
+                  <div className="h-1.5 bg-black/10 rounded-full overflow-hidden relative border border-white/10 shadow-[inset_0_1px_1px_rgba(0,0,0,0.1)]">
+                    <div 
+                      className="h-full bg-gradient-to-r from-white/90 via-white to-white/90 rounded-full transition-all duration-1000" 
+                      style={{ width: '21.43%' }}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-[9px] font-bold uppercase mb-1.5 text-white/70 tracking-widest">
+                    <span>Aproveitamento</span>
+                    <span className="text-white">100%</span>
+                  </div>
+                  <div className="h-1.5 bg-black/10 rounded-full overflow-hidden relative border border-white/10 shadow-[inset_0_1px_1px_rgba(0,0,0,0.1)]">
+                    <div 
+                      className="h-full bg-gradient-to-r from-white/90 via-white to-white/90 rounded-full transition-all duration-1000" 
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="w-full text-[10px] text-gray-400 italic">
+              Regra: Preenchimento branco dinâmico sobre trilho escuro (black/10). Altura 6px (h-1.5).
+            </div>
+          </ComponentBox>
+
+          <ComponentBox title="Cabeçalho Sidebar (White Label)" description="Top da navegação lateral totalmente imersivo na marca.">
+            <div className="w-full max-w-xs bg-brand rounded-2xl overflow-hidden shadow-2xl shadow-brand/20">
+              <div className="p-5 relative border-b border-white/10">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white">
+                    <X size={18} />
+                  </div>
+                  <h2 className="text-[11px] font-bold uppercase tracking-tight text-white">Nome do Treinamento</h2>
+                </div>
+                <div className="h-1 bg-black/10 rounded-full overflow-hidden">
+                  <div className="h-full bg-white w-1/3" />
+                </div>
+              </div>
+            </div>
+            <div className="w-full text-[10px] text-gray-400 italic">
+              Regra: bg-brand no fundo, textos brancos e ícones com background de baixa opacidade (white/10).
+            </div>
+          </ComponentBox>
+
           <ComponentBox title="Botões & Ações" description="Variações de botões para diferentes hierarquias de ação.">
             <button className="bg-brand text-white px-6 py-3 rounded-xl text-[11.5px] font-bold uppercase tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95">
               Primário
