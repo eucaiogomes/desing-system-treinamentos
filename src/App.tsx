@@ -3,13 +3,25 @@ import { CourseCatalog } from './components/CourseCatalog';
 import { TrilhaCatalog } from './components/TrilhaCatalog';
 import { TrilhaView } from './components/TrilhaView';
 import TrainingView from './components/TrainingView';
+import TreinamentoTrilhaView from './components/TreinamentoTrilhaView';
 import { DesignSystem } from './components/DesignSystem';
 import { BookOpen, Play, Box } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState<'catalog' | 'view' | 'design' | 'trilha' | 'trilhaView'>('catalog');
+  const [currentScreen, setCurrentScreen] = useState<'catalog' | 'view' | 'design' | 'trilha' | 'trilhaView' | 'treinamentoTrilha'>('catalog');
   const [activeColor, setActiveColor] = useState('#c00000');
+  const [completedTrainings, setCompletedTrainings] = useState<string[]>([]);
+
+  const handleReturnToTrilha = (trainingId: string) => {
+    setCompletedTrainings(prev => {
+      if (!prev.includes(trainingId)) {
+        return [...prev, trainingId];
+      }
+      return prev;
+    });
+    setCurrentScreen('trilhaView');
+  };
 
   const colors = [
     { id: 'red', value: '#c00000', dark: '#a00000' },
@@ -49,12 +61,13 @@ export default function App() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -10 }}
           transition={{ duration: 0.2 }}
-          className={currentScreen === 'view' || currentScreen === 'trilhaView' ? 'h-[100dvh] overflow-hidden' : 'min-h-[100dvh]'}
+          className={currentScreen === 'view' || currentScreen === 'trilhaView' || currentScreen === 'treinamentoTrilha' ? 'h-[100dvh] overflow-hidden' : 'min-h-[100dvh]'}
         >
           {currentScreen === 'catalog' && <div className="pb-32"><CourseCatalog /></div>}
           {currentScreen === 'trilha' && <div className="pb-32"><TrilhaCatalog /></div>}
           {currentScreen === 'view' && <TrainingView />}
-          {currentScreen === 'trilhaView' && <TrilhaView />}
+          {currentScreen === 'trilhaView' && <TrilhaView completedTrainings={completedTrainings} onNavigateToTraining={() => setCurrentScreen('treinamentoTrilha')} />}
+          {currentScreen === 'treinamentoTrilha' && <TreinamentoTrilhaView onReturn={() => handleReturnToTrilha('t1')} />}
           {currentScreen === 'design' && <div className="pb-32"><DesignSystem /></div>}
         </motion.main>
       </AnimatePresence>
@@ -115,6 +128,17 @@ export default function App() {
           }`}
         >
           5
+        </button>
+        <button 
+          onClick={() => setCurrentScreen('treinamentoTrilha')}
+          title="Treinamento na Trilha"
+          className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold transition-all duration-300 cursor-pointer ${
+            currentScreen === 'treinamentoTrilha' 
+              ? 'bg-brand text-white shadow-lg shadow-brand/20 scale-110' 
+              : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100'
+          }`}
+        >
+          6
         </button>
       </div>
     </div>

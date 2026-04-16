@@ -12,17 +12,22 @@ export const TrilhaCatalog: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   
-  // Accordion state: stores the IDs of expanded items (etapas or treinamentos)
+  // Accordion state: expanded by default for all stages on first load
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({
-    'etapa-1': true // Expand the first one by default
+    'etapa-1': true,
+    'etapa-2': true,
+    'etapa-3': true
   });
+  
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   const toggleItem = (id: string, isEtapa: boolean = false) => {
+    setHasInteracted(true);
     setExpandedItems(prev => {
       const newState = { ...prev };
       
-      // If we are opening this item, close others of the same type
-      if (!prev[id]) {
+      // If we are opening this item and we've already started the "focus" logic
+      if (!prev[id] && hasInteracted) {
         Object.keys(newState).forEach(key => {
           if (isEtapa && key.startsWith('etapa-')) {
             newState[key] = false;
@@ -113,11 +118,11 @@ export const TrilhaCatalog: React.FC = () => {
           <div key={etapa.id} className="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm flex flex-col">
             <button 
               onClick={() => toggleItem(etapa.id, true)}
-              className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors border-b border-gray-100 cursor-pointer z-10"
+              className="w-full flex items-center gap-3 p-4 bg-gray-50 hover:bg-gray-100 transition-colors border-b border-gray-100 cursor-pointer z-10"
             >
-              <span className="text-xs font-bold text-[#003366] uppercase tracking-wide">{etapa.title}</span>
-              <div className="w-6 h-6 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm">
-                {expandedItems[etapa.id] ? <ChevronDown size={14} className="text-gray-500" /> : <ChevronRight size={14} className="text-gray-500" />}
+              <span className="text-xs font-bold text-[#003366] tracking-tight">{etapa.title}</span>
+              <div className="w-5 h-5 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm">
+                {expandedItems[etapa.id] ? <ChevronUp size={12} className="text-gray-500" /> : <ChevronDown size={12} className="text-gray-500" />}
               </div>
             </button>
             
@@ -155,7 +160,7 @@ export const TrilhaCatalog: React.FC = () => {
                               <div className="flex-1 flex items-center justify-between pl-4">
                                 <span className="text-xs font-bold text-gray-800 group-hover:text-brand transition-colors text-left line-clamp-1">{content.title}</span>
                                 <div className="w-5 h-5 rounded-full bg-white/50 flex items-center justify-center text-brand flex-shrink-0 ml-2">
-                                  {expandedItems[content.id] ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                                  {expandedItems[content.id] ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                                 </div>
                               </div>
                             </button>

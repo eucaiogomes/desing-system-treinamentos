@@ -114,7 +114,7 @@ const MiniCircularProgress = ({ percentage, label, color = "var(--brand-color)" 
   );
 };
 
-export const TrilhaView: React.FC = () => {
+export const TrilhaView: React.FC<{ completedTrainings?: string[], onNavigateToTraining?: () => void }> = ({ completedTrainings = [], onNavigateToTraining }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('descricao');
   
@@ -150,12 +150,20 @@ export const TrilhaView: React.FC = () => {
 
   const renderContentItem = (lesson: ContentItem, isNested: boolean) => {
     const isActive = activeContentId === lesson.id;
-    const isCompleted = lesson.completed;
+    // Also consider it completed if its ID is in completedTrainings
+    const isCompleted = lesson.completed || completedTrainings.includes(lesson.id);
     
+    const handleContentClick = () => {
+      setActiveContentId(lesson.id);
+      if (lesson.type === 'Treinamento' && onNavigateToTraining) {
+        onNavigateToTraining();
+      }
+    };
+
     return (
       <div
         key={lesson.id}
-        onClick={() => setActiveContentId(lesson.id)}
+        onClick={handleContentClick}
         className={`w-full text-left p-4 border-b border-gray-100/50 transition-all relative group cursor-pointer ${
           isActive ? 'bg-brand/5' : 'hover:bg-gray-100/50'
         } ${isNested ? 'pl-8 bg-gray-50/50 shadow-inner' : ''}`}

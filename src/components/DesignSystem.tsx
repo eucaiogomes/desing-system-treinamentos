@@ -181,6 +181,10 @@ export const DesignSystem: React.FC = () => {
             <button className="bg-brand text-white px-6 py-3 rounded-xl text-[11.5px] font-bold uppercase tracking-[0.15em] flex items-center gap-2 shadow-lg shadow-brand/10">
               <CreditCard size={14} /> Com Ícone
             </button>
+            <button className="flex items-center gap-2 bg-brand text-white px-4 py-2 rounded-full hover:bg-brand-dark transition-all shadow-md shadow-brand/20 cursor-pointer group">
+              <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+              <span className="text-[11.5px] font-bold">Voltar para a trilha</span>
+            </button>
             
             <div className="w-full h-px bg-gray-100 my-2" />
             
