@@ -486,19 +486,27 @@ export const TrilhaView: React.FC = () => {
               <h1 className="text-xl font-bold text-[#003366] mb-4 uppercase tracking-tighter">TRILHA: {activeLesson?.title || 'Vídeo da Aula'}</h1>
               
               {/* Tabs */}
-              <div className="flex items-center gap-1 p-1 bg-gray-50 rounded-lg border border-gray-100 mb-4 overflow-x-auto no-scrollbar">
+              <div className="flex items-center border-b border-gray-100 mb-6 overflow-x-auto no-scrollbar w-full">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-[9.5px] font-bold uppercase tracking-tight transition-all whitespace-nowrap cursor-pointer ${
+                    className={`relative flex items-center gap-2 px-4 py-3 text-[10px] font-bold uppercase tracking-[0.1em] transition-colors whitespace-nowrap cursor-pointer ${
                       activeTab === tab.id 
-                        ? 'bg-white text-brand shadow-sm border border-gray-100' 
+                        ? 'text-brand' 
                         : 'text-gray-400 hover:text-gray-600'
                     }`}
                   >
                     {tab.icon}
                     {tab.label}
+                    {activeTab === tab.id && (
+                      <motion.div
+                        layoutId="activeTabIndicatorTrilha"
+                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand"
+                        initial={false}
+                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      />
+                    )}
                   </button>
                 ))}
               </div>

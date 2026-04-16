@@ -47,6 +47,7 @@ const ComponentBox: React.FC<{ title: string; description: string; children: Rea
 
 export const DesignSystem: React.FC = () => {
   const [activeTab, setActiveTab] = useState('conteudos');
+  const [documentedTab, setDocumentedTab] = useState('tab_0');
   const [isExpanded, setIsExpanded] = useState(false);
   const [isCustomFieldsModalOpen, setIsCustomFieldsModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -197,6 +198,36 @@ export const DesignSystem: React.FC = () => {
                 </button>
               </div>
             </div>
+          </ComponentBox>
+
+          <ComponentBox title="Navegação em Abas (Tabs)" description="Abas animadas com barra inferior deslizante (Sliding Line).">
+            <div className="w-full flex items-center border-b border-gray-100 mb-2 overflow-x-auto no-scrollbar">
+              {['Descrição', 'Desempenho', 'Resumo'].map((tabLabel, idx) => {
+                const tabId = `tab_${idx}`;
+                return (
+                  <button
+                    key={tabId}
+                    onClick={() => setDocumentedTab(tabId)}
+                    className={`relative flex items-center gap-2 px-4 py-3 text-[10px] font-bold uppercase tracking-[0.1em] transition-colors whitespace-nowrap cursor-pointer ${
+                      documentedTab === tabId 
+                        ? 'text-brand' 
+                        : 'text-gray-400 hover:text-gray-600'
+                    }`}
+                  >
+                    {tabLabel}
+                    {documentedTab === tabId && (
+                      <motion.div
+                        layoutId="activeTabIndicatorDS"
+                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand"
+                        initial={false}
+                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="text-xs text-gray-400 italic">Clique nas abas acima para testar a barra deslizante e a transição de cor.</div>
           </ComponentBox>
 
           <ComponentBox title="Badges / Status" description="Indicadores de estado para conteúdos e processos.">
