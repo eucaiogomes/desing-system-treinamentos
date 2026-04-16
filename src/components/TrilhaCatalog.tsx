@@ -401,7 +401,7 @@ export const TrilhaCatalog: React.FC = () => {
             <div className="relative">
               <motion.div 
                 initial={false}
-                animate={{ height: isExpanded ? 'auto' : '4.5em' }}
+                animate={{ height: isExpanded ? 'auto' : '18em' }}
                 className="overflow-hidden relative"
               >
                 <div className="prose prose-sm text-gray-600 max-w-none">
