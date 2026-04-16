@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, QrCode, CreditCard, Check, Copy, Tag, AlertCircle, Loader2 } from 'lucide-react';
+import { X, QrCode, CreditCard, Check, Copy, Tag, AlertCircle, Loader2, PlusCircle } from 'lucide-react';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -98,7 +98,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 30 }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
-          className="relative w-full max-w-[320px] bg-white rounded-[40px] shadow-2xl shadow-black/5 flex flex-col max-h-[90vh]"
+          className="relative w-full max-w-[380px] bg-white rounded-[40px] shadow-2xl shadow-black/5 flex flex-col max-h-[90vh]"
         >
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100/50">
@@ -112,144 +112,126 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           </div>
 
           {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto p-7 flex flex-col gap-6 custom-scrollbar">
             
-            {/* Summary & Coupon */}
-            <div className="bg-[#f8f9fa] rounded-[28px] p-6 border border-gray-100/50">
-              <div className="flex justify-between items-start mb-6">
-                <div className="pr-4">
-                  <h3 className="text-[14px] font-bold text-gray-800 leading-tight mb-1">{itemName}</h3>
-                  {discount > 0 && (
-                    <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest block">
-                      Cupom aplicado
-                    </span>
-                  )}
-                </div>
-                <div className="text-right">
-                  {discount > 0 && (
-                    <div className="text-[11px] text-gray-400 line-through mb-0.5">
-                      R$ {itemPrice.toFixed(2)}
-                    </div>
-                  )}
-                  <div className="text-[24px] font-bold text-[#cc0000] tracking-tighter">
-                    R$ {finalPrice.toFixed(2)}
-                  </div>
+            {/* Top Info Area */}
+            <div className="space-y-1">
+              <div className="flex justify-between items-start">
+                <span className="text-[13px] font-bold text-gray-800 leading-tight flex-1 pr-6">{itemName}</span>
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">Valor</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <div className="flex-1" /> {/* Spacer */}
+                <div className="text-[18px] font-bold text-gray-800">
+                  R$ {itemPrice.toFixed(2)}
                 </div>
               </div>
-
-              {/* Coupon Area */}
-              <div className="pt-6 border-t border-gray-200/50">
+              <div className="flex justify-end mt-2">
                 {couponState === 'success' ? (
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="flex items-center justify-between bg-green-50 rounded-2xl p-4"
+                  <button 
+                    onClick={handleRemoveCoupon}
+                    className="bg-green-50 text-green-600 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 hover:bg-green-100 transition-all border border-green-100"
                   >
-                    <div className="flex items-center gap-2 text-green-700">
-                      <Tag size={16} />
-                      <span className="text-xs font-bold uppercase tracking-widest">{couponCode}</span>
-                    </div>
-                    <button 
-                      onClick={handleRemoveCoupon}
-                      className="text-green-500 hover:text-green-700 p-1 cursor-pointer transition-colors"
-                    >
-                      <X size={16} />
-                    </button>
-                  </motion.div>
+                    <Tag size={12} /> {couponCode} <X size={12} />
+                  </button>
                 ) : (
-                  <div className="flex flex-col gap-3">
-                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-2">Possui cupom?</label>
-                    <div className="flex gap-2">
-                      <input 
-                        type="text"
-                        placeholder="CÓDIGO"
-                        value={couponCode}
-                        onChange={(e) => {
-                          setCouponCode(e.target.value);
-                          if (couponState === 'error') setCouponState('idle');
-                        }}
-                        onKeyDown={(e) => e.key === 'Enter' && handleApplyCoupon()}
-                        className={`flex-1 bg-white border ${couponState === 'error' ? 'border-red-200 focus:border-red-400' : 'border-gray-200 focus:border-gray-400'} rounded-full px-6 py-3 text-[13px] font-medium outline-none transition-all uppercase placeholder:text-gray-200`}
-                      />
-                      <button 
-                        onClick={handleApplyCoupon}
-                        disabled={!couponCode.trim() || couponState === 'loading'}
-                        className="bg-gray-800 text-white px-6 rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-black transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
-                      >
-                        {couponState === 'loading' ? <Loader2 size={16} className="animate-spin" /> : 'Aplicar'}
-                      </button>
-                    </div>
-                    {couponState === 'error' && (
-                      <motion.span 
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                        className="text-[10px] text-red-500 font-bold flex items-center gap-1 mt-1 ml-2 uppercase"
-                      >
-                        <AlertCircle size={12} /> Cupom inválido. Use "DESCONTO".
-                      </motion.span>
-                    )}
+                  <div className="flex items-center bg-[#e0e0e0]/50 rounded-full pl-4 pr-1 py-0.5 w-full max-w-[240px] border border-transparent focus-within:border-gray-300 transition-all">
+                    <input 
+                      type="text"
+                      placeholder="CÓDIGO"
+                      value={couponCode}
+                      onChange={(e) => {
+                        setCouponCode(e.target.value);
+                        if (couponState === 'error') setCouponState('idle');
+                      }}
+                      className="bg-transparent border-none text-[10px] font-bold text-gray-600 outline-none flex-1 placeholder:text-gray-400"
+                    />
+                    <div className="w-[1px] h-4 bg-gray-300 mx-1" />
+                    <button 
+                      onClick={handleApplyCoupon}
+                      disabled={!couponCode.trim() || couponState === 'loading'}
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-full text-[10px] font-medium text-gray-500 hover:text-gray-900 transition-all disabled:opacity-50"
+                    >
+                      {couponState === 'loading' ? (
+                        <Loader2 size={12} className="animate-spin" />
+                      ) : (
+                        <>
+                          <PlusCircle size={15} strokeWidth={1} className="text-gray-400" />
+                          <span className="text-[10px] text-gray-500">Aplicar cupom</span>
+                        </>
+                      )}
+                    </button>
                   </div>
                 )}
               </div>
+              {couponState === 'error' && (
+                <div className="flex justify-end mt-1">
+                  <span className="text-[8px] text-red-500 font-bold uppercase tracking-tighter">Cupom inválido</span>
+                </div>
+              )}
             </div>
 
-            {/* Payment Methods */}
-            <div>
-              <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-5 ml-2">Método de Pagamento</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <button
-                  onClick={() => setPaymentMethod('pix')}
-                  className={`flex flex-col items-center gap-3 p-6 rounded-[32px] border-2 transition-all cursor-pointer ${
-                    paymentMethod === 'pix' 
-                      ? 'border-[#cc0000] bg-red-50/10' 
-                      : 'border-gray-100 bg-white hover:border-gray-200'
-                  }`}
-                >
-                  <div className={`p-3 rounded-full ${paymentMethod === 'pix' ? 'bg-[#cc0000] text-white' : 'bg-gray-100 text-gray-400'}`}>
-                    <QrCode size={24} />
-                  </div>
-                  <span className={`font-bold text-xs uppercase tracking-widest ${paymentMethod === 'pix' ? 'text-[#cc0000]' : 'text-gray-400'}`}>Pix</span>
-                </button>
+            {/* Total Label */}
+            <div className="mt-2">
+              <span className="text-[11px] font-bold text-gray-800 uppercase tracking-widest">Total</span>
+            </div>
 
-                <button
-                  onClick={() => setPaymentMethod('card')}
-                  className={`flex flex-col items-center gap-3 p-6 rounded-[32px] border-2 transition-all cursor-pointer ${
-                    paymentMethod === 'card' 
-                      ? 'border-[#cc0000] bg-red-50/10' 
-                      : 'border-gray-100 bg-white hover:border-gray-200'
-                  }`}
-                >
-                  <div className={`p-3 rounded-full ${paymentMethod === 'card' ? 'bg-[#cc0000] text-white' : 'bg-gray-100 text-gray-400'}`}>
-                    <CreditCard size={24} />
-                  </div>
-                  <span className={`font-bold text-xs uppercase tracking-widest ${paymentMethod === 'card' ? 'text-[#cc0000]' : 'text-gray-400'}`}>Cartão</span>
-                </button>
-              </div>
+            {/* Payment Methods - Vertical List */}
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={() => setPaymentMethod('pix')}
+                className={`w-full py-3 px-5 rounded-full flex items-center gap-3 transition-all cursor-pointer ${
+                  paymentMethod === 'pix' ? 'bg-[#f0f9fa]' : 'bg-transparent'
+                }`}
+              >
+                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'pix' ? 'border-[#cc0000]' : 'border-gray-200'}`}>
+                  {paymentMethod === 'pix' && <div className="w-2 h-2 rounded-full bg-[#cc0000]" />}
+                </div>
+                <QrCode size={16} className={paymentMethod === 'pix' ? 'text-gray-800' : 'text-gray-400'} />
+                <span className={`text-[12px] font-bold ${paymentMethod === 'pix' ? 'text-gray-800' : 'text-gray-400'}`}>Pix</span>
+              </button>
+
+              <button
+                onClick={() => setPaymentMethod('card')}
+                className={`w-full py-3 px-5 rounded-full flex items-center gap-3 transition-all cursor-pointer ${
+                  paymentMethod === 'card' ? 'bg-[#f0f9fa]' : 'bg-transparent'
+                }`}
+              >
+                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'card' ? 'border-[#cc0000]' : 'border-gray-200'}`}>
+                  {paymentMethod === 'card' && <div className="w-2 h-2 rounded-full bg-[#cc0000]" />}
+                </div>
+                <CreditCard size={16} className={paymentMethod === 'card' ? 'text-gray-800' : 'text-gray-400'} />
+                <span className={`text-[12px] font-bold ${paymentMethod === 'card' ? 'text-gray-800' : 'text-gray-400'}`}>Cartão</span>
+              </button>
             </div>
 
             {/* Dynamic Content Area */}
-            <div className="min-h-[220px] flex items-center justify-center">
+            <div className="flex-1 flex items-center justify-center py-4">
               <AnimatePresence mode="wait">
                 {paymentMethod === 'pix' ? (
                   <motion.div 
                     key="pix"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
                     className="flex flex-col items-center text-center w-full"
                   >
-                    <div className="bg-white p-4 rounded-[32px] border border-gray-100 shadow-xl shadow-black/5 mb-8">
+                    <div className="mb-4">
+                      <h4 className="text-[13px] font-bold text-gray-800">Escaneie o QR Code</h4>
+                      <p className="text-[10px] text-gray-400 font-medium">para pagar com pix</p>
+                    </div>
+
+                    <div className="bg-white p-2 rounded-2xl mb-6">
                       {/* Fake QR Code */}
-                      <div className="w-48 h-48 bg-gray-50 flex items-center justify-center rounded-2xl border border-dashed border-gray-200">
-                        <QrCode size={64} className="text-gray-200" />
-                      </div>
+                      <QrCode size={140} className="text-gray-800" strokeWidth={1} />
                     </div>
 
                     <button 
                       onClick={handleCopyPix}
-                      className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-gray-500 hover:text-[#cc0000] transition-all px-8 py-4 rounded-full border border-gray-100 hover:border-red-200 hover:bg-red-50/30 cursor-pointer bg-white"
+                      className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-800 border-2 border-gray-100 px-6 py-2.5 rounded-full transition-all bg-white"
                     >
-                      {pixCopied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
-                      {pixCopied ? 'Código Copiado!' : 'Copiar Código Pix'}
+                      {pixCopied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+                      {pixCopied ? 'Código Copiado!' : 'Pix copia e cola'}
                     </button>
                   </motion.div>
                 ) : (
@@ -258,28 +240,18 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="flex flex-col gap-6 w-full"
+                    className="flex flex-col gap-4 w-full"
                   >
                     <div>
-                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 ml-2">Número do Cartão</label>
-                      <input type="text" placeholder="0000 0000 0000 0000" className="w-full bg-white border border-gray-200 focus:border-gray-400 rounded-full px-6 py-4 text-[13px] font-medium outline-none transition-all placeholder:text-gray-200" />
+                      <input type="text" placeholder="NÚMERO DO CARTÃO" className="w-full bg-[#f8f9fa] border-none rounded-full px-6 py-3.5 text-[11px] font-bold uppercase tracking-widest outline-none placeholder:text-gray-300" />
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 ml-2">Validade</label>
-                        <input type="text" placeholder="MM/AA" className="w-full bg-white border border-gray-200 focus:border-gray-400 rounded-full px-6 py-4 text-[13px] font-medium outline-none transition-all placeholder:text-gray-200" />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 ml-2">CVV</label>
-                        <input type="text" placeholder="123" className="w-full bg-white border border-gray-200 focus:border-gray-400 rounded-full px-6 py-4 text-[13px] font-medium outline-none transition-all placeholder:text-gray-200" />
-                      </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <input type="text" placeholder="MM/AA" className="w-full bg-[#f8f9fa] border-none rounded-full px-6 py-3.5 text-[11px] font-bold uppercase tracking-widest outline-none placeholder:text-gray-300" />
+                      <input type="text" placeholder="CVV" className="w-full bg-[#f8f9fa] border-none rounded-full px-6 py-3.5 text-[11px] font-bold uppercase tracking-widest outline-none placeholder:text-gray-300" />
                     </div>
 
-                    <div>
-                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 ml-2">Nome Completo</label>
-                      <input type="text" placeholder="Como no cartão" className="w-full bg-white border border-gray-200 focus:border-gray-400 rounded-full px-6 py-4 text-[13px] font-medium outline-none transition-all uppercase placeholder:text-gray-200" />
-                    </div>
+                    <input type="text" placeholder="NOME NO CARTÃO" className="w-full bg-[#f8f9fa] border-none rounded-full px-6 py-3.5 text-[11px] font-bold uppercase tracking-widest outline-none placeholder:text-gray-300" />
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -287,22 +259,14 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
           </div>
 
-          {/* Footer Actions */}
-          <div className="p-6 pt-0 flex gap-3">
+          {/* Footer Actions - Optional in the photo, but we need the confirm button */}
+          <div className="px-7 pb-8">
             <button 
               onClick={handleSimulatePayment}
               disabled={isProcessing}
-              className="flex-3 bg-[#cc0000] text-white h-14 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-red-700 shadow-xl shadow-red-500/10 transition-all active:scale-95 flex items-center justify-center gap-3 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full bg-[#cc0000] text-white h-13 rounded-full text-[11px] font-bold uppercase tracking-[0.1em] hover:bg-red-700 shadow-xl shadow-red-500/10 transition-all active:scale-95 flex items-center justify-center gap-3 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              {isProcessing && <Loader2 size={18} className="animate-spin" />}
-              {paymentMethod === 'pix' ? 'Confirmar Pagamento' : 'Pagar Agora'}
-            </button>
-            <button 
-              onClick={onClose}
-              disabled={isProcessing}
-              className="flex-1 bg-[#f2f2f2] text-gray-500 h-14 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-gray-200 transition-all cursor-pointer disabled:opacity-50"
-            >
-              Cancelar
+              {isProcessing ? <Loader2 size={16} className="animate-spin" /> : (paymentMethod === 'pix' ? 'Confirmar pagamento' : 'Finalizar compra')}
             </button>
           </div>
 
