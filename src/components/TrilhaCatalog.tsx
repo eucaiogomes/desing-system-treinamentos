@@ -371,7 +371,7 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
               {/* Scrollable Turmas Area - Vertical List on Mobile & Desktop */}
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10.5px] font-bold text-gray-400 uppercase tracking-widest">
+                  <span className="text-[10.5px] font-bold text-[#003366] uppercase tracking-widest">
                     {enrollmentStatus === 'default' ? 'Selecionar Turma' : 'Turma Selecionada'}
                   </span>
                 </div>
@@ -434,6 +434,20 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
                               </div>
                             </div>
                           </div>
+                          
+                          {enrollmentStatus === 'pending' && selectedTurmaId === turma.id && (
+                            <div className="mt-4 border-t border-brand/10 bg-brand/5 -mx-4 lg:-mx-3 -mb-4 lg:-mb-3 p-4 lg:p-3 rounded-b-2xl lg:rounded-b-lg flex items-start gap-3 text-left">
+                              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand shadow-sm flex-shrink-0">
+                                <Clock size={16} />
+                              </div>
+                              <div className="flex flex-col gap-1 mt-0.5">
+                                <span className="text-[10px] font-black text-brand uppercase tracking-widest">Aguardando aprovação</span>
+                                <p className="text-[10.5px] text-brand/80 leading-relaxed font-medium pr-2">
+                                  Sua solicitação de vaga foi enviada. Agora, basta aguardar a liberação do responsável.
+                                </p>
+                              </div>
+                            </div>
+                          )}
                         </button>
                       ))
                     )}
@@ -500,69 +514,7 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
                   )}
                 </AnimatePresence>
 
-                {enrollmentStatus === 'pending' && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex flex-col gap-5 mt-4"
-                  >
-                    {/* Stepper Visual */}
-                    <div className="flex items-center justify-between px-2 relative">
-                      <div className="absolute top-[14px] left-[15%] right-[15%] h-0.5 bg-gray-100 -z-0" />
-                      
-                      <div className="flex flex-col items-center gap-2 relative z-10">
-                        <div className="w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center shadow-sm">
-                          <Check size={14} />
-                        </div>
-                        <span className="text-[8px] font-black text-green-600 uppercase tracking-tighter">Enviado</span>
-                      </div>
-
-                      <div className="flex flex-col items-center gap-2 relative z-10">
-                        <motion.div 
-                          animate={{ scale: [1, 1.1, 1] }}
-                          transition={{ repeat: Infinity, duration: 2 }}
-                          className="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center shadow-md shadow-brand/20"
-                        >
-                          <Clock size={14} />
-                        </motion.div>
-                        <span className="text-[8px] font-black text-brand uppercase tracking-tighter">Em Análise</span>
-                      </div>
-
-                      <div className="flex flex-col items-center gap-2 relative z-10 opacity-30">
-                        <div className="w-7 h-7 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center">
-                          <CheckSquare size={14} />
-                        </div>
-                        <span className="text-[8px] font-black text-gray-400 uppercase tracking-tighter">Liberado</span>
-                      </div>
-                    </div>
-
-                    {/* Feedback Card */}
-                    <div className="bg-brand/5 border border-brand/10 p-4 rounded-xl flex items-start gap-4">
-                      <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-brand shadow-sm flex-shrink-0">
-                        <Info size={16} />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[10px] font-black text-brand uppercase tracking-widest">Protocolo em andamento</span>
-                        <p className="text-[10.5px] text-brand/70 leading-relaxed font-medium">
-                          Nossa equipe está revisando seus dados. Você receberá uma notificação assim que o acesso for liberado.
-                        </p>
-                      </div>
-                    </div>
-
-                    <button 
-                      disabled
-                      className="w-full bg-white border-2 border-dashed border-gray-200 text-gray-400 py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] flex items-center justify-center gap-2 cursor-not-allowed group overflow-hidden relative"
-                    >
-                      <motion.div 
-                        animate={{ x: ['-100%', '200%'] }}
-                        transition={{ repeat: Infinity, duration: 3, ease: 'linear' }}
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-50/50 to-transparent -skew-x-12"
-                      />
-                      <Clock size={14} className="animate-spin-slow" />
-                      Aguardando aprovação
-                    </button>
-                  </motion.div>
-                )}
+                  {/* Removed separate pending block */}
               </div>
             </div>
           </div>

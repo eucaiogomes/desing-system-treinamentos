@@ -240,7 +240,7 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
               {/* Selection Turmas - Horizontal Carousel on Mobile */}
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10.5px] font-bold text-gray-400 uppercase tracking-widest">
+                  <span className="text-[10.5px] font-bold text-[#003366] uppercase tracking-widest">
                     {enrollmentStatus === 'default' ? 'Selecionar Turma' : 'Turma Selecionada'}
                   </span>
                 </div>
@@ -304,6 +304,20 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
                               </div>
                             </div>
                           </div>
+                          
+                          {enrollmentStatus === 'pending' && selectedTurmaId === turma.id && (
+                            <div className="mt-4 border-t border-brand/10 bg-brand/5 -mx-4 lg:-mx-3 -mb-4 lg:-mb-3 p-4 lg:p-3 rounded-b-2xl lg:rounded-b-lg flex items-start gap-3 text-left">
+                              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand shadow-sm flex-shrink-0">
+                                <Clock size={16} />
+                              </div>
+                              <div className="flex flex-col gap-1 mt-0.5">
+                                <span className="text-[10px] font-black text-brand uppercase tracking-widest">Aguardando aprovação</span>
+                                <p className="text-[10.5px] text-brand/80 leading-relaxed font-medium pr-2">
+                                  Sua solicitação de vaga foi enviada. Agora, basta aguardar a liberação do responsável.
+                                </p>
+                              </div>
+                            </div>
+                          )}
                         </button>
                       ))
                     )}
@@ -370,19 +384,7 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
                     )}
                   </AnimatePresence>
   
-                  {enrollmentStatus === 'pending' && (
-                    <div className="w-full bg-brand/5 border border-brand/10 p-4 rounded-xl flex items-start gap-4">
-                      <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-brand shadow-sm flex-shrink-0">
-                        <Info size={16} />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[10px] font-black text-brand uppercase tracking-widest">Protocolo em andamento</span>
-                        <p className="text-[10.5px] text-brand/70 leading-relaxed font-medium">
-                          Nossa equipe está revisando seus dados.
-                        </p>
-                      </div>
-                    </div>
-                  )}
+                  {/* Removed separate pending block */}
                 </div>
               </div>
             </div>
