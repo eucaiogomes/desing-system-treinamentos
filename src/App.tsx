@@ -15,8 +15,8 @@ export default function App() {
   const [completedTrainings, setCompletedTrainings] = useState<string[]>([]);
   const [courseEnrollmentStatus, setCourseEnrollmentStatus] = useState<'default' | 'payment' | 'rejected' | 'pending'>('default');
   const [trilhaEnrollmentStatus, setTrilhaEnrollmentStatus] = useState<'default' | 'payment' | 'rejected' | 'pending'>('default');
-  const [selectedCourseTurmaId, setSelectedCourseTurmaId] = useState<number>(1);
-  const [selectedTrilhaTurmaId, setSelectedTrilhaTurmaId] = useState<number>(1);
+  const [selectedCourseTurmaId, setSelectedCourseTurmaId] = useState<number | null>(null);
+  const [selectedTrilhaTurmaId, setSelectedTrilhaTurmaId] = useState<number | null>(null);
   const [isCoursePaymentOpen, setIsCoursePaymentOpen] = useState(false);
   const [isTrilhaPaymentOpen, setIsTrilhaPaymentOpen] = useState(false);
   const [isCourseBoletoOpen, setIsCourseBoletoOpen] = useState(false);

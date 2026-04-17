@@ -10,8 +10,8 @@ interface CourseCatalogProps {
   onNavigate: (screen: 'catalog' | 'view' | 'design' | 'trilha' | 'trilhaView' | 'treinamentoTrilha') => void;
   enrollmentStatus: 'default' | 'payment' | 'rejected' | 'pending';
   setEnrollmentStatus: (status: 'default' | 'payment' | 'rejected' | 'pending') => void;
-  selectedTurmaId: number;
-  setSelectedTurmaId: (id: number) => void;
+  selectedTurmaId: number | null;
+  setSelectedTurmaId: (id: number | null) => void;
   isPaymentModalOpen: boolean;
   setIsPaymentModalOpen: (open: boolean) => void;
   isBoletoModalOpen: boolean;
@@ -117,10 +117,11 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
     { type: 'Certificado', title: 'Emissão do Certificado', icon: <Award size={14} /> }
   ];
 
-  const selectedTurma = turmas.find(t => t.id === selectedTurmaId);
+  const selectedTurma = selectedTurmaId ? turmas.find(t => t.id === selectedTurmaId) : null;
   const mainButtonText = selectedTurma?.price === "Gratuito" ? "Fazer inscrição" : `Comprar ${selectedTurma?.price}`;
 
   const handleMainAction = () => {
+    if (!selectedTurmaId) return;
     if (selectedTurmaId === 2) {
       onNavigate('view');
     } else if (selectedTurmaId === 9) {
@@ -245,8 +246,8 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
                 </div>
                 
                 <div className="relative">
-                  {/* Container: Flex row on mobile, col on desktop */}
-                  <div className="flex flex-row lg:flex-col lg:max-h-[320px] overflow-x-auto lg:overflow-x-visible lg:overflow-y-auto lg:pr-2 custom-scrollbar gap-4 lg:gap-2 snap-x snap-mandatory pb-6 px-4 -mx-4 after:content-[''] after:min-w-[1px] after:h-full lg:after:hidden">
+                  {/* Container: Flex col on mobile and desktop */}
+                  <div className="flex flex-col lg:max-h-[320px] lg:overflow-y-auto lg:pr-2 custom-scrollbar gap-3 lg:gap-2 pb-2 lg:pb-0">
                     {turmas.length === 0 ? (
                       <div className="w-full text-center p-8 border border-dashed border-gray-200 rounded-lg text-gray-400 text-xs font-medium">
                         Nenhuma turma cadastrada
@@ -257,18 +258,30 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
                         .map((turma) => (
                         <button
                           key={turma.id}
-                          onClick={() => enrollmentStatus === 'default' && setSelectedTurmaId(turma.id)}
-                          className={`flex-none w-[82vw] lg:min-w-0 lg:w-full text-left p-4 lg:p-3 rounded-2xl lg:rounded-lg transition-all cursor-pointer snap-start snap-always shadow-sm ${
+                          onClick={(e) => {
+                            if (enrollmentStatus === 'default') {
+                              const isCurrentlySelected = selectedTurmaId === turma.id;
+                              setSelectedTurmaId(isCurrentlySelected ? null : turma.id);
+                              if (!isCurrentlySelected) {
+                                e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                              }
+                            }
+                          }}
+                          className={`w-full text-left p-4 lg:p-3 rounded-2xl lg:rounded-lg transition-all duration-200 cursor-pointer shadow-sm ${
                             selectedTurmaId === turma.id 
                               ? 'border-2 border-brand bg-brand/5 shadow-md scale-[0.98] lg:scale-100' 
-                              : 'border border-gray-100 hover:border-gray-200 bg-gray-50/20 hover:shadow-md'
+                              : 'border border-gray-200 hover:border-gray-300 bg-white hover:shadow-md'
                           } ${enrollmentStatus !== 'default' ? 'cursor-default opacity-90' : ''}`}
                         >
                           <div className="flex items-start gap-3">
-                            <div className={`mt-0.5 w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${
+                            <div className={`mt-0.5 w-[18px] h-[18px] rounded-full flex-shrink-0 border-[1.5px] flex items-center justify-center transition-all duration-300 ${
                               selectedTurmaId === turma.id ? 'border-brand bg-brand' : 'border-gray-300 bg-white'
                             }`}>
-                              {selectedTurmaId === turma.id && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                              <motion.div
+                                initial={false}
+                                animate={{ scale: selectedTurmaId === turma.id ? 1 : 0 }}
+                                className="w-2 h-2 rounded-full bg-white"
+                              />
                             </div>
                             <div className="flex-1">
                               <div className={`text-[12px] lg:text-[11px] font-black lg:font-bold leading-tight uppercase tracking-tight mb-3 ${
@@ -305,11 +318,15 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
                     <>
                       <button 
                         onClick={handleMainAction}
-                        className="w-full bg-brand text-white py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                        disabled={selectedTurmaId === null}
+                        className={`w-full py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] transition-all flex items-center justify-center gap-2 ${selectedTurmaId === null ? 'bg-gray-100 text-gray-400 cursor-not-allowed shadow-none' : 'bg-brand text-white hover:bg-brand-dark shadow-lg shadow-brand/10 active:scale-95 cursor-pointer'}`}
                       >
-                        {mainButtonText}
+                        {selectedTurmaId === null ? "SELECIONE UMA TURMA" : mainButtonText.toUpperCase()}
                       </button>
-                      <button className="w-full bg-white text-brand py-3.5 rounded-xl text-[11.5px] font-bold border border-brand/20 hover:bg-brand/5 transition-all active:scale-95 flex items-center justify-center gap-2 tracking-[0.1em] cursor-pointer">
+                      <button 
+                        disabled={selectedTurmaId === null}
+                        className={`w-full py-3.5 rounded-xl text-[11.5px] font-bold transition-all flex items-center justify-center gap-2 tracking-[0.1em] ${selectedTurmaId === null ? 'bg-white text-gray-300 border border-gray-100 cursor-not-allowed' : 'bg-white text-brand border border-brand/20 hover:bg-brand/5 active:scale-95 cursor-pointer'}`}
+                      >
                         Registrar interesse
                       </button>
                     </>
@@ -500,47 +517,53 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
       />
 
       {/* Mobile Sticky Action Bar */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 p-4 bg-white/80 backdrop-blur-md border-t border-gray-100 flex gap-3 shadow-[0_-8px_20px_rgba(0,0,0,0.05)]">
-        {enrollmentStatus === 'default' && (
-          <button 
-            onClick={handleMainAction}
-            className="flex-1 bg-brand text-white py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] shadow-lg shadow-brand/20 active:scale-95 flex items-center justify-center gap-2"
+      <AnimatePresence>
+        {(selectedTurmaId !== null || enrollmentStatus !== 'default') && (
+          <motion.div 
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="lg:hidden fixed bottom-0 left-0 right-0 z-50 p-4 pb-8 bg-white border-t border-gray-100 flex gap-3 shadow-[0_-12px_40px_rgba(0,0,0,0.08)]"
           >
-            {mainButtonText}
-          </button>
-        )}
+            {enrollmentStatus === 'default' && (
+              <button 
+                onClick={handleMainAction}
+                className="flex-1 bg-brand text-white h-[56px] rounded-xl text-[16px] font-bold shadow-lg shadow-brand/20 active:scale-95 flex items-center justify-center gap-2 transition-transform"
+              >
+                {mainButtonText}
+              </button>
+            )}
 
-        {enrollmentStatus === 'payment' && (
-          <button 
-            onClick={() => setIsBoletoModalOpen(true)}
-            className="flex-1 bg-brand text-white py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] shadow-lg shadow-brand/20 active:scale-95 flex items-center justify-center gap-2"
-          >
-            <CreditCard size={14} />
-            Pagamento
-          </button>
-        )}
+            {enrollmentStatus === 'payment' && (
+              <button 
+                onClick={() => setIsBoletoModalOpen(true)}
+                className="flex-1 bg-brand text-white h-[56px] rounded-xl text-[15px] font-bold shadow-lg shadow-brand/20 active:scale-95 flex items-center justify-center gap-2"
+              >
+                <CreditCard size={18} />
+                Efetuar Pagamento
+              </button>
+            )}
 
-        {enrollmentStatus === 'pending' && (
-          <div className="flex-1 bg-white border border-brand/20 text-brand py-3.5 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 whitespace-nowrap px-2">
-            <Clock size={12} className="animate-spin-slow" />
-            Em Análise
-          </div>
-        )}
+            {enrollmentStatus === 'pending' && (
+              <div className="flex-1 bg-white border border-brand/20 text-brand h-[56px] rounded-xl text-[13px] font-bold uppercase tracking-wide flex items-center justify-center gap-2">
+                <Clock size={16} className="animate-spin-slow" />
+                Em Análise
+              </div>
+            )}
 
-        {enrollmentStatus === 'rejected' && (
-          <button 
-            onClick={() => setIsModalOpen(true)}
-            className="flex-1 bg-red-600 text-white py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] shadow-lg shadow-red-500/10 active:scale-95 flex items-center justify-center gap-2"
-          >
-            <RefreshCw size={14} />
-            Reenviar
-          </button>
+            {enrollmentStatus === 'rejected' && (
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                className="flex-1 bg-red-600 text-white h-[56px] rounded-xl text-[15px] font-bold shadow-lg shadow-red-500/10 active:scale-95 flex items-center justify-center gap-2"
+              >
+                <RefreshCw size={18} />
+                Reenviar Dados
+              </button>
+            )}
+          </motion.div>
         )}
-
-        <button className="px-4 bg-white text-brand rounded-xl border border-brand/20 flex items-center justify-center">
-          <Folder size={16} />
-        </button>
-      </div>
+      </AnimatePresence>
     </motion.div>
   );
 };
