@@ -5,13 +5,15 @@ import { TrilhaView } from './components/TrilhaView';
 import TrainingView from './components/TrainingView';
 import TreinamentoTrilhaView from './components/TreinamentoTrilhaView';
 import { DesignSystem } from './components/DesignSystem';
-import { BookOpen, Play, Box } from 'lucide-react';
+import { BookOpen, Play, Box, Check, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<'catalog' | 'view' | 'design' | 'trilha' | 'trilhaView' | 'treinamentoTrilha'>('catalog');
   const [activeColor, setActiveColor] = useState('#c00000');
   const [completedTrainings, setCompletedTrainings] = useState<string[]>([]);
+  const [courseEnrollmentStatus, setCourseEnrollmentStatus] = useState<'default' | 'payment' | 'rejected' | 'pending'>('default');
+  const [trilhaEnrollmentStatus, setTrilhaEnrollmentStatus] = useState<'default' | 'payment' | 'rejected' | 'pending'>('default');
 
   const handleReturnToTrilha = (trainingId: string) => {
     setCompletedTrainings(prev => {
@@ -39,18 +41,43 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Minimalist Color Switcher */}
-      <div className="fixed top-6 right-6 flex gap-2 z-[60]">
-        {colors.map((color) => (
-          <button
-            key={color.id}
-            onClick={() => handleColorChange(color)}
-            className={`w-4 h-4 rounded-full transition-all hover:scale-125 cursor-pointer shadow-sm ${
-              activeColor === color.value ? 'ring-2 ring-offset-2 ring-gray-400 scale-110' : ''
-            }`}
-            style={{ backgroundColor: color.value }}
-            title={`Mudar para ${color.id}`}
-          />
-        ))}
+      <div className="fixed top-6 right-6 flex items-center gap-4 z-[60] bg-white/40 backdrop-blur-sm p-1.5 rounded-full border border-white/20 shadow-sm">
+        <div className="flex gap-2 pl-1">
+          {colors.map((color) => (
+            <button
+              key={color.id}
+              onClick={() => handleColorChange(color)}
+              className={`w-4 h-4 rounded-full transition-all hover:scale-125 cursor-pointer shadow-sm ${
+                activeColor === color.value ? 'ring-2 ring-offset-2 ring-gray-400 scale-110' : ''
+              }`}
+              style={{ backgroundColor: color.value }}
+              title={`Mudar para ${color.id}`}
+            />
+          ))}
+        </div>
+        
+        <div className="flex items-center gap-2 pr-1 border-l border-gray-200 pl-3">
+          <button 
+            onClick={() => {
+              if (currentScreen === 'catalog') setCurrentScreen('view');
+              if (currentScreen === 'trilha') setCurrentScreen('trilhaView');
+            }}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-green-50 hover:text-green-600 transition-colors cursor-pointer"
+            title="Validar fluxos"
+          >
+            <Check size={16} />
+          </button>
+          <button 
+            onClick={() => {
+              if (currentScreen === 'catalog') setCourseEnrollmentStatus('rejected');
+              if (currentScreen === 'trilha') setTrilhaEnrollmentStatus('rejected');
+            }}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer"
+            title="Simular recusa"
+          >
+            <X size={16} />
+          </button>
+        </div>
       </div>
 
       {/* Main Content */}
@@ -63,8 +90,24 @@ export default function App() {
           transition={{ duration: 0.2 }}
           className={currentScreen === 'view' || currentScreen === 'trilhaView' || currentScreen === 'treinamentoTrilha' ? 'h-[100dvh] overflow-hidden' : 'min-h-[100dvh]'}
         >
-          {currentScreen === 'catalog' && <div className="pb-32"><CourseCatalog /></div>}
-          {currentScreen === 'trilha' && <div className="pb-32"><TrilhaCatalog /></div>}
+          {currentScreen === 'catalog' && (
+            <div className="pb-32">
+              <CourseCatalog 
+                onNavigate={setCurrentScreen} 
+                enrollmentStatus={courseEnrollmentStatus}
+                setEnrollmentStatus={setCourseEnrollmentStatus}
+              />
+            </div>
+          )}
+          {currentScreen === 'trilha' && (
+            <div className="pb-32">
+              <TrilhaCatalog 
+                onNavigate={setCurrentScreen} 
+                enrollmentStatus={trilhaEnrollmentStatus}
+                setEnrollmentStatus={setTrilhaEnrollmentStatus}
+              />
+            </div>
+          )}
           {currentScreen === 'view' && <TrainingView />}
           {currentScreen === 'trilhaView' && <TrilhaView completedTrainings={completedTrainings} onNavigateToTraining={() => setCurrentScreen('treinamentoTrilha')} />}
           {currentScreen === 'treinamentoTrilha' && <TreinamentoTrilhaView onReturn={() => handleReturnToTrilha('t1')} />}

@@ -11,7 +11,7 @@ import { MaterialExplorer } from './MaterialExplorer';
 import { TutorList } from './TutorList';
 import { CircularProgress } from './CircularProgress';
 import { CustomFieldsModal } from './CustomFieldsModal';
-import { PaymentModal } from './PaymentModal';
+import { PaymentModalV2 } from './PaymentModalV2';
 import { SidebarContentIndicator, ContentTypeLabel } from './SidebarContentIndicator';
 
 const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
@@ -569,25 +569,54 @@ export const DesignSystem: React.FC = () => {
               <CreditCard size={24} />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-[#003366] uppercase tracking-widest mb-1">Checkout / Pagamento</h3>
-              <p className="text-[10.5px] text-gray-400 mb-6 max-w-xs mx-auto">Modal de pagamento com suporte a Pix, Cartão de Crédito e Cupons de Desconto.</p>
+              <h3 className="text-sm font-bold text-[#003366] uppercase tracking-widest mb-1">Checkout Inteligente (V2)</h3>
+              <p className="text-[10.5px] text-gray-400 mb-6 max-w-xs mx-auto">Nova versão com posicionamento superior, fundo de baixo desfoque e interface expansível (Smart Expand).</p>
             </div>
             <button 
               onClick={() => setIsPaymentModalOpen(true)}
               className="bg-brand text-white px-6 py-3 rounded-xl text-[11.5px] font-bold uppercase tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95"
             >
-              Abrir Modal de Pagamento
+              Abrir Checkout V2
             </button>
           </div>
         </div>
 
+        <div className="mt-12">
+          <ComponentBox title="Regras de Interação: Botões de Matrícula" description="Lógica dinâmica aplicada nos botões de catálogo para cursos e trilhas.">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+              <div className="space-y-4">
+                <div className="flex flex-col gap-2">
+                  <span className="text-[9.5px] font-black text-brand uppercase tracking-widest">Turma Gratuita</span>
+                  <button className="bg-brand text-white px-6 py-3 rounded-xl text-[11.5px] font-bold transition-all w-fit shadow-md shadow-brand/10">
+                    Fazer inscrição
+                  </button>
+                  <p className="text-[10px] text-gray-400 italic">O texto padrão permanece 'Fazer inscrição'.</p>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div className="flex flex-col gap-2">
+                  <span className="text-[9.5px] font-black text-brand uppercase tracking-widest">Turma Paga</span>
+                  <button className="bg-brand text-white px-6 py-3 rounded-xl text-[11.5px] font-bold transition-all w-fit shadow-md shadow-brand/10">
+                    Comprar R$ 1.000,00
+                  </button>
+                  <p className="text-[10px] text-gray-400 italic">O texto muda dinamicamente para 'Comprar' + Valor.</p>
+                </div>
+              </div>
+            </div>
+            <div className="w-full h-px bg-gray-50 my-4" />
+            <div className="w-full text-[10.5px] text-gray-500 bg-gray-50 p-4 rounded-xl border border-gray-100 italic">
+              <strong>Regra de Ouro:</strong> Nunca utilize 'UPPERCASE' nos botões de ação do catálogo. O texto deve ser amigável e direto. Botões de ação principais devem ter sombra (shadow-brand/10) e feedback de clique (active:scale-95).
+            </div>
+          </ComponentBox>
+        </div>
+
         <div className="mt-8 bg-brand/5 border border-brand/10 p-4 rounded-xl">
           <h4 className="text-[10px] font-black text-brand uppercase tracking-widest mb-2 flex items-center gap-2">
-            <Info size={12} /> Padrão de Overlay (Fundo)
+            <Info size={12} /> Padrão de Overlay e Animação
           </h4>
           <p className="text-[10.5px] text-brand/70 leading-relaxed font-medium">
-            Todos os modais devem utilizar o fundo semi-transparente <code className="bg-white/50 px-1 rounded">bg-slate-900/10</code> <strong>sem efeito de desfoque (blur)</strong>. 
-            Isso garante leveza visual e mantém o contexto do conteúdo de fundo nítido, seguindo a diretriz de "Clareza e Precisão" do sistema.
+            O novo overlay utiliza um desfoque mínimo (<code className="bg-white/50 px-1 rounded">backdrop-blur-[1px]</code>) e cor <code className="bg-white/50 px-1 rounded text-slate-700">bg-slate-900/10</code>. 
+            Modais expansíveis devem utilizar a propriedade <code className="bg-white/50 px-1 rounded">layout</code> do Framer Motion para transições suaves de altura ao revelar conteúdo dinâmico.
           </p>
         </div>
       </Section>
@@ -605,7 +634,7 @@ export const DesignSystem: React.FC = () => {
         onConfirm={() => setIsCustomFieldsModalOpen(false)} 
       />
 
-      <PaymentModal 
+      <PaymentModalV2 
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
         itemName="CURSO DE DESIGN SYSTEM AVANÇADO"

@@ -2,13 +2,18 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronUp, ChevronRight, Folder, PlaySquare, FileText, Video, Users, MonitorPlay, Box, UploadCloud, CheckSquare, Star, Award, Layers, Calendar, AlertCircle, RefreshCw, CreditCard } from 'lucide-react';
 import { CustomFieldsModal } from './CustomFieldsModal';
-import { PaymentModal } from './PaymentModal';
+import { PaymentModalV2 } from './PaymentModalV2';
 
-export const TrilhaCatalog: React.FC = () => {
+interface TrilhaCatalogProps {
+  onNavigate: (screen: 'catalog' | 'view' | 'design' | 'trilha' | 'trilhaView' | 'treinamentoTrilha') => void;
+  enrollmentStatus: 'default' | 'payment' | 'rejected' | 'pending';
+  setEnrollmentStatus: (status: 'default' | 'payment' | 'rejected' | 'pending') => void;
+}
+
+export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({ onNavigate, enrollmentStatus, setEnrollmentStatus }) => {
   const [selectedTurmaId, setSelectedTurmaId] = useState<number>(1);
   const [activeTab, setActiveTab] = useState<string>('conteudos');
   const [isExpanded, setIsExpanded] = useState(false);
-  const [enrollmentStatus, setEnrollmentStatus] = useState<'default' | 'payment' | 'rejected' | 'pending'>('default');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   
@@ -98,6 +103,13 @@ export const TrilhaCatalog: React.FC = () => {
       period: "Indeterminado",
       price: "R$ 1.050,00",
       vagas: "25 vagas"
+    },
+    {
+      id: 9,
+      title: "9° ALUNO APLICANDO CUPOM",
+      period: "Indeterminado",
+      price: "R$ 49,90",
+      vagas: "Ilimitadas"
     }
   ];
 
@@ -381,7 +393,17 @@ export const TrilhaCatalog: React.FC = () => {
                 {enrollmentStatus === 'default' && (
                   <>
                     <button 
-                      onClick={() => setEnrollmentStatus('payment')}
+                      onClick={() => {
+                        if (selectedTurmaId === 2) {
+                          onNavigate('trilhaView');
+                        } else if (selectedTurmaId === 1 || selectedTurmaId === 7) {
+                          setEnrollmentStatus('pending');
+                        } else if ([3, 4, 5, 6].includes(selectedTurmaId)) {
+                          setIsModalOpen(true);
+                        } else {
+                          setEnrollmentStatus('payment');
+                        }
+                      }}
                       className="w-full bg-brand text-white py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
                     >
                       {mainButtonText}
@@ -541,11 +563,11 @@ export const TrilhaCatalog: React.FC = () => {
         }} 
       />
 
-      <PaymentModal 
+      <PaymentModalV2 
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
         itemName="TRILHA DE FORMAÇÃO: LIDERANÇA DO FUTURO"
-        itemPrice={1200.00}
+        itemPrice={parseFloat(selectedTurma?.price.replace('R$ ', '').replace('.', '').replace(',', '.') || '1200')}
         onSuccess={() => {
           setIsPaymentModalOpen(false);
           setEnrollmentStatus('rejected'); // Simulate the error state after payment for testing

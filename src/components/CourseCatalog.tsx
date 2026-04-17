@@ -2,13 +2,18 @@ import React, { useState } from 'react';
 import { Search, ChevronUp, ChevronDown, CheckCircle2, Folder, PlaySquare, FileText, Video, Users, MonitorPlay, Box, UploadCloud, CheckSquare, Star, Award, Calendar, AlertCircle, RefreshCw, CreditCard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CustomFieldsModal } from './CustomFieldsModal';
-import { PaymentModal } from './PaymentModal';
+import { PaymentModalV2 } from './PaymentModalV2';
 
-export const CourseCatalog: React.FC = () => {
+interface CourseCatalogProps {
+  onNavigate: (screen: 'catalog' | 'view' | 'design' | 'trilha' | 'trilhaView' | 'treinamentoTrilha') => void;
+  enrollmentStatus: 'default' | 'payment' | 'rejected' | 'pending';
+  setEnrollmentStatus: (status: 'default' | 'payment' | 'rejected' | 'pending') => void;
+}
+
+export const CourseCatalog: React.FC<CourseCatalogProps> = ({ onNavigate, enrollmentStatus, setEnrollmentStatus }) => {
   const [selectedTurmaId, setSelectedTurmaId] = useState<number>(1);
   const [activeTab, setActiveTab] = useState<string>('conteudos');
   const [isExpanded, setIsExpanded] = useState(false);
-  const [enrollmentStatus, setEnrollmentStatus] = useState<'default' | 'payment' | 'rejected' | 'pending'>('default');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
@@ -67,6 +72,13 @@ export const CourseCatalog: React.FC = () => {
       title: "8° PAGA SEM APROVAÇÃO GESTOR",
       period: "Indeterminado",
       price: "R$ 290,00",
+      vagas: "Ilimitadas"
+    },
+    {
+      id: 9,
+      title: "9° ALUNO APLICANDO CUPOM",
+      period: "Indeterminado",
+      price: "R$ 49,90",
       vagas: "Ilimitadas"
     }
   ];
@@ -247,7 +259,17 @@ export const CourseCatalog: React.FC = () => {
                 {enrollmentStatus === 'default' && (
                   <>
                     <button 
-                      onClick={() => setEnrollmentStatus('payment')}
+                      onClick={() => {
+                        if (selectedTurmaId === 2) {
+                          onNavigate('view');
+                        } else if (selectedTurmaId === 1 || selectedTurmaId === 7) {
+                          setEnrollmentStatus('pending');
+                        } else if ([3, 4, 5, 6].includes(selectedTurmaId)) {
+                          setIsModalOpen(true);
+                        } else {
+                          setEnrollmentStatus('payment');
+                        }
+                      }}
                       className="w-full bg-brand text-white py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
                     >
                       {mainButtonText}
@@ -407,11 +429,11 @@ export const CourseCatalog: React.FC = () => {
         }} 
       />
 
-      <PaymentModal 
+      <PaymentModalV2 
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
         itemName="TEORIA GERAL DO DIREITO"
-        itemPrice={10.00}
+        itemPrice={parseFloat(selectedTurma?.price.replace('R$ ', '').replace('.', '').replace(',', '.') || '1000')}
         onSuccess={() => {
           setIsPaymentModalOpen(false);
           setEnrollmentStatus('rejected'); // Simulate the error state after payment for testing
