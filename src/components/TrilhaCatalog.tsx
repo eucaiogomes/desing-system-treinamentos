@@ -388,10 +388,10 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
                         <button
                           key={turma.id}
                           onClick={() => enrollmentStatus === 'default' && setSelectedTurmaId(turma.id)}
-                          className={`flex-none w-[82vw] lg:min-w-0 lg:w-full text-left p-4 lg:p-3 rounded-2xl lg:rounded-lg transition-all cursor-pointer snap-start snap-always ${
+                          className={`flex-none w-[82vw] lg:min-w-0 lg:w-full text-left p-4 lg:p-3 rounded-2xl lg:rounded-lg transition-all cursor-pointer snap-start snap-always shadow-sm ${
                             selectedTurmaId === turma.id 
                               ? 'border-2 border-brand bg-brand/5 shadow-md scale-[0.98] lg:scale-100' 
-                              : 'border border-gray-100 hover:border-gray-200 bg-gray-50/20'
+                              : 'border border-gray-100 hover:border-gray-200 bg-gray-50/20 hover:shadow-md'
                           } ${enrollmentStatus !== 'default' ? 'cursor-default opacity-90' : ''}`}
                         >
                           <div className="flex items-start gap-3">
