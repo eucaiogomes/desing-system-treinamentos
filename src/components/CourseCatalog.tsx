@@ -246,7 +246,7 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
                 
                 <div className="relative">
                   {/* Container: Flex row on mobile, col on desktop */}
-                  <div className="flex flex-row lg:flex-col lg:max-h-[320px] overflow-x-auto lg:overflow-x-visible lg:overflow-y-auto lg:pr-2 lg:custom-scrollbar gap-4 lg:gap-2 custom-scrollbar-h lg:scrollbar snap-x snap-mandatory pb-6 px-4 -mx-4 after:content-[''] after:min-w-[1px] after:h-full lg:after:hidden">
+                  <div className="flex flex-row lg:flex-col lg:max-h-[320px] overflow-x-auto lg:overflow-x-visible lg:overflow-y-auto lg:pr-2 custom-scrollbar gap-4 lg:gap-2 snap-x snap-mandatory pb-6 px-4 -mx-4 after:content-[''] after:min-w-[1px] after:h-full lg:after:hidden">
                     {turmas.length === 0 ? (
                       <div className="w-full text-center p-8 border border-dashed border-gray-200 rounded-lg text-gray-400 text-xs font-medium">
                         Nenhuma turma cadastrada
