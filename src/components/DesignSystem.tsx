@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { 
   Play, CheckCircle2, Circle, Clock, ChevronLeft, ChevronRight, ChevronDown, ChevronUp,
-  ArrowLeft, FileText, BarChart3, BookOpen, Paperclip, User, Info, Menu, X, 
+  ArrowLeft, FileText, BarChart3, BookOpen, Paperclip, User, Info, Menu, X, Check,
   Layout, GraduationCap, Search, Settings, Maximize2, Video, ClipboardCheck, 
-  Award, List, MessageSquare, AlertCircle, RefreshCw, CreditCard, QrCode, Tag, Loader2, UploadCloud
+  Award, List, MessageSquare, AlertCircle, RefreshCw, CreditCard, QrCode, Tag, Loader2, UploadCloud, CheckSquare
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PerformanceDashboard } from './PerformanceDashboard';
@@ -12,6 +12,7 @@ import { TutorList } from './TutorList';
 import { CircularProgress } from './CircularProgress';
 import { CustomFieldsModal } from './CustomFieldsModal';
 import { PaymentModalV2 } from './PaymentModalV2';
+import { BoletoModal } from './BoletoModal';
 import { SidebarContentIndicator, ContentTypeLabel } from './SidebarContentIndicator';
 
 const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
@@ -50,6 +51,7 @@ const ComponentBox: React.FC<{ title: string; description: string; children: Rea
 );
 
 export const DesignSystem: React.FC = () => {
+  const [isBoletoModalOpen, setIsBoletoModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('conteudos');
   const [documentedTab, setDocumentedTab] = useState('tab_0');
   const [isExpanded, setIsExpanded] = useState(false);
@@ -547,7 +549,7 @@ export const DesignSystem: React.FC = () => {
 
       {/* SEÇÃO 3 — MODAIS E FLUXOS COMPLEXOS */}
       <Section title="03. Modais & Fluxos Complexos">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm flex flex-col items-center justify-center text-center gap-4">
             <div className="w-16 h-16 bg-brand/10 rounded-full flex items-center justify-center text-brand mb-2">
               <FileText size={24} />
@@ -558,7 +560,7 @@ export const DesignSystem: React.FC = () => {
             </div>
             <button 
               onClick={() => setIsCustomFieldsModalOpen(true)}
-              className="bg-brand text-white px-6 py-3 rounded-xl text-[11.5px] font-bold uppercase tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95"
+              className="bg-brand text-white px-6 py-3 rounded-xl text-[11.5px] font-bold uppercase tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95 cursor-pointer"
             >
               Abrir Modal de Campos
             </button>
@@ -574,9 +576,25 @@ export const DesignSystem: React.FC = () => {
             </div>
             <button 
               onClick={() => setIsPaymentModalOpen(true)}
-              className="bg-brand text-white px-6 py-3 rounded-xl text-[11.5px] font-bold uppercase tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95"
+              className="bg-brand text-white px-6 py-3 rounded-xl text-[11.5px] font-bold uppercase tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95 cursor-pointer"
             >
               Abrir Checkout V2
+            </button>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm flex flex-col items-center justify-center text-center gap-4">
+            <div className="w-16 h-16 bg-brand/10 rounded-full flex items-center justify-center text-brand mb-2">
+              <QrCode size={24} />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-[#003366] uppercase tracking-widest mb-1">Boleto Estilizado</h3>
+              <p className="text-[10.5px] text-gray-400 mb-6 max-w-xs mx-auto">Simulação visual de documento bancário com código de barras e dados do pagador.</p>
+            </div>
+            <button 
+              onClick={() => setIsBoletoModalOpen(true)}
+              className="bg-brand text-white px-6 py-3 rounded-xl text-[11.5px] font-bold uppercase tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95 cursor-pointer"
+            >
+              Visualizar Boleto
             </button>
           </div>
         </div>
@@ -621,6 +639,98 @@ export const DesignSystem: React.FC = () => {
         </div>
       </Section>
 
+      {/* SEÇÃO 04 — DOCUMENTAÇÃO DE FLUXOS LÓGICOS */}
+      <Section title="04. Fluxos de Inscrição e Aprovação">
+        <div className="grid grid-cols-1 gap-12">
+          {/* Mapeamento de Turmas */}
+          <div className="bg-[#003366] rounded-[32px] p-10 text-white shadow-2xl overflow-hidden relative">
+            <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12">
+              <ClipboardCheck size={120} />
+            </div>
+            
+            <h3 className="text-[14px] font-black uppercase tracking-[0.2em] mb-8 flex items-center gap-3 relative z-10">
+              <div className="w-2 h-6 bg-brand rounded-full" />
+              Lógica por Identificador (Turma ID)
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+              {[
+                { ids: '01, 07', title: 'Pendente (Gestor)', desc: 'Exige aprovação. Muda status do botão para "Aguardando aprovação".', color: 'bg-yellow-500/20 text-yellow-500' },
+                { ids: '02', title: 'Navegação Direta', desc: 'Inscrição automática com redirecionamento para o conteúdo.', color: 'bg-green-500/20 text-green-500' },
+                { ids: '03, 04', title: 'Paga + Campos', desc: 'Exige campos e aprovação. Após aprovação (Check), abre checkout.', color: 'bg-brand/20 text-brand' },
+                { ids: '05, 06', title: 'Grátis + Campos', desc: 'Exige campos e aprovação. Após aprovação (Check), libera conteúdo.', color: 'bg-blue-500/20 text-blue-500' },
+                { ids: '08, 09', title: 'Fluxo Padrão', desc: 'Inscrição direta com abertura de checkout para pagas.', color: 'bg-white/10 text-white' }
+              ].map((item, i) => (
+                <div key={i} className="bg-white/5 border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition-colors">
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded uppercase mb-3 inline-block ${item.color}`}>IDs {item.ids}</span>
+                  <h4 className="text-sm font-bold mb-2">{item.title}</h4>
+                  <p className="text-[11px] text-white/60 leading-relaxed font-medium">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Diagrama Visual do Fluxo */}
+          <div className="bg-white rounded-[32px] border border-gray-100 p-10 shadow-sm overflow-hidden">
+            <div className="text-center mb-12">
+              <h3 className="text-[14px] font-black text-[#003366] uppercase tracking-[0.2em] mb-2">Protocolo de Matrícula Assistida</h3>
+              <p className="text-xs text-gray-400 font-medium">Fluxo operacional para treinamentos que exigem validação cadastral</p>
+            </div>
+            
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative max-w-5xl mx-auto py-4">
+              <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-50 -translate-y-1/2 hidden md:block" />
+              
+              {[
+                { icon: <Search size={22} />, title: 'Inscrição', sub: 'Seleção de Turma' },
+                { icon: <FileText size={22} />, title: 'Personalização', sub: 'Modal de Campos' },
+                { icon: <Clock size={22} />, title: 'Análise', sub: 'Aprovação Gestora' },
+                { icon: <CreditCard size={22} />, title: 'Pagamento', sub: 'Geração de Boleto' },
+                { icon: <Award size={22} />, title: 'Acesso', sub: 'Conteúdo Liberado' }
+              ].map((step, i) => (
+                <div key={i} className="relative z-10 flex flex-col items-center gap-4 group">
+                  <div className="w-16 h-16 rounded-[24px] bg-white border-2 border-gray-100 flex items-center justify-center text-gray-300 group-hover:border-brand group-hover:text-brand group-hover:bg-brand/5 shadow-sm transition-all duration-300">
+                    {step.icon}
+                  </div>
+                  <div className="text-center">
+                    <span className="text-[11px] font-black text-[#003366] uppercase block mb-0.5">{step.title}</span>
+                    <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">{step.sub}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-12 pt-10 border-t border-gray-50">
+              <div className="flex gap-5 bg-green-50/30 p-6 rounded-2xl border border-green-50">
+                <div className="w-12 h-12 rounded-xl bg-green-500 text-white flex items-center justify-center flex-shrink-0 shadow-lg shadow-green-500/20">
+                  <CheckSquare size={24} />
+                </div>
+                <div>
+                  <h4 className="text-xs font-black text-green-700 uppercase tracking-wider mb-2">Ação: Aprovação (Check)</h4>
+                  <p className="text-[11.5px] text-green-800/70 leading-relaxed font-medium">
+                    O ícone de <strong>Check</strong> no menu superior simula a aprovação do gestor. 
+                    <br />• Se pago: Aciona o <strong>Checkout</strong>.
+                    <br />• Se grátis: Libera o <strong>Conteúdo</strong>.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-5 bg-red-50/30 p-6 rounded-2xl border border-red-50">
+                <div className="w-12 h-12 rounded-xl bg-red-500 text-white flex items-center justify-center flex-shrink-0 shadow-lg shadow-red-500/20">
+                  <X size={24} />
+                </div>
+                <div>
+                  <h4 className="text-xs font-black text-red-700 uppercase tracking-wider mb-2">Ação: Recusa (X)</h4>
+                  <p className="text-[11.5px] text-red-800/70 leading-relaxed font-medium">
+                    O ícone <strong>X</strong> cancela a matrícula atual.
+                    <br />• Status muda para: <strong>"Recusada"</strong>.
+                    <br />• Botão no catálogo: <strong>"Reenviar campos"</strong>.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Section>
+
       <footer className="mt-20 pt-8 border-t border-gray-100 text-center">
         <p className="text-[10.5px] font-bold text-gray-300 uppercase tracking-[0.3em]">
           © 2026 Plataforma de Treinamento • Design System v2.0
@@ -640,6 +750,12 @@ export const DesignSystem: React.FC = () => {
         itemName="CURSO DE DESIGN SYSTEM AVANÇADO"
         itemPrice={150.00}
         onSuccess={() => setIsPaymentModalOpen(false)}
+      />
+
+      <BoletoModal 
+        isOpen={isBoletoModalOpen}
+        onClose={() => setIsBoletoModalOpen(false)}
+        price={150.00}
       />
     </div>
   );
