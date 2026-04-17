@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ChevronUp, ChevronRight, Folder, PlaySquare, FileText, Video, Users, MonitorPlay, Box, UploadCloud, CheckSquare, Star, Award, Layers, Calendar, AlertCircle, RefreshCw, CreditCard } from 'lucide-react';
+import { ChevronDown, ChevronUp, ChevronRight, Folder, PlaySquare, FileText, Video, Users, MonitorPlay, Box, UploadCloud, CheckSquare, Star, Award, Layers, Calendar, AlertCircle, RefreshCw, CreditCard, Check, Clock, Info } from 'lucide-react';
 import { CustomFieldsModal } from './CustomFieldsModal';
 import { PaymentModalV2 } from './PaymentModalV2';
+import { PaymentModal } from './PaymentModal';
 import { BoletoModal } from './BoletoModal';
 
 interface TrilhaCatalogProps {
@@ -15,6 +16,8 @@ interface TrilhaCatalogProps {
   setIsPaymentModalOpen: (open: boolean) => void;
   isBoletoModalOpen: boolean;
   setIsBoletoModalOpen: (open: boolean) => void;
+  isOldPaymentModalOpen: boolean;
+  setIsOldPaymentModalOpen: (open: boolean) => void;
 }
 
 export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({ 
@@ -26,7 +29,9 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
   isPaymentModalOpen,
   setIsPaymentModalOpen,
   isBoletoModalOpen,
-  setIsBoletoModalOpen
+  setIsBoletoModalOpen,
+  isOldPaymentModalOpen,
+  setIsOldPaymentModalOpen
 }) => {
   const [activeTab, setActiveTab] = useState<string>('conteudos');
   const [isExpanded, setIsExpanded] = useState(false);
@@ -183,6 +188,20 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
   const selectedTurma = turmas.find(t => t.id === selectedTurmaId);
   const mainButtonText = selectedTurma?.price === "Gratuito" ? "Fazer inscrição" : `Comprar ${selectedTurma?.price}`;
 
+  const handleMainAction = () => {
+    if (selectedTurmaId === 2) {
+      onNavigate('trilhaView');
+    } else if (selectedTurmaId === 9) {
+      setIsOldPaymentModalOpen(true);
+    } else if (selectedTurmaId === 1 || selectedTurmaId === 7) {
+      setEnrollmentStatus('pending');
+    } else if ([3, 4, 5, 6].includes(selectedTurmaId)) {
+      setIsModalOpen(true);
+    } else {
+      setEnrollmentStatus('payment');
+    }
+  };
+
   const tabContent: Record<string, React.ReactNode> = {
     conteudos: (
       <div className="flex flex-col gap-3 pb-4">
@@ -195,7 +214,7 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
               <div className="w-5 h-5 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm flex-shrink-0">
                 {expandedItems[etapa.id] ? <ChevronUp size={12} className="text-gray-500" /> : <ChevronDown size={12} className="text-gray-500" />}
               </div>
-              <span className="text-xs font-bold text-[#003366] tracking-tight">{etapa.title}</span>
+              <span className="text-[11px] lg:text-xs font-bold text-[#003366] tracking-tight">{etapa.title}</span>
             </button>
             
             <AnimatePresence initial={false}>
@@ -207,8 +226,8 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                   className="flex flex-col overflow-hidden"
                 >
-                  {/* Table Header */}
-                  <div className="flex items-center px-4 py-2.5 bg-gray-50/50 border-b border-gray-100">
+                  {/* Desktop Table Header */}
+                  <div className="hidden lg:flex items-center px-4 py-2.5 bg-gray-50/50 border-b border-gray-100">
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest w-[240px]">Tipo</span>
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-4">Conteúdos</span>
                   </div>
@@ -221,19 +240,22 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
                           <div className="flex flex-col bg-brand/5">
                             <button 
                               onClick={() => toggleItem(content.id, false)}
-                              className="w-full flex items-center px-4 py-3 hover:bg-brand/10 transition-colors group cursor-pointer"
+                              className="w-full flex flex-col lg:flex-row lg:items-center px-4 py-4 lg:py-3 hover:bg-brand/10 transition-colors group cursor-pointer"
                             >
-                              <div className="flex items-center gap-3 w-[240px] flex-shrink-0">
+                              <div className="flex items-center gap-3 lg:w-[240px] lg:flex-shrink-0 mb-1 lg:mb-0">
                                 <div className="w-6 h-6 rounded bg-brand flex items-center justify-center text-white flex-shrink-0 shadow-sm">
                                   {content.icon}
                                 </div>
-                                <span className="text-[11px] font-bold text-brand uppercase tracking-wide truncate">{content.type}</span>
+                                <span className="text-[10px] lg:text-[11px] font-black lg:font-bold text-brand uppercase tracking-widest lg:tracking-wide truncate">{content.type}</span>
                               </div>
-                              <div className="flex-1 flex items-center gap-2 pl-4">
-                                <div className="w-5 h-5 rounded-full bg-white/50 flex items-center justify-center text-brand flex-shrink-0">
+                              <div className="flex-1 flex items-center gap-2 lg:pl-4">
+                                <div className="hidden lg:flex w-5 h-5 rounded-full bg-white/50 items-center justify-center text-brand flex-shrink-0">
                                   {expandedItems[content.id] ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                                 </div>
-                                <span className="text-xs font-bold text-gray-800 group-hover:text-brand transition-colors text-left line-clamp-1">{content.title}</span>
+                                <span className="text-[13px] lg:text-xs font-bold text-gray-800 group-hover:text-brand transition-colors text-left line-clamp-1">{content.title}</span>
+                                <div className="lg:hidden ml-auto">
+                                  {expandedItems[content.id] ? <ChevronUp size={14} className="text-brand" /> : <ChevronDown size={14} className="text-brand" />}
+                                </div>
                               </div>
                             </button>
                             
@@ -247,15 +269,15 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
                                   className="flex flex-col divide-y divide-gray-100/50 bg-white/50 overflow-hidden"
                                 >
                                   {content.subContents.map(sub => (
-                                    <div key={sub.id} className="flex items-center px-4 py-2.5 hover:bg-white transition-colors group">
-                                      <div className="flex items-center gap-3 w-[240px] flex-shrink-0 pl-6">
+                                    <div key={sub.id} className="flex flex-col lg:flex-row lg:items-center px-5 lg:px-4 py-3 lg:py-2.5 hover:bg-white transition-colors group">
+                                      <div className="flex items-center gap-3 lg:w-[240px] lg:flex-shrink-0 lg:pl-6 mb-1 lg:mb-0">
                                         <div className="w-5 h-5 rounded bg-gray-200/70 flex items-center justify-center text-gray-500 flex-shrink-0">
                                           {sub.icon}
                                         </div>
-                                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wide truncate">{sub.type}</span>
+                                        <span className="text-[9px] lg:text-[10px] font-black lg:font-bold text-gray-500 uppercase tracking-widest truncate">{sub.type}</span>
                                       </div>
-                                      <div className="flex-1 text-left pl-4">
-                                        <span className="text-[11.5px] font-medium text-gray-600 group-hover:text-gray-900 line-clamp-1">{sub.title}</span>
+                                      <div className="flex-1 text-left lg:pl-4">
+                                        <span className="text-xs lg:text-[11.5px] font-medium text-gray-600 group-hover:text-gray-900 line-clamp-2 lg:line-clamp-1">{sub.title}</span>
                                       </div>
                                     </div>
                                   ))}
@@ -264,16 +286,16 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
                             </AnimatePresence>
                           </div>
                         ) : (
-                          // Regular Content
-                          <div className="flex items-center px-4 py-3 hover:bg-gray-50 transition-colors group">
-                            <div className="flex items-center gap-3 w-[240px] flex-shrink-0">
+                          // Regular Content (Card style on mobile)
+                          <div className="flex flex-col lg:flex-row lg:items-center px-4 py-4 lg:py-3 hover:bg-gray-50 transition-colors group">
+                            <div className="flex items-center gap-3 lg:w-[240px] lg:flex-shrink-0 mb-1 lg:mb-0">
                               <div className="w-6 h-6 rounded bg-brand/10 flex items-center justify-center text-brand flex-shrink-0">
                                 {content.icon}
                               </div>
-                              <span className="text-[11px] font-bold text-brand uppercase tracking-wide truncate">{content.type}</span>
+                              <span className="text-[10px] lg:text-[11px] font-black lg:font-bold text-brand uppercase tracking-widest lg:tracking-wide truncate">{content.type}</span>
                             </div>
-                            <div className="flex-1 text-left pl-4">
-                              <span className="text-xs font-medium text-gray-600 group-hover:text-gray-900 transition-colors line-clamp-1">{content.title}</span>
+                            <div className="flex-1 text-left lg:pl-4">
+                              <span className="text-[13px] lg:text-xs font-semibold lg:font-medium text-gray-600 group-hover:text-gray-900 transition-colors line-clamp-2 lg:line-clamp-1">{content.title}</span>
                             </div>
                           </div>
                         )}
@@ -288,18 +310,20 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
       </div>
     ),
     resumo: (
-      <p className="text-xs text-gray-500 leading-relaxed italic">
-        "Uma jornada completa de desenvolvimento para formar os líderes do futuro, combinando teoria, prática e autoconhecimento em uma trilha estruturada e imersiva."
-      </p>
+      <div className="px-1 py-2">
+        <p className="text-sm lg:text-xs text-gray-500 leading-relaxed italic">
+          "Uma jornada completa de desenvolvimento para formar os líderes do futuro, combinando teoria, prática e autoconhecimento em uma trilha estruturada e imersiva."
+        </p>
+      </div>
     ),
     autor: (
-      <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden">
+      <div className="flex items-center gap-4 px-1 py-2">
+        <div className="w-14 h-14 lg:w-12 lg:h-12 rounded-full bg-gray-200 overflow-hidden shadow-sm border border-white">
           <img src="https://picsum.photos/seed/leader/100/100" alt="Autor" referrerPolicy="no-referrer" />
         </div>
         <div>
-          <h4 className="text-xs font-bold text-[#003366]">Equipe de Desenvolvimento Humano</h4>
-          <p className="text-[10.5px] text-gray-500">Especialistas em Liderança e Gestão de Pessoas.</p>
+          <h4 className="text-sm lg:text-xs font-bold text-[#003366]">Equipe de Desenvolvimento Humano</h4>
+          <p className="text-[11px] lg:text-[10.5px] text-gray-500">Especialistas em Liderança e Gestão de Pessoas.</p>
         </div>
       </div>
     )
@@ -309,7 +333,7 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="p-4 font-sans"
+      className="p-4 font-sans pb-32 lg:pb-4"
     >
       {/* Breadcrumbs */}
       <nav className="text-[10.5px] mb-6 flex items-center gap-2 text-gray-400 uppercase tracking-[0.15em] font-bold">
@@ -319,106 +343,98 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
       </nav>
 
       {/* Main Content Card */}
-      <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 mb-6">
-        <div className="flex flex-row flex-nowrap gap-12">
-          {/* Left Sidebar Info */}
-          <div className="flex-none w-64 flex flex-col gap-6">
-            <div className="relative aspect-square rounded-xl overflow-hidden shadow-sm group">
+      <div className="bg-white rounded-2xl p-0 lg:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 mb-6 transition-all duration-300 overflow-hidden lg:overflow-visible">
+        <div className="flex flex-col lg:flex-row lg:flex-nowrap lg:gap-12">
+          {/* Left Sidebar / Top Hero on Mobile */}
+          <div className="flex-none w-full lg:w-64 flex flex-col lg:gap-6">
+            {/* Banner/Thumbnail */}
+            <div className="relative w-full h-[220px] lg:h-auto lg:aspect-square overflow-hidden group">
               <img 
-                src="https://picsum.photos/seed/leadership/300/400" 
+                src="https://picsum.photos/seed/leadership/600/400" 
                 alt="Trilha Thumbnail" 
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 referrerPolicy="no-referrer"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#003366]/90 via-[#003366]/40 to-transparent flex flex-col items-center justify-end p-6 text-center">
-                <span className="text-[9.5px] text-white/70 uppercase tracking-[0.2em] mb-1">Trilha de Formação</span>
-                <h3 className="text-sm font-bold text-white leading-tight">LIDERANÇA DO FUTURO</h3>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col items-center justify-end p-6 text-center lg:p-4">
+                <span className="text-[9.5px] text-white/70 uppercase tracking-[0.2em] mb-1 font-black">Trilha de Formação</span>
+                <h3 className="text-lg lg:text-sm font-black lg:font-bold text-white leading-tight uppercase tracking-tight">Liderança do Futuro</h3>
               </div>
             </div>
 
-            <div className="flex flex-col gap-1 pb-4 border-b border-gray-100">
-              <span className="text-[9.5px] font-bold text-gray-400 uppercase tracking-widest">Carga Horária</span>
-              <span className="text-xs font-semibold text-[#003366]">120 horas e 00 minuto</span>
-            </div>
-
-            {/* Scrollable Turmas Area */}
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center justify-between">
-                <span className="text-[10.5px] font-bold text-gray-400 uppercase tracking-widest">
-                  {enrollmentStatus === 'default' ? 'Selecionar Turma' : 'Turma Selecionada'}
-                </span>
+            <div className="p-6 lg:p-0 flex flex-col gap-6">
+              <div className="flex flex-col gap-1 pb-4 border-b border-gray-100">
+                <span className="text-[9.5px] font-bold text-gray-400 uppercase tracking-widest">Carga Horária</span>
+                <span className="text-xs font-semibold text-[#003366]">120 horas e 00 minuto</span>
               </div>
-              
-              <div className="relative">
-                <div className="max-h-[320px] overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-2">
-                  {turmas.length === 0 ? (
-                    <div className="text-center p-4 border border-dashed border-gray-200 rounded-lg text-gray-400 text-xs font-medium">
-                      Nenhuma turma cadastrada
-                    </div>
-                  ) : (
-                    turmas
-                      .filter(t => enrollmentStatus === 'default' || t.id === selectedTurmaId)
-                      .map((turma) => (
-                      <button
-                        key={turma.id}
-                        onClick={() => enrollmentStatus === 'default' && setSelectedTurmaId(turma.id)}
-                        className={`w-full text-left p-3 rounded-lg transition-all cursor-pointer ${
-                          selectedTurmaId === turma.id 
-                            ? 'border-2 border-brand bg-brand/10 shadow-md' 
-                            : 'border border-gray-100 hover:border-gray-200 bg-gray-50/30'
-                        } ${enrollmentStatus !== 'default' ? 'cursor-default opacity-90' : ''}`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className={`mt-0.5 w-3.5 h-3.5 rounded-full border flex items-center justify-center transition-colors ${
-                            selectedTurmaId === turma.id ? 'border-brand bg-brand' : 'border-gray-300 bg-white'
-                          }`}>
-                            {selectedTurmaId === turma.id && <div className="w-1 h-1 rounded-full bg-white" />}
-                          </div>
-                          <div className="flex-1">
-                            <div className={`text-[11px] font-bold leading-tight uppercase tracking-tight mb-2.5 ${
-                              selectedTurmaId === turma.id ? 'text-brand' : 'text-[#003366]'
+  
+              {/* Scrollable Turmas Area - Horizontal Carousel on Mobile */}
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10.5px] font-bold text-gray-400 uppercase tracking-widest">
+                    {enrollmentStatus === 'default' ? 'Selecionar Turma' : 'Turma Selecionada'}
+                  </span>
+                </div>
+                
+                <div className="relative">
+                  <div className="flex flex-row lg:flex-col lg:max-h-[320px] overflow-x-auto lg:overflow-x-visible lg:overflow-y-auto lg:pr-2 lg:custom-scrollbar gap-4 lg:gap-2 no-scrollbar lg:scrollbar snap-x snap-mandatory">
+                    {turmas.length === 0 ? (
+                      <div className="w-full text-center p-8 border border-dashed border-gray-200 rounded-lg text-gray-400 text-xs font-medium">
+                        Nenhuma turma cadastrada
+                      </div>
+                    ) : (
+                      turmas
+                        .filter(t => enrollmentStatus === 'default' || t.id === selectedTurmaId)
+                        .map((turma) => (
+                        <button
+                          key={turma.id}
+                          onClick={() => enrollmentStatus === 'default' && setSelectedTurmaId(turma.id)}
+                          className={`min-w-[80vw] lg:min-w-0 lg:w-full text-left p-4 lg:p-3 rounded-2xl lg:rounded-lg transition-all cursor-pointer snap-center ${
+                            selectedTurmaId === turma.id 
+                              ? 'border-2 border-brand bg-brand/5 shadow-md scale-[0.98] lg:scale-100' 
+                              : 'border border-gray-100 hover:border-gray-200 bg-gray-50/20'
+                          } ${enrollmentStatus !== 'default' ? 'cursor-default opacity-90' : ''}`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className={`mt-0.5 w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${
+                              selectedTurmaId === turma.id ? 'border-brand bg-brand' : 'border-gray-300 bg-white'
                             }`}>
-                              {turma.title}
+                              {selectedTurmaId === turma.id && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                             </div>
-                            
-                            <div className="flex items-start gap-1.5 mb-3">
-                              <Calendar size={12} className="text-gray-400 mt-0.5 flex-shrink-0" />
-                              <div className="flex flex-col">
-                                <span className="text-[8.5px] font-bold text-gray-400 uppercase tracking-wider leading-none mb-1">Prazo de inscrição</span>
-                                <span className="text-[10px] text-gray-600 font-medium leading-none">{turma.period}</span>
+                            <div className="flex-1">
+                              <div className={`text-[12px] lg:text-[11px] font-black lg:font-bold leading-tight uppercase tracking-tight mb-3 ${
+                                selectedTurmaId === turma.id ? 'text-brand' : 'text-[#003366]'
+                              }`}>
+                                {turma.title}
+                              </div>
+                              
+                              <div className="flex items-start gap-1.5 mb-4 lg:mb-3">
+                                <Calendar size={13} className="text-gray-400 mt-0.5 flex-shrink-0" />
+                                <div className="flex flex-col">
+                                  <span className="text-[9px] lg:text-[8.5px] font-bold text-gray-400 uppercase tracking-[0.1em] leading-none mb-1">Prazo de inscrição</span>
+                                  <span className="text-[11px] lg:text-[10px] text-gray-600 font-medium leading-none">{turma.period}</span>
+                                </div>
+                              </div>
+  
+                              <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                                <span className="text-[10px] lg:text-[9.5px] font-black text-brand bg-brand/10 px-2 py-0.5 rounded uppercase tracking-tighter">{turma.vagas}</span>
+                                <span className="text-sm lg:text-[11px] font-black text-gray-700">{turma.price}</span>
                               </div>
                             </div>
-
-                            <div className="flex items-center justify-between pt-2.5 border-t border-gray-100/80">
-                              <span className="text-[9.5px] font-bold text-brand bg-brand/10 px-2 py-0.5 rounded">{turma.vagas}</span>
-                              <span className="text-[11px] font-bold text-gray-700">{turma.price}</span>
-                            </div>
                           </div>
-                        </div>
-                      </button>
-                    ))
-                  )}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                  {/* Desktop Visual fade effect for scrolling */}
+                  <div className="hidden lg:block absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white/80 to-transparent pointer-events-none mb-2" />
                 </div>
-                {/* Visual fade effect for scrolling */}
-                <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white/80 to-transparent pointer-events-none mb-2" />
-              </div>
-
-              {/* Action Buttons - Always Visible */}
-              <div className="flex flex-col gap-2 pt-2 border-t border-gray-100">
+  
+                {/* Desktop Action Buttons */}
+                <div className="hidden lg:flex flex-col gap-2 pt-2 border-t border-gray-100">
                 {enrollmentStatus === 'default' && (
                   <>
                     <button 
-                      onClick={() => {
-                        if (selectedTurmaId === 2) {
-                          onNavigate('trilhaView');
-                        } else if (selectedTurmaId === 1 || selectedTurmaId === 7) {
-                          setEnrollmentStatus('pending');
-                        } else if ([3, 4, 5, 6].includes(selectedTurmaId)) {
-                          setIsModalOpen(true);
-                        } else {
-                          setEnrollmentStatus('payment');
-                        }
-                      }}
+                      onClick={handleMainAction}
                       className="w-full bg-brand text-white py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
                     >
                       {mainButtonText}
@@ -468,20 +484,76 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
                 </AnimatePresence>
 
                 {enrollmentStatus === 'pending' && (
-                  <button 
-                    disabled
-                    className="w-full bg-gray-200 text-gray-400 py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] flex items-center justify-center gap-2 cursor-not-allowed mt-2"
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex flex-col gap-5 mt-4"
                   >
-                    Aguardando aprovação
-                  </button>
+                    {/* Stepper Visual */}
+                    <div className="flex items-center justify-between px-2 relative">
+                      <div className="absolute top-[14px] left-[15%] right-[15%] h-0.5 bg-gray-100 -z-0" />
+                      
+                      <div className="flex flex-col items-center gap-2 relative z-10">
+                        <div className="w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center shadow-sm">
+                          <Check size={14} />
+                        </div>
+                        <span className="text-[8px] font-black text-green-600 uppercase tracking-tighter">Enviado</span>
+                      </div>
+
+                      <div className="flex flex-col items-center gap-2 relative z-10">
+                        <motion.div 
+                          animate={{ scale: [1, 1.1, 1] }}
+                          transition={{ repeat: Infinity, duration: 2 }}
+                          className="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center shadow-md shadow-brand/20"
+                        >
+                          <Clock size={14} />
+                        </motion.div>
+                        <span className="text-[8px] font-black text-brand uppercase tracking-tighter">Em Análise</span>
+                      </div>
+
+                      <div className="flex flex-col items-center gap-2 relative z-10 opacity-30">
+                        <div className="w-7 h-7 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center">
+                          <CheckSquare size={14} />
+                        </div>
+                        <span className="text-[8px] font-black text-gray-400 uppercase tracking-tighter">Liberado</span>
+                      </div>
+                    </div>
+
+                    {/* Feedback Card */}
+                    <div className="bg-brand/5 border border-brand/10 p-4 rounded-xl flex items-start gap-4">
+                      <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-brand shadow-sm flex-shrink-0">
+                        <Info size={16} />
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[10px] font-black text-brand uppercase tracking-widest">Protocolo em andamento</span>
+                        <p className="text-[10.5px] text-brand/70 leading-relaxed font-medium">
+                          Nossa equipe está revisando seus dados. Você receberá uma notificação assim que o acesso for liberado.
+                        </p>
+                      </div>
+                    </div>
+
+                    <button 
+                      disabled
+                      className="w-full bg-white border-2 border-dashed border-gray-200 text-gray-400 py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] flex items-center justify-center gap-2 cursor-not-allowed group overflow-hidden relative"
+                    >
+                      <motion.div 
+                        animate={{ x: ['-100%', '200%'] }}
+                        transition={{ repeat: Infinity, duration: 3, ease: 'linear' }}
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-50/50 to-transparent -skew-x-12"
+                      />
+                      <Clock size={14} className="animate-spin-slow" />
+                      Aguardando aprovação
+                    </button>
+                  </motion.div>
                 )}
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Right Content */}
-          <div className="flex-1 flex flex-col">
-            <h1 className="text-2xl font-bold text-brand uppercase mb-6 leading-tight tracking-tight">
+        {/* Right Content / Bottom Content on Mobile */}
+          <div className="flex-1 flex flex-col p-6 lg:p-0">
+            <h1 className="hidden lg:block text-2xl font-bold text-brand uppercase mb-6 leading-tight tracking-tight">
               TRILHA DE FORMAÇÃO: LIDERANÇA DO FUTURO
             </h1>
 
@@ -492,44 +564,44 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
                 className="overflow-hidden relative"
               >
                 <div className="prose prose-sm text-gray-600 max-w-none">
-                  <p className="leading-relaxed text-sm mb-4">
+                  <p className="leading-relaxed text-sm lg:text-[13px] mb-4">
                     Esta trilha foi desenhada para desenvolver as competências essenciais dos líderes da nossa organização. 
                     Através de uma jornada estruturada em etapas, você passará por fundamentos teóricos, práticas de gestão 
                     de equipes e resolução de conflitos, combinando diversos formatos de conteúdo e treinamentos imersivos.
                   </p>
-                  <p className="leading-relaxed text-sm mb-4">
+                  <p className="leading-relaxed text-sm lg:text-[13px] mb-4">
                     A liderança contemporânea exige mais do que apenas conhecimento técnico; exige empatia, visão estratégica e a capacidade de inspirar pessoas. Neste programa, mergulharemos profundamente nas metodologias ágeis de gestão de pessoas, explorando casos reais e simulando cenários desafiadores que os gestores enfrentam no dia a dia corporativo.
                   </p>
-                  <p className="leading-relaxed text-sm mb-4">
+                  <p className="leading-relaxed text-sm lg:text-[13px] mb-4">
                     A trilha também foca no desenvolvimento da inteligência emocional e na capacidade de adaptação a mudanças constantes. Discutiremos como construir redes de confiança dentro das equipes e como promover uma cultura de inovação e aprendizado contínuo, elementos vitais para a sustentabilidade organizacional a longo prazo.
                   </p>
-                  <p className="leading-relaxed text-sm mb-4">
+                  <p className="leading-relaxed text-sm lg:text-[13px] mb-4">
                     Através de dinâmicas de grupo e sessões de mentoria, os participantes serão incentivados a refletir sobre seu próprio estilo de liderança, identificando pontos de melhoria e fortalecendo suas habilidades de comunicação e influência.
                   </p>
-                  <img src="https://picsum.photos/seed/teamwork/800/400" alt="Equipe colaborando" className="w-full rounded-lg my-6 object-cover max-h-[300px]" referrerPolicy="no-referrer" />
-                  <p className="leading-relaxed text-sm">
+                  <img src="https://picsum.photos/seed/teamwork/800/400" alt="Equipe colaborando" className="w-full rounded-2xl my-6 object-cover max-h-[240px] lg:max-h-[300px] shadow-lg" referrerPolicy="no-referrer" />
+                  <p className="leading-relaxed text-sm lg:text-[13px]">
                     Ao final desta trilha, espera-se que o participante esteja apto a conduzir reuniões de feedback de alto impacto, mediar conflitos complexos e estruturar planos de desenvolvimento individual (PDI) para seus liderados, alinhando os objetivos pessoais aos objetivos estratégicos da empresa.
                   </p>
                 </div>
                 {!isExpanded && (
-                  <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white to-transparent pointer-events-none" />
                 )}
               </motion.div>
               
               <button 
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="mt-2 flex items-center gap-1 text-[10.5px] font-bold text-brand uppercase tracking-[0.15em] hover:text-brand-dark transition-colors cursor-pointer"
+                className="mt-4 flex items-center gap-1 text-[11px] font-black text-brand uppercase tracking-widest hover:text-brand-dark transition-colors cursor-pointer"
               >
                 {isExpanded ? (
-                  <>Ver menos <ChevronUp size={14} /></>
+                  <>Ver menos <ChevronUp size={16} /></>
                 ) : (
-                  <>Ver mais <ChevronDown size={14} /></>
+                  <>Ler descrição completa <ChevronDown size={16} /></>
                 )}
               </button>
             </div>
 
-            {/* Minimalist interactive tabs below description */}
-            <div className="relative flex items-center mt-6 mb-4 border-b border-gray-100">
+            {/* Responsive interactive tabs */}
+            <div className="relative flex items-center mt-10 mb-6 border-b border-gray-100 w-full overflow-x-auto no-scrollbar scroll-smooth">
               {[
                 { id: 'conteudos', label: 'Conteúdos' },
                 { id: 'resumo', label: 'Resumo' },
@@ -538,7 +610,7 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`relative px-4 py-3 text-[10.5px] font-bold uppercase tracking-[0.1em] transition-colors cursor-pointer ${
+                  className={`relative flex-1 lg:flex-none px-6 py-4 text-[11px] font-black uppercase tracking-widest transition-all cursor-pointer whitespace-nowrap min-w-[120px] lg:min-w-0 ${
                     activeTab === tab.id ? 'text-brand' : 'text-gray-400 hover:text-gray-600'
                   }`}
                 >
@@ -546,7 +618,7 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
                   {activeTab === tab.id && (
                     <motion.div
                       layoutId="activeTabIndicatorTrilha"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand"
+                      className="absolute bottom-0 left-0 right-0 h-[3px] bg-brand rounded-t-full"
                       initial={false}
                       transition={{ type: "spring", stiffness: 500, damping: 30 }}
                     />
@@ -558,16 +630,17 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
             {/* Tab Content Area */}
             <motion.div
               key={activeTab}
-              initial={{ opacity: 0, x: 10 }}
+              initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.2 }}
-              className="min-h-[120px]"
+              transition={{ duration: 0.3 }}
+              className="min-h-[160px] pb-10"
             >
               {tabContent[activeTab]}
             </motion.div>
           </div>
         </div>
       </div>
+
       {/* Custom Fields Modal */}
       <CustomFieldsModal 
         isOpen={isModalOpen} 
@@ -595,6 +668,60 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
         onClose={() => setIsBoletoModalOpen(false)}
         price={parseFloat(selectedTurma?.price.replace('R$ ', '').replace('.', '').replace(',', '.') || '1200')}
       />
+
+      <PaymentModal 
+        isOpen={isOldPaymentModalOpen}
+        onClose={() => setIsOldPaymentModalOpen(false)}
+        itemName={selectedTurma?.title || "TRILHA DE FORMAÇÃO"}
+        itemPrice={parseFloat(selectedTurma?.price.replace('R$ ', '').replace('.', '').replace(',', '.') || '1200')}
+        onSuccess={() => {
+          setIsOldPaymentModalOpen(false);
+          onNavigate('trilhaView');
+        }}
+      />
+
+      {/* Mobile Sticky Action Bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 p-4 bg-white/80 backdrop-blur-md border-t border-gray-100 flex gap-3 shadow-[0_-8px_20px_rgba(0,0,0,0.05)]">
+        {enrollmentStatus === 'default' && (
+          <button 
+            onClick={handleMainAction}
+            className="flex-1 bg-brand text-white py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] shadow-lg shadow-brand/20 active:scale-95 flex items-center justify-center gap-2"
+          >
+            {mainButtonText}
+          </button>
+        )}
+
+        {enrollmentStatus === 'payment' && (
+          <button 
+            onClick={() => setIsBoletoModalOpen(true)}
+            className="flex-1 bg-brand text-white py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] shadow-lg shadow-brand/20 active:scale-95 flex items-center justify-center gap-2"
+          >
+            <CreditCard size={14} />
+            Pagamento
+          </button>
+        )}
+
+        {enrollmentStatus === 'pending' && (
+          <div className="flex-1 bg-white border border-brand/20 text-brand py-3.5 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 whitespace-nowrap px-2">
+            <Clock size={12} className="animate-spin-slow" />
+            Em Análise
+          </div>
+        )}
+
+        {enrollmentStatus === 'rejected' && (
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="flex-1 bg-red-600 text-white py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] shadow-lg shadow-red-500/10 active:scale-95 flex items-center justify-center gap-2"
+          >
+            <RefreshCw size={14} />
+            Reenviar
+          </button>
+        )}
+
+        <button className="px-4 bg-white text-brand rounded-xl border border-brand/20 flex items-center justify-center">
+          <Layers size={16} />
+        </button>
+      </div>
     </motion.div>
   );
 };

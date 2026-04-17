@@ -20,6 +20,8 @@ export default function App() {
   const [isTrilhaPaymentOpen, setIsTrilhaPaymentOpen] = useState(false);
   const [isCourseBoletoOpen, setIsCourseBoletoOpen] = useState(false);
   const [isTrilhaBoletoOpen, setIsTrilhaBoletoOpen] = useState(false);
+  const [isCourseOldPaymentOpen, setIsCourseOldPaymentOpen] = useState(false);
+  const [isTrilhaOldPaymentOpen, setIsTrilhaOldPaymentOpen] = useState(false);
 
   const handleReturnToTrilha = (trainingId: string) => {
     setCompletedTrainings(prev => {
@@ -120,6 +122,8 @@ export default function App() {
                 setIsPaymentModalOpen={setIsCoursePaymentOpen}
                 isBoletoModalOpen={isCourseBoletoOpen}
                 setIsBoletoModalOpen={setIsCourseBoletoOpen}
+                isOldPaymentModalOpen={isCourseOldPaymentOpen}
+                setIsOldPaymentModalOpen={setIsCourseOldPaymentOpen}
               />
             </div>
           )}
@@ -135,6 +139,8 @@ export default function App() {
                 setIsPaymentModalOpen={setIsTrilhaPaymentOpen}
                 isBoletoModalOpen={isTrilhaBoletoOpen}
                 setIsBoletoModalOpen={setIsTrilhaBoletoOpen}
+                isOldPaymentModalOpen={isTrilhaOldPaymentOpen}
+                setIsOldPaymentModalOpen={setIsTrilhaOldPaymentOpen}
               />
             </div>
           )}
