@@ -246,7 +246,7 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
                 
                 <div className="relative">
                   {/* Container: Flex row on mobile, col on desktop */}
-                  <div className="flex flex-row lg:flex-col lg:max-h-[320px] overflow-x-auto lg:overflow-x-visible lg:overflow-y-auto lg:pr-2 lg:custom-scrollbar gap-4 lg:gap-2 custom-scrollbar-h lg:scrollbar snap-x snap-mandatory pb-6 px-4 -mx-4">
+                  <div className="flex flex-row lg:flex-col lg:max-h-[320px] overflow-x-auto lg:overflow-x-visible lg:overflow-y-auto lg:pr-2 lg:custom-scrollbar gap-4 lg:gap-2 custom-scrollbar-h lg:scrollbar snap-x snap-mandatory pb-6 px-4 -mx-4 after:content-[''] after:min-w-[1px] after:h-full lg:after:hidden">
                     {turmas.length === 0 ? (
                       <div className="w-full text-center p-8 border border-dashed border-gray-200 rounded-lg text-gray-400 text-xs font-medium">
                         Nenhuma turma cadastrada
@@ -258,7 +258,7 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
                         <button
                           key={turma.id}
                           onClick={() => enrollmentStatus === 'default' && setSelectedTurmaId(turma.id)}
-                          className={`min-w-[82vw] lg:min-w-0 lg:w-full text-left p-4 lg:p-3 rounded-2xl lg:rounded-lg transition-all cursor-pointer snap-start ${
+                          className={`flex-none w-[82vw] lg:min-w-0 lg:w-full text-left p-4 lg:p-3 rounded-2xl lg:rounded-lg transition-all cursor-pointer snap-start snap-always ${
                             selectedTurmaId === turma.id 
                               ? 'border-2 border-brand bg-brand/5 shadow-md scale-[0.98] lg:scale-100' 
                               : 'border border-gray-100 hover:border-gray-200 bg-gray-50/20'
