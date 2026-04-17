@@ -731,6 +731,248 @@ export const DesignSystem: React.FC = () => {
         </div>
       </Section>
 
+      {/* SEÇÃO 05 — EXPERIÊNCIA MOBILE E MODO FOCO */}
+      <Section title="05. Experiência Mobile & Modo Foco (Tela 2)">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          
+          {/* Card: Header e Modo Foco */}
+          <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
+            <h3 className="text-xs font-bold text-[#003366] uppercase tracking-widest mb-6 flex items-center gap-2">
+              <Maximize2 size={16} className="text-brand" /> O "Modo Foco" (Focus Mode)
+            </h3>
+            <p className="text-[11.5px] text-gray-500 mb-6 leading-relaxed">
+              O layout mobile da Sala de Aula (TrainingView) foi arquitetado para imersão total. Em dispositivos móveis, elementos intrusivos do desktop são ocultados em prol de uma experiência fluida baseada em "Camadas".
+            </p>
+            
+            <div className="space-y-6">
+              <div className="border-l-2 border-brand pl-4">
+                <span className="text-[10px] font-black text-brand uppercase tracking-widest block mb-1">A Fachada Padrão (Red Header)</span>
+                <p className="text-[10.5px] text-gray-600 leading-relaxed font-medium">
+                  Apresenta o <strong>Top Header Vermelho</strong> abraçando o <em>notch</em> do aparelho (<code className="bg-gray-50 text-gray-400 px-1 rounded">pt-12</code>). Contém as barras de progresso, título absoluto ao centro, ícone de saída (esquerda) e botão "X" (direita).
+                </p>
+              </div>
+
+              <div className="border-l-2 border-[#003366] pl-4">
+                <span className="text-[10px] font-black text-[#003366] uppercase tracking-widest block mb-1">A Ativação do Modo Foco</span>
+                <p className="text-[10.5px] text-gray-600 leading-relaxed font-medium">
+                  Ao clicar no "X", o Red Header e o botão FAB inferior somem. A barra branca de contexto (Breadcrumbs) revela duas "pílulas" gigantes (<code className="bg-gray-50 text-gray-400 px-1 rounded">w-[42px] h-[42px]</code>): o <strong>Menu Hambúrguer</strong> cinza e o botão vermelho de <strong>Voltar</strong>. Tudo para ceder 100% da tela ao Vídeo e ao Texto.
+                </p>
+              </div>
+
+              <div className="border-l-2 border-green-500 pl-4">
+                <span className="text-[10px] font-black text-green-600 uppercase tracking-widest block mb-1">Imunidade a Quebras de ScrollWebKit</span>
+                <p className="text-[10.5px] text-gray-600 leading-relaxed font-medium">
+                  A barra de Breadcrumbs fica fora do contêiner flexível de conteúdo longo (<code className="bg-gray-50 text-gray-400 px-1 rounded">overflow-y-auto</code>). Ela reza como um <em>teto estático absoluto</em>, não correndo risco de sofrer invasão das scrollbars nativas dos navegadores de Desktop.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Card: Componentes de Base Mobile */}
+          <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
+            <h3 className="text-xs font-bold text-[#003366] uppercase tracking-widest mb-6 flex items-center gap-2">
+              <Layout size={16} className="text-gray-400" /> Componentes Estruturais
+            </h3>
+            
+            <div className="space-y-8">
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-8 h-8 rounded-full bg-brand/10 text-brand flex items-center justify-center">
+                    <List size={14} />
+                  </div>
+                  <span className="text-[11px] font-bold text-[#003366] uppercase tracking-wider">Bottom Sheet Modal</span>
+                </div>
+                <p className="text-[10.5px] text-gray-500 leading-relaxed pl-11">
+                  A antiga sidebar (Menu Lateral) do Desktop vira uma gaveta de rodapé suave no Mobile. Sobe englobando toda a lista de aulas, permitindo leitura completa sem competir com o player. E agora não possui mais a palavra "Voltar" confusa, apenas "FECHAR" na direita.
+                </p>
+              </div>
+
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-8 h-8 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center">
+                    <RefreshCw size={14} />
+                  </div>
+                  <span className="text-[11px] font-bold text-gray-600 uppercase tracking-wider">F.A.B (Floating Action Button)</span>
+                </div>
+                <p className="text-[10.5px] text-gray-500 leading-relaxed pl-11">
+                  Aquele botão elíptico vermelho que flutua (<code className="bg-gray-50 text-gray-400 px-1 rounded">fixed bottom-6 right-6</code>) alertando <strong>"≡ CONTEÚDO"</strong>. Possui uma sombra avermelhada forte e desaparece organicamente com animação <code className="bg-gray-50 text-gray-400 px-1 rounded">framer-motion</code> quando o Modo Foco impera.
+                </p>
+              </div>
+
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center">
+                    <Video size={14} />
+                  </div>
+                  <span className="text-[11px] font-bold text-blue-700 uppercase tracking-wider">Player "Bezel-less" e Fast Nav</span>
+                </div>
+                <p className="text-[10.5px] text-gray-500 leading-relaxed pl-11">
+                  O vídeo perde arredondamentos nos flancos e as barras de proteção no Mobile, encostando nos "vidros" do aparelho. Abaixo de seu título, nascem atalhos diretos dinâmicos <strong>"← ANTERIOR" | "PRÓXIMO →"</strong> antes da sessão de Abas/Guias descritivas.
+                </p>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </Section>
+
+      {/* SEÇÃO 06 — MANUAL TÉCNICO DE IMPLEMENTAÇÃO MOBILE */}
+      <Section title="06. Manual Técnico: Arquitetura Foco Mobile (Gabarito Tela 2)">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-12">
+          <div className="p-8 border-b border-gray-100 bg-gray-50/50">
+            <h3 className="text-sm font-black text-[#003366] uppercase tracking-widest mb-2">Engenharia Reversa da Tela de Aula</h3>
+            <p className="text-[11.5px] text-gray-500 leading-relaxed max-w-4xl">
+              Este é o guia definitivo (Blueprint) para replicar o comportamento mobile da Sala de Aula em qualquer nova rota. 
+              Ao construir visualizações de player (como Treinamentos ou Trilhas), você <strong>deve</strong> implementar os 5 blocos abaixo exatamente com estas classes e estados matemáticos.
+            </p>
+          </div>
+
+          <div className="p-8 divide-y divide-gray-100">
+            {/* Bloco 1: Estados Necessários */}
+            <div className="py-8 first:pt-0">
+              <h4 className="text-xs font-bold text-[#003366] uppercase tracking-widest mb-4 flex items-center gap-2">
+                <span className="w-6 h-6 rounded bg-brand/10 text-brand flex items-center justify-center">1</span> 
+                Estados Funcionais (React Hooks)
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                  <code className="text-[10px] font-mono text-purple-600 font-bold block mb-2">const [isMobileFocusMode, setIsMobileFocusMode] = useState(false);</code>
+                  <p className="text-[10.5px] text-gray-500">Controla o desligamento da interface (Red Header e F.A.B) para imersão total no player.</p>
+                </div>
+                <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                  <code className="text-[10px] font-mono text-purple-600 font-bold block mb-2">const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);</code>
+                  <p className="text-[10.5px] text-gray-500">Gatilho do Bottom Sheet Modal (Gaveta de navegação de aulas).</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Bloco 2: Proteção do Desktop */}
+            <div className="py-8">
+              <h4 className="text-xs font-bold text-[#003366] uppercase tracking-widest mb-4 flex items-center gap-2">
+                <span className="w-6 h-6 rounded bg-brand/10 text-brand flex items-center justify-center">2</span> 
+                Desabilitando a Sidebar Clássica
+              </h4>
+              <p className="text-[11px] text-gray-500 mb-4">
+                Envolva a barra lateral clássica (Desktop) com a instrução matemática de ocultamento mobile para evitar achatamento do vídeo.
+              </p>
+              <div className="p-4 bg-slate-900 rounded-xl overflow-x-auto text-[11px] font-mono leading-relaxed shadow-inner">
+                <div className="text-gray-400">{'<motion.div'}</div>
+                <div className="text-green-400 pl-4">className="hidden lg:flex flex-none flex-col border-r border-gray-100 bg-gray-50/30 overflow-hidden"</div>
+                <div className="text-gray-400">{'>'}</div>
+                <div className="text-gray-500 pl-4 text-[10px] italic">{'// O segredo está no "hidden lg:flex" que cede 100% da largura ao player no celular.'}</div>
+              </div>
+            </div>
+
+            {/* Bloco 3: Header Vermelho vs Focus Mode */}
+            <div className="py-8">
+              <h4 className="text-xs font-bold text-[#003366] uppercase tracking-widest mb-4 flex items-center gap-2">
+                <span className="w-6 h-6 rounded bg-brand/10 text-brand flex items-center justify-center">3</span> 
+                Top Header Mobile & Barra Flexível (Breadcrumb)
+              </h4>
+              <p className="text-[11px] text-gray-500 mb-4">
+                O Topo da estrutura (<code className="text-brand">flex-none flex flex-col w-full lg:hidden bg-white shadow-sm z-20 relative</code>) 
+                contém dois sub-blocos. Um vermelho (AnimatePresence verificando !isMobileFocusMode) e a barra fixa branca de Breadcrumbs abaixo dele.
+              </p>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
+                <div className="border border-red-100 bg-red-50/20 rounded-xl p-5">
+                  <span className="text-[9.5px] font-black uppercase text-brand tracking-widest block mb-2">Comportamento do "X" Vermelho:</span>
+                  <p className="text-[10.5px] text-gray-600 mb-3">No header vermelho alto, a barra de navegação alinha-se via <code className="bg-white px-1">justify-between pt-12 pb-4</code>. O botão X redondo aciona a imersão:</p>
+                  <code className="block bg-white p-2 rounded text-[9.5px] font-mono border border-red-100 text-red-600">onClick=() {'=>'} setIsMobileFocusMode(true)</code>
+                </div>
+                <div className="border border-gray-200 bg-gray-50/50 rounded-xl p-5">
+                  <span className="text-[9.5px] font-black uppercase text-gray-600 tracking-widest block mb-2">Botão de Hambúrguer e Saída (Pílulas):</span>
+                  <p className="text-[10.5px] text-gray-600 mb-3">Esses botões surgem na barra Branca quando <code className="bg-white px-1 font-bold">isMobileFocusMode === true</code>. O botão Hambúrguer desfaz o foco:</p>
+                  <code className="block bg-white p-2 rounded text-[9.5px] font-mono border border-gray-200 text-gray-700">onClick=() {'=>'} setIsMobileFocusMode(false)</code>
+                </div>
+              </div>
+            </div>
+
+            {/* Bloco 4: Gaveta Inferior (Bottom Sheet Modal) */}
+            <div className="py-8">
+              <h4 className="text-xs font-bold text-[#003366] uppercase tracking-widest mb-4 flex items-center gap-2">
+                <span className="w-6 h-6 rounded bg-brand/10 text-brand flex items-center justify-center">4</span> 
+                Estrutura Milimétrica do Bottom Sheet (Mobile Drawer)
+              </h4>
+              <p className="text-[11px] text-gray-500 mb-4 pb-4 border-b border-gray-100">
+                A Gaveta do rodapé é ativada pelo FAB inferior. Certifique-se de colocá-la na raiz absoluta do componente da visualização. 
+                Ela é composta por Backdrop fosco e Sheet content com física de mola (Spring).
+              </p>
+              
+              <div className="space-y-4">
+                <div className="flex gap-4 items-start">
+                  <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex-shrink-0 flex items-center justify-center font-black text-xs">A</div>
+                  <div>
+                    <h5 className="text-[11px] font-bold text-gray-800 uppercase tracking-wide">Cápsula Mãe & Backdrop</h5>
+                    <p className="text-[10px] bg-slate-100 p-2 rounded-lg font-mono text-gray-600 mt-1">fixed inset-0 z-50 flex flex-col lg:hidden</p>
+                    <p className="text-[10px] bg-slate-100 p-2 rounded-lg font-mono text-gray-600 mt-1 border-l-4 border-blue-400">absolute inset-0 bg-slate-900/60 backdrop-blur-sm</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4 items-start">
+                  <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-700 flex-shrink-0 flex items-center justify-center font-black text-xs">B</div>
+                  <div className="flex-1">
+                    <h5 className="text-[11px] font-bold text-gray-800 uppercase tracking-wide">Mola de Animação (Framer)</h5>
+                    <div className="bg-slate-900 p-3 rounded-lg mt-1 w-full overflow-x-auto">
+<pre className="text-[9.5px] font-mono text-gray-300 leading-normal">
+{`initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+transition={{ type: "spring", damping: 40, stiffness: 400 }}`}
+</pre>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-4 items-start">
+                  <div className="w-8 h-8 rounded-full bg-brand/10 text-brand flex-shrink-0 flex items-center justify-center font-black text-xs">C</div>
+                  <div className="flex-1">
+                    <h5 className="text-[11px] font-bold text-gray-800 uppercase tracking-wide">Cabeçalho com Alça Física e Palavra de Fechar</h5>
+                    <p className="text-[10.5px] text-gray-500 mb-2">Esse detalhe crava o design como "App Nativo", ao invés da Web Móvel.</p>
+                    <div className="bg-slate-900 p-3 rounded-lg w-full overflow-x-auto text-[9.5px] font-mono text-gray-300">
+                      {'<!-- Alça Física -->\n'}
+                      <span className="text-yellow-300">{'<div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto my-3" />'}</span>
+                      {'\n\n<!-- Divisor Tríptico do Header -->\n'}
+                      {'<div className="flex-none px-6 py-2 border-b border-gray-100 flex items-center justify-between">\n'}
+                      {'  <div className="flex-1 text-brand"></div>\n'}
+                      {'  <h3 className="text-xs font-black text-[#003366] uppercase tracking-widest text-center flex-[2]">\n'}
+                      {'    Conteúdo do Treinamento\n'}
+                      {'  </h3>\n'}
+                      {'  <div className="flex-1 flex justify-end">\n'}
+                      {"    <span className=\"text-[9px] font-bold text-gray-400 uppercase tracking-widest cursor-pointer\"\n"}
+                      {"          onClick={() => setIsMobileSidebarOpen(false)}>\n"}
+                      {"      Fechar\n"}
+                      {"    </span>\n"}
+                      {'  </div>\n'}
+                      {'</div>'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bloco 5: F.A.B Inferior */}
+            <div className="py-8 pb-4">
+              <h4 className="text-xs font-bold text-[#003366] uppercase tracking-widest mb-4 flex items-center gap-2">
+                <span className="w-6 h-6 rounded bg-brand/10 text-brand flex items-center justify-center">5</span> 
+                Floating Action Button (F.A.B. Inferior)
+              </h4>
+              <p className="text-[11px] text-gray-500 mb-4">
+                O botão flutuante que dispara a gaveta. Ele vive na raiz do componente sob um <code className="bg-gray-50 px-1 border border-gray-200 rounded">{'<AnimatePresence>'}</code> avaliando <code className="font-bold text-red-600">{'!isMobileFocusMode && !isMobileSidebarOpen'}</code>.
+              </p>
+              <div className="bg-white p-4 border border-red-100 rounded-xl relative overflow-hidden shadow-[0_8px_32px_rgba(204,0,0,0.1)]">
+                <code className="text-[10px] font-mono text-gray-600 block pl-8 border-l-2 border-brand relative z-10">
+                  className="lg:hidden fixed bottom-6 right-6 z-40 bg-brand text-white pl-4 pr-5 py-3 rounded-full shadow-[0_8px_32px_rgba(204,0,0,0.4)] flex items-center gap-2 font-bold text-[11px] uppercase tracking-widest active:scale-95 transition-all text-shadow"
+                </code>
+                {/* Elemento de demonstração meramente visual */}
+                <div className="absolute right-4 bottom-1/2 translate-y-1/2 bg-brand text-white pl-4 pr-5 py-3 rounded-full shadow-[0_8px_32px_rgba(204,0,0,0.4)] flex items-center gap-2 font-bold text-[11px] uppercase tracking-widest">
+                  <Menu size={18} />
+                  <span>Conteúdo</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </Section>
+
       <footer className="mt-20 pt-8 border-t border-gray-100 text-center">
         <p className="text-[10.5px] font-bold text-gray-300 uppercase tracking-[0.3em]">
           © 2026 Plataforma de Treinamento • Design System v2.0

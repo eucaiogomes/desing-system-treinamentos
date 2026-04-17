@@ -348,6 +348,14 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
         <div className="flex flex-col lg:flex-row lg:flex-nowrap lg:gap-12">
           {/* Left Sidebar / Top Hero on Mobile */}
           <div className="flex-none w-full lg:w-64 flex flex-col lg:gap-6">
+            {/* Mobile Title Header (Above Image) */}
+            <div className="lg:hidden p-6 pb-2">
+              <span className="text-[13px] font-medium text-gray-500 mb-1 block">Trilha de Formação</span>
+              <h3 className="text-[22px] font-bold text-[#003366] leading-tight">
+                Liderança do Futuro
+              </h3>
+            </div>
+
             {/* Banner/Thumbnail */}
             <div className="relative w-full h-[220px] lg:h-auto lg:aspect-square overflow-hidden group">
               <img 
@@ -356,9 +364,9 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 referrerPolicy="no-referrer"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col items-center justify-end p-6 text-center lg:p-4">
+              <div className="hidden lg:flex absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex-col items-center justify-end p-4 text-center">
                 <span className="text-[9.5px] text-white/70 uppercase tracking-[0.2em] mb-1 font-black">Trilha de Formação</span>
-                <h3 className="text-lg lg:text-sm font-black lg:font-bold text-white leading-tight uppercase tracking-tight">Liderança do Futuro</h3>
+                <h3 className="text-sm font-bold text-white leading-tight uppercase tracking-tight">Liderança do Futuro</h3>
               </div>
             </div>
 
@@ -377,7 +385,11 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
                 </div>
                 
                 <div className="relative">
-                  <div className="flex flex-col lg:max-h-[320px] lg:overflow-y-auto lg:pr-2 custom-scrollbar gap-3 lg:gap-2 pb-2 lg:pb-0">
+                  <div className="lg:hidden flex justify-center py-1 absolute -top-4 w-full text-gray-300 z-10 pointer-events-none">
+                    <ChevronUp size={16} />
+                  </div>
+                  {/* Container: Flex col with scroll on mobile (max 300px for explicit hard cut of 3rd item) and desktop */}
+                  <div className="flex flex-col max-h-[300px] lg:max-h-[320px] overflow-y-auto pr-2 custom-scrollbar gap-3 lg:gap-2 pb-2 lg:pb-0">
                     {turmas.length === 0 ? (
                       <div className="w-full text-center p-8 border border-dashed border-gray-200 rounded-lg text-gray-400 text-xs font-medium">
                         Nenhuma turma cadastrada
@@ -452,8 +464,11 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
                       ))
                     )}
                   </div>
-                  {/* Desktop Visual fade effect for scrolling */}
-                  <div className="hidden lg:block absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white/80 to-transparent pointer-events-none mb-2" />
+                  <div className="lg:hidden flex justify-center py-1 absolute -bottom-4 w-full text-gray-300 z-10 pointer-events-none">
+                    <ChevronDown size={16} />
+                  </div>
+                  {/* Visual fade effect for scrolling (Hidden on mobile for a hard cut indicator, visible on Desktop) */}
+                  <div className="hidden lg:block absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none rounded-b-2xl" />
                 </div>
   
                 {/* Desktop Action Buttons */}
@@ -525,6 +540,12 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({
             <h1 className="hidden lg:block text-2xl font-bold text-brand uppercase mb-6 leading-tight tracking-tight">
               TRILHA DE FORMAÇÃO: LIDERANÇA DO FUTURO
             </h1>
+
+            <div className="mb-4 lg:hidden">
+              <span className="text-[13px] font-bold text-[#003366] uppercase tracking-widest block border-b border-gray-100 pb-2">
+                Descrição
+              </span>
+            </div>
 
             <div className="relative">
               <motion.div 
