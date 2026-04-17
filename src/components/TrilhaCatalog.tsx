@@ -45,17 +45,59 @@ export const TrilhaCatalog: React.FC = () => {
   const turmas = [
     {
       id: 1,
-      title: "TURMA 1 - TRILHA DE LIDERANÇA",
+      title: "1° GRATUITA COM APROVAÇÃO DO GESTOR",
+      period: "15/05/2026 até 30/11/2026",
+      price: "Gratuito",
+      vagas: "80 vagas"
+    },
+    {
+      id: 2,
+      title: "2°GRATUITA SEM APROVAÇÃO DO GESTOR",
       period: "Indeterminado",
       price: "Gratuito",
       vagas: "Ilimitadas"
     },
     {
-      id: 2,
-      title: "TURMA 2 - TRILHA DE LIDERANÇA (VAGAS REMANESCENTES)",
-      period: "15/05/2026 08:00:00 até 15/12/2026 23:55:00",
-      price: "R$ 1.200,00",
+      id: 3,
+      title: "3° PAGA COM APROV. GESTOR + CAMPOS PERSON.",
+      period: "01/06/2026 até 01/12/2026",
+      price: "R$ 850,00",
+      vagas: "30 vagas"
+    },
+    {
+      id: 4,
+      title: "4°PAGA SEM APROV. GESTOR + CAMPOS PERSON.",
+      period: "Indeterminado",
+      price: "R$ 980,00",
       vagas: "50 vagas"
+    },
+    {
+      id: 5,
+      title: "5° GRATUIITA COM APROV. GESTOR + CAMPOS PERSON.",
+      period: "10/05/2026 até 20/08/2026",
+      price: "Gratuito",
+      vagas: "15 vagas"
+    },
+    {
+      id: 6,
+      title: "6° GRATUITA SEM APROV. GESTOR + CAMPOS PERSON.",
+      period: "Indeterminado",
+      price: "Gratuito",
+      vagas: "Ilimitadas"
+    },
+    {
+      id: 7,
+      title: "7° PAGA COM APROVAÇÃO GESTOR",
+      period: "05/06/2026 até 05/10/2026",
+      price: "R$ 1.100,00",
+      vagas: "10 vagas"
+    },
+    {
+      id: 8,
+      title: "8° PAGA SEM APROVAÇÃO GESTOR",
+      period: "Indeterminado",
+      price: "R$ 1.050,00",
+      vagas: "25 vagas"
     }
   ];
 
@@ -110,6 +152,9 @@ export const TrilhaCatalog: React.FC = () => {
       ]
     }
   ];
+
+  const selectedTurma = turmas.find(t => t.id === selectedTurmaId);
+  const mainButtonText = selectedTurma?.price === "Gratuito" ? "Fazer inscrição" : `Comprar ${selectedTurma?.price}`;
 
   const tabContent: Record<string, React.ReactNode> = {
     conteudos: (
@@ -269,7 +314,7 @@ export const TrilhaCatalog: React.FC = () => {
               <span className="text-xs font-semibold text-[#003366]">120 horas e 00 minuto</span>
             </div>
 
-            {/* Compact Turmas List below photo */}
+            {/* Scrollable Turmas Area */}
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <span className="text-[10.5px] font-bold text-gray-400 uppercase tracking-widest">
@@ -277,66 +322,71 @@ export const TrilhaCatalog: React.FC = () => {
                 </span>
               </div>
               
-              <div className="space-y-2">
-                {turmas.length === 0 ? (
-                  <div className="text-center p-4 border border-dashed border-gray-200 rounded-lg text-gray-400 text-xs font-medium">
-                    Nenhuma turma cadastrada
-                  </div>
-                ) : (
-                  turmas
-                    .filter(t => enrollmentStatus === 'default' || t.id === selectedTurmaId)
-                    .map((turma) => (
-                    <button
-                      key={turma.id}
-                      onClick={() => enrollmentStatus === 'default' && setSelectedTurmaId(turma.id)}
-                      className={`w-full text-left p-3 rounded-lg transition-all cursor-pointer ${
-                        selectedTurmaId === turma.id 
-                          ? 'border-2 border-brand bg-brand/10 shadow-md' 
-                          : 'border border-gray-100 hover:border-gray-200 bg-gray-50/30'
-                      } ${enrollmentStatus !== 'default' ? 'cursor-default opacity-90' : ''}`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className={`mt-0.5 w-3.5 h-3.5 rounded-full border flex items-center justify-center transition-colors ${
-                          selectedTurmaId === turma.id ? 'border-brand bg-brand' : 'border-gray-300 bg-white'
-                        }`}>
-                          {selectedTurmaId === turma.id && <div className="w-1 h-1 rounded-full bg-white" />}
-                        </div>
-                        <div className="flex-1">
-                          <div className={`text-[11px] font-bold leading-tight uppercase tracking-tight mb-2.5 ${
-                            selectedTurmaId === turma.id ? 'text-brand' : 'text-[#003366]'
+              <div className="relative">
+                <div className="max-h-[320px] overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-2">
+                  {turmas.length === 0 ? (
+                    <div className="text-center p-4 border border-dashed border-gray-200 rounded-lg text-gray-400 text-xs font-medium">
+                      Nenhuma turma cadastrada
+                    </div>
+                  ) : (
+                    turmas
+                      .filter(t => enrollmentStatus === 'default' || t.id === selectedTurmaId)
+                      .map((turma) => (
+                      <button
+                        key={turma.id}
+                        onClick={() => enrollmentStatus === 'default' && setSelectedTurmaId(turma.id)}
+                        className={`w-full text-left p-3 rounded-lg transition-all cursor-pointer ${
+                          selectedTurmaId === turma.id 
+                            ? 'border-2 border-brand bg-brand/10 shadow-md' 
+                            : 'border border-gray-100 hover:border-gray-200 bg-gray-50/30'
+                        } ${enrollmentStatus !== 'default' ? 'cursor-default opacity-90' : ''}`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className={`mt-0.5 w-3.5 h-3.5 rounded-full border flex items-center justify-center transition-colors ${
+                            selectedTurmaId === turma.id ? 'border-brand bg-brand' : 'border-gray-300 bg-white'
                           }`}>
-                            {turma.title}
+                            {selectedTurmaId === turma.id && <div className="w-1 h-1 rounded-full bg-white" />}
                           </div>
-                          
-                          <div className="flex items-start gap-1.5 mb-3">
-                            <Calendar size={12} className="text-gray-400 mt-0.5 flex-shrink-0" />
-                            <div className="flex flex-col">
-                              <span className="text-[8.5px] font-bold text-gray-400 uppercase tracking-wider leading-none mb-1">Prazo de inscrição</span>
-                              <span className="text-[10px] text-gray-600 font-medium leading-none">{turma.period}</span>
+                          <div className="flex-1">
+                            <div className={`text-[11px] font-bold leading-tight uppercase tracking-tight mb-2.5 ${
+                              selectedTurmaId === turma.id ? 'text-brand' : 'text-[#003366]'
+                            }`}>
+                              {turma.title}
+                            </div>
+                            
+                            <div className="flex items-start gap-1.5 mb-3">
+                              <Calendar size={12} className="text-gray-400 mt-0.5 flex-shrink-0" />
+                              <div className="flex flex-col">
+                                <span className="text-[8.5px] font-bold text-gray-400 uppercase tracking-wider leading-none mb-1">Prazo de inscrição</span>
+                                <span className="text-[10px] text-gray-600 font-medium leading-none">{turma.period}</span>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-between pt-2.5 border-t border-gray-100/80">
+                              <span className="text-[9.5px] font-bold text-brand bg-brand/10 px-2 py-0.5 rounded">{turma.vagas}</span>
+                              <span className="text-[11px] font-bold text-gray-700">{turma.price}</span>
                             </div>
                           </div>
-
-                          <div className="flex items-center justify-between pt-2.5 border-t border-gray-100/80">
-                            <span className="text-[9.5px] font-bold text-brand bg-brand/10 px-2 py-0.5 rounded">{turma.vagas}</span>
-                            <span className="text-[11px] font-bold text-gray-700">{turma.price}</span>
-                          </div>
                         </div>
-                      </div>
-                    </button>
-                  ))
-                )}
+                      </button>
+                    ))
+                  )}
+                </div>
+                {/* Visual fade effect for scrolling */}
+                <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white/80 to-transparent pointer-events-none mb-2" />
               </div>
 
-              <div className="flex flex-col gap-2 mt-2">
+              {/* Action Buttons - Always Visible */}
+              <div className="flex flex-col gap-2 pt-2 border-t border-gray-100">
                 {enrollmentStatus === 'default' && (
                   <>
                     <button 
                       onClick={() => setEnrollmentStatus('payment')}
-                      className="w-full bg-brand text-white py-3.5 rounded-xl text-[11.5px] font-bold uppercase tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full bg-brand text-white py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
                     >
-                      Fazer inscrição
+                      {mainButtonText}
                     </button>
-                    <button className="w-full bg-white text-brand py-3.5 rounded-xl text-[11.5px] font-bold border border-brand/20 hover:bg-brand/5 transition-all active:scale-95 flex items-center justify-center gap-2 uppercase tracking-[0.1em] cursor-pointer">
+                    <button className="w-full bg-white text-brand py-3.5 rounded-xl text-[11.5px] font-bold border border-brand/20 hover:bg-brand/5 transition-all active:scale-95 flex items-center justify-center gap-2 tracking-[0.1em] cursor-pointer">
                       Registrar interesse
                     </button>
                   </>
@@ -345,7 +395,7 @@ export const TrilhaCatalog: React.FC = () => {
                 {enrollmentStatus === 'payment' && (
                   <button 
                     onClick={() => setIsPaymentModalOpen(true)}
-                    className="w-full bg-brand text-white py-3.5 rounded-xl text-[11.5px] font-bold uppercase tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full bg-brand text-white py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <CreditCard size={14} />
                     Efetuar pagamento
@@ -363,7 +413,7 @@ export const TrilhaCatalog: React.FC = () => {
                       <div className="bg-red-50 border border-red-100 p-3.5 rounded-xl flex items-start gap-3">
                         <AlertCircle size={16} className="text-red-500 flex-shrink-0 mt-0.5" />
                         <div className="flex flex-col gap-1">
-                          <span className="text-xs font-bold text-red-700 uppercase tracking-wide">Matrícula Recusada</span>
+                          <span className="text-xs font-bold text-red-700 tracking-wide uppercase">Matrícula Recusada</span>
                           <span className="text-[11px] text-red-600 leading-relaxed font-medium">
                             Sua matrícula não foi aprovada pelo gestor. Verifique os dados e tente novamente.
                           </span>
@@ -371,7 +421,7 @@ export const TrilhaCatalog: React.FC = () => {
                       </div>
                       <button 
                         onClick={() => setIsModalOpen(true)}
-                        className="w-full bg-brand text-white py-3.5 rounded-xl text-[11.5px] font-bold uppercase tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                        className="w-full bg-brand text-white py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
                       >
                         <RefreshCw size={14} />
                         Reenviar campos
@@ -383,7 +433,7 @@ export const TrilhaCatalog: React.FC = () => {
                 {enrollmentStatus === 'pending' && (
                   <button 
                     disabled
-                    className="w-full bg-gray-200 text-gray-400 py-3.5 rounded-xl text-[11.5px] font-bold uppercase tracking-[0.15em] flex items-center justify-center gap-2 cursor-not-allowed mt-2"
+                    className="w-full bg-gray-200 text-gray-400 py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] flex items-center justify-center gap-2 cursor-not-allowed mt-2"
                   >
                     Aguardando aprovação
                   </button>
