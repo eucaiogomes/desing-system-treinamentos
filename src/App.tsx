@@ -14,6 +14,12 @@ export default function App() {
   const [completedTrainings, setCompletedTrainings] = useState<string[]>([]);
   const [courseEnrollmentStatus, setCourseEnrollmentStatus] = useState<'default' | 'payment' | 'rejected' | 'pending'>('default');
   const [trilhaEnrollmentStatus, setTrilhaEnrollmentStatus] = useState<'default' | 'payment' | 'rejected' | 'pending'>('default');
+  const [selectedCourseTurmaId, setSelectedCourseTurmaId] = useState<number>(1);
+  const [selectedTrilhaTurmaId, setSelectedTrilhaTurmaId] = useState<number>(1);
+  const [isCoursePaymentOpen, setIsCoursePaymentOpen] = useState(false);
+  const [isTrilhaPaymentOpen, setIsTrilhaPaymentOpen] = useState(false);
+  const [isCourseBoletoOpen, setIsCourseBoletoOpen] = useState(false);
+  const [isTrilhaBoletoOpen, setIsTrilhaBoletoOpen] = useState(false);
 
   const handleReturnToTrilha = (trainingId: string) => {
     setCompletedTrainings(prev => {
@@ -59,11 +65,23 @@ export default function App() {
         <div className="flex items-center gap-2 pr-1 border-l border-gray-200 pl-3">
           <button 
             onClick={() => {
-              if (currentScreen === 'catalog') setCurrentScreen('view');
-              if (currentScreen === 'trilha') setCurrentScreen('trilhaView');
+              if (currentScreen === 'catalog') {
+                if (courseEnrollmentStatus === 'pending' && [3, 4, 7, 8].includes(selectedCourseTurmaId)) {
+                  setIsCoursePaymentOpen(true);
+                } else {
+                  setCurrentScreen('view');
+                }
+              }
+              if (currentScreen === 'trilha') {
+                if (trilhaEnrollmentStatus === 'pending' && [3, 4, 7, 8].includes(selectedTrilhaTurmaId)) {
+                  setIsTrilhaPaymentOpen(true);
+                } else {
+                  setCurrentScreen('trilhaView');
+                }
+              }
             }}
             className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-green-50 hover:text-green-600 transition-colors cursor-pointer"
-            title="Validar fluxos"
+            title="Aprovar / Navegar"
           >
             <Check size={16} />
           </button>
@@ -73,7 +91,7 @@ export default function App() {
               if (currentScreen === 'trilha') setTrilhaEnrollmentStatus('rejected');
             }}
             className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer"
-            title="Simular recusa"
+            title="Recusar / Reenviar"
           >
             <X size={16} />
           </button>
@@ -96,6 +114,12 @@ export default function App() {
                 onNavigate={setCurrentScreen} 
                 enrollmentStatus={courseEnrollmentStatus}
                 setEnrollmentStatus={setCourseEnrollmentStatus}
+                selectedTurmaId={selectedCourseTurmaId}
+                setSelectedTurmaId={setSelectedCourseTurmaId}
+                isPaymentModalOpen={isCoursePaymentOpen}
+                setIsPaymentModalOpen={setIsCoursePaymentOpen}
+                isBoletoModalOpen={isCourseBoletoOpen}
+                setIsBoletoModalOpen={setIsCourseBoletoOpen}
               />
             </div>
           )}
@@ -105,6 +129,12 @@ export default function App() {
                 onNavigate={setCurrentScreen} 
                 enrollmentStatus={trilhaEnrollmentStatus}
                 setEnrollmentStatus={setTrilhaEnrollmentStatus}
+                selectedTurmaId={selectedTrilhaTurmaId}
+                setSelectedTurmaId={setSelectedTrilhaTurmaId}
+                isPaymentModalOpen={isTrilhaPaymentOpen}
+                setIsPaymentModalOpen={setIsTrilhaPaymentOpen}
+                isBoletoModalOpen={isTrilhaBoletoOpen}
+                setIsBoletoModalOpen={setIsTrilhaBoletoOpen}
               />
             </div>
           )}

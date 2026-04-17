@@ -3,19 +3,34 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronUp, ChevronRight, Folder, PlaySquare, FileText, Video, Users, MonitorPlay, Box, UploadCloud, CheckSquare, Star, Award, Layers, Calendar, AlertCircle, RefreshCw, CreditCard } from 'lucide-react';
 import { CustomFieldsModal } from './CustomFieldsModal';
 import { PaymentModalV2 } from './PaymentModalV2';
+import { BoletoModal } from './BoletoModal';
 
 interface TrilhaCatalogProps {
   onNavigate: (screen: 'catalog' | 'view' | 'design' | 'trilha' | 'trilhaView' | 'treinamentoTrilha') => void;
   enrollmentStatus: 'default' | 'payment' | 'rejected' | 'pending';
   setEnrollmentStatus: (status: 'default' | 'payment' | 'rejected' | 'pending') => void;
+  selectedTurmaId: number;
+  setSelectedTurmaId: (id: number) => void;
+  isPaymentModalOpen: boolean;
+  setIsPaymentModalOpen: (open: boolean) => void;
+  isBoletoModalOpen: boolean;
+  setIsBoletoModalOpen: (open: boolean) => void;
 }
 
-export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({ onNavigate, enrollmentStatus, setEnrollmentStatus }) => {
-  const [selectedTurmaId, setSelectedTurmaId] = useState<number>(1);
+export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({ 
+  onNavigate, 
+  enrollmentStatus, 
+  setEnrollmentStatus,
+  selectedTurmaId,
+  setSelectedTurmaId,
+  isPaymentModalOpen,
+  setIsPaymentModalOpen,
+  isBoletoModalOpen,
+  setIsBoletoModalOpen
+}) => {
   const [activeTab, setActiveTab] = useState<string>('conteudos');
   const [isExpanded, setIsExpanded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   
   // Accordion state: expanded by default for all stages on first load
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({
@@ -416,7 +431,7 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({ onNavigate, enroll
 
                 {enrollmentStatus === 'payment' && (
                   <button 
-                    onClick={() => setIsPaymentModalOpen(true)}
+                    onClick={() => setIsBoletoModalOpen(true)}
                     className="w-full bg-brand text-white py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <CreditCard size={14} />
@@ -570,8 +585,15 @@ export const TrilhaCatalog: React.FC<TrilhaCatalogProps> = ({ onNavigate, enroll
         itemPrice={parseFloat(selectedTurma?.price.replace('R$ ', '').replace('.', '').replace(',', '.') || '1200')}
         onSuccess={() => {
           setIsPaymentModalOpen(false);
-          setEnrollmentStatus('rejected'); // Simulate the error state after payment for testing
+          setEnrollmentStatus('payment');
+          setIsBoletoModalOpen(true);
         }}
+      />
+
+      <BoletoModal 
+        isOpen={isBoletoModalOpen}
+        onClose={() => setIsBoletoModalOpen(false)}
+        price={parseFloat(selectedTurma?.price.replace('R$ ', '').replace('.', '').replace(',', '.') || '1200')}
       />
     </motion.div>
   );

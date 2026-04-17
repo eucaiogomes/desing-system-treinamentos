@@ -3,19 +3,34 @@ import { Search, ChevronUp, ChevronDown, CheckCircle2, Folder, PlaySquare, FileT
 import { motion, AnimatePresence } from 'framer-motion';
 import { CustomFieldsModal } from './CustomFieldsModal';
 import { PaymentModalV2 } from './PaymentModalV2';
+import { BoletoModal } from './BoletoModal';
 
 interface CourseCatalogProps {
   onNavigate: (screen: 'catalog' | 'view' | 'design' | 'trilha' | 'trilhaView' | 'treinamentoTrilha') => void;
   enrollmentStatus: 'default' | 'payment' | 'rejected' | 'pending';
   setEnrollmentStatus: (status: 'default' | 'payment' | 'rejected' | 'pending') => void;
+  selectedTurmaId: number;
+  setSelectedTurmaId: (id: number) => void;
+  isPaymentModalOpen: boolean;
+  setIsPaymentModalOpen: (open: boolean) => void;
+  isBoletoModalOpen: boolean;
+  setIsBoletoModalOpen: (open: boolean) => void;
 }
 
-export const CourseCatalog: React.FC<CourseCatalogProps> = ({ onNavigate, enrollmentStatus, setEnrollmentStatus }) => {
-  const [selectedTurmaId, setSelectedTurmaId] = useState<number>(1);
+export const CourseCatalog: React.FC<CourseCatalogProps> = ({ 
+  onNavigate, 
+  enrollmentStatus, 
+  setEnrollmentStatus,
+  selectedTurmaId,
+  setSelectedTurmaId,
+  isPaymentModalOpen,
+  setIsPaymentModalOpen,
+  isBoletoModalOpen,
+  setIsBoletoModalOpen
+}) => {
   const [activeTab, setActiveTab] = useState<string>('conteudos');
   const [isExpanded, setIsExpanded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   const turmas = [
     {
@@ -282,7 +297,7 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({ onNavigate, enroll
 
                 {enrollmentStatus === 'payment' && (
                   <button 
-                    onClick={() => setIsPaymentModalOpen(true)}
+                    onClick={() => setIsBoletoModalOpen(true)}
                     className="w-full bg-brand text-white py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <CreditCard size={14} />
@@ -436,8 +451,15 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({ onNavigate, enroll
         itemPrice={parseFloat(selectedTurma?.price.replace('R$ ', '').replace('.', '').replace(',', '.') || '1000')}
         onSuccess={() => {
           setIsPaymentModalOpen(false);
-          setEnrollmentStatus('rejected'); // Simulate the error state after payment for testing
+          setEnrollmentStatus('payment');
+          setIsBoletoModalOpen(true);
         }}
+      />
+
+      <BoletoModal 
+        isOpen={isBoletoModalOpen}
+        onClose={() => setIsBoletoModalOpen(false)}
+        price={parseFloat(selectedTurma?.price.replace('R$ ', '').replace('.', '').replace(',', '.') || '1000')}
       />
     </motion.div>
   );
