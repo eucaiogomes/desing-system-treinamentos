@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
-import { Search, ChevronUp, ChevronDown, CheckCircle2, Folder, PlaySquare, FileText, Video, Users, MonitorPlay, Box, UploadCloud, CheckSquare, Star, Award, Calendar, AlertCircle, RefreshCw, CreditCard, Check, Clock, Info } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import {
+  Info, ChevronDown, ChevronUp, AlertCircle, RefreshCw, CreditCard, Clock,
+  Folder, Play, FileText, Video, Users, MonitorPlay, Box, UploadCloud,
+  CheckSquare, Star, Award
+} from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { CustomFieldsModal } from './CustomFieldsModal';
 import { PaymentModalV2 } from './PaymentModalV2';
 import { PaymentModal } from './PaymentModal';
@@ -20,9 +24,80 @@ interface CourseCatalogProps {
   setIsOldPaymentModalOpen: (open: boolean) => void;
 }
 
-export const CourseCatalog: React.FC<CourseCatalogProps> = ({ 
-  onNavigate, 
-  enrollmentStatus, 
+interface Turma {
+  id: number;
+  title: string;
+  prazo: string;
+  price: string;
+  vagas: string;
+  modo: string;
+  recomendada?: boolean;
+  hasExtras?: boolean;
+  extrasCount?: number;
+}
+
+interface ContentItem {
+  type: string;
+  title: string;
+  exclusive?: boolean;
+}
+
+const turmas: Turma[] = [
+  { id: 1, title: '1ª Gratuita com aprovação do gestor', prazo: '01/05/2026 até 30/06/2026', price: 'Gratuito', vagas: '50 vagas', modo: 'EaD' },
+  { id: 2, title: '2ª Gratuita sem aprovação do gestor', prazo: 'Indeterminado', price: 'Gratuito', vagas: 'Ilimitadas', modo: 'EaD', recomendada: true, hasExtras: true, extrasCount: 2 },
+  { id: 3, title: '3ª Paga com aprovação do gestor + campos personalizados', prazo: '10/05/2026 até 15/07/2026', price: 'R$ 150,00', vagas: '20 vagas', modo: 'Presencial' },
+  { id: 4, title: '4ª Paga sem aprovação do gestor + campos personalizados', prazo: '05/04/2026 até 31/12/2026', price: 'R$ 320,00', vagas: '100 vagas', modo: 'EaD', hasExtras: true, extrasCount: 1 },
+  { id: 5, title: '5ª Gratuita com aprovação do gestor + campos personalizados', prazo: '15/06/2026 até 15/08/2026', price: 'Gratuito', vagas: '10 vagas', modo: 'In-company' },
+  { id: 6, title: '6ª Gratuita sem aprovação do gestor + campos personalizados', prazo: '01/04/2026 até 01/10/2026', price: 'Gratuito', vagas: 'Ilimitadas', modo: 'EaD' },
+  { id: 7, title: '7ª Paga com aprovação do gestor', prazo: '20/05/2026 até 20/06/2026', price: 'R$ 450,00', vagas: '5 vagas', modo: 'Presencial' },
+  { id: 8, title: '8ª Paga sem aprovação do gestor', prazo: 'Indeterminado', price: 'R$ 290,00', vagas: 'Ilimitadas', modo: 'EaD' },
+  { id: 9, title: '9ª Aluno aplicando cupom de desconto', prazo: 'Indeterminado', price: 'R$ 49,90', vagas: 'Ilimitadas', modo: 'EaD' },
+];
+
+const baseContents: ContentItem[] = [
+  { type: 'Tópico', title: 'Módulo 1: Fundamentos' },
+  { type: 'Vídeos', title: 'Introdução ao Pensamento Jurídico Brasileiro' },
+  { type: 'Documentos', title: 'Material de Apoio (PDF)' },
+  { type: 'Gravado', title: 'Aula Magna Gravada' },
+  { type: 'Aula presencial', title: 'Encontro Presencial — Polo SP' },
+  { type: 'Webconferência', title: 'Tira-dúvidas ao vivo' },
+  { type: 'Scorm', title: 'Módulo Interativo SCORM' },
+  { type: 'Entrega de atividade', title: 'Trabalho de Conclusão de Módulo' },
+  { type: 'Avaliação', title: 'Prova de Conhecimentos' },
+  { type: 'Avaliação de reação/pesquisa', title: 'Pesquisa de Satisfação' },
+  { type: 'Certificado', title: 'Emissão do Certificado' },
+];
+
+const extraContents: ContentItem[] = [
+  { type: 'Vídeos', title: 'Masterclass Exclusiva de Encerramento', exclusive: true },
+  { type: 'Documentos', title: 'Apostila Premium com Jurisprudência', exclusive: true },
+];
+
+const CONTENT_ICONS: Record<string, React.ReactNode> = {
+  'Tópico': <Folder size={8} />,
+  'Vídeos': <Play size={8} />,
+  'Documentos': <FileText size={8} />,
+  'Gravado': <Video size={8} />,
+  'Aula presencial': <Users size={8} />,
+  'Webconferência': <MonitorPlay size={8} />,
+  'Scorm': <Box size={8} />,
+  'Entrega de atividade': <UploadCloud size={8} />,
+  'Avaliação': <CheckSquare size={8} />,
+  'Avaliação de reação/pesquisa': <Star size={8} />,
+  'Certificado': <Award size={8} />,
+};
+
+const TURMAS_LIMIT = 8;
+
+const tabs = [
+  { id: 'conteudos', label: 'Conteúdos' },
+  { id: 'resumo', label: 'Resumo' },
+  { id: 'autor', label: 'Sobre o autor' },
+];
+
+export const CourseCatalog: React.FC<CourseCatalogProps> = ({
+  onNavigate,
+  enrollmentStatus,
   setEnrollmentStatus,
   selectedTurmaId,
   setSelectedTurmaId,
@@ -31,94 +106,81 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
   isBoletoModalOpen,
   setIsBoletoModalOpen,
   isOldPaymentModalOpen,
-  setIsOldPaymentModalOpen
+  setIsOldPaymentModalOpen,
 }) => {
-  const [activeTab, setActiveTab] = useState<string>('conteudos');
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState('conteudos');
+  const [isDescExpanded, setIsDescExpanded] = useState(false);
+  const [isTurmasExpanded, setIsTurmasExpanded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const turmas = [
-    {
-      id: 1,
-      title: "1° GRATUITA COM APROVAÇÃO DO GESTOR",
-      period: "01/05/2026 até 30/06/2026",
-      price: "Gratuito",
-      vagas: "50 vagas"
-    },
-    {
-      id: 2,
-      title: "2°GRATUITA SEM APROVAÇÃO DO GESTOR",
-      period: "Indeterminado",
-      price: "Gratuito",
-      vagas: "Ilimitadas"
-    },
-    {
-      id: 3,
-      title: "3° PAGA COM APROV. GESTOR + CAMPOS PERSON.",
-      period: "10/05/2026 até 15/07/2026",
-      price: "R$ 150,00",
-      vagas: "20 vagas"
-    },
-    {
-      id: 4,
-      title: "4°PAGA SEM APROV. GESTOR + CAMPOS PERSON.",
-      period: "05/04/2026 até 31/12/2026",
-      price: "R$ 320,00",
-      vagas: "100 vagas"
-    },
-    {
-      id: 5,
-      title: "5° GRATUIITA COM APROV. GESTOR + CAMPOS PERSON.",
-      period: "15/06/2026 até 15/08/2026",
-      price: "Gratuito",
-      vagas: "10 vagas"
-    },
-    {
-      id: 6,
-      title: "6° GRATUITA SEM APROV. GESTOR + CAMPOS PERSON.",
-      period: "01/04/2026 até 01/10/2026",
-      price: "Gratuito",
-      vagas: "Ilimitadas"
-    },
-    {
-      id: 7,
-      title: "7° PAGA COM APROVAÇÃO GESTOR",
-      period: "20/05/2026 até 20/06/2026",
-      price: "R$ 450,00",
-      vagas: "5 vagas"
-    },
-    {
-      id: 8,
-      title: "8° PAGA SEM APROVAÇÃO GESTOR",
-      period: "Indeterminado",
-      price: "R$ 290,00",
-      vagas: "Ilimitadas"
-    },
-    {
-      id: 9,
-      title: "9° ALUNO APLICANDO CUPOM",
-      period: "Indeterminado",
-      price: "R$ 49,90",
-      vagas: "Ilimitadas"
-    }
+  // Hover panel state
+  const [hoveredCardId, setHoveredCardId] = useState<number | null>(null);
+  const [panelTurmaId, setPanelTurmaId] = useState<number | null>(null);
+  const [panelTop, setPanelTop] = useState(0);
+  const [panelVisible, setPanelVisible] = useState(false);
+
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const cardRefsMap = useRef<Map<number, HTMLDivElement>>(new Map());
+  const showTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const clearPanelTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (showTimerRef.current) clearTimeout(showTimerRef.current);
+      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+      if (clearPanelTimerRef.current) clearTimeout(clearPanelTimerRef.current);
+    };
+  }, []);
+
+  const selectedTurma = selectedTurmaId ? turmas.find(t => t.id === selectedTurmaId) ?? null : null;
+
+  const selectedTurmaIndex = selectedTurmaId ? turmas.findIndex(t => t.id === selectedTurmaId) : -1;
+  const selectedBeyondLimit = selectedTurmaIndex >= TURMAS_LIMIT;
+
+  const visibleTurmas = isTurmasExpanded
+    ? turmas
+    : selectedBeyondLimit
+      ? [...turmas.slice(0, TURMAS_LIMIT), turmas[selectedTurmaIndex]]
+      : turmas.slice(0, TURMAS_LIMIT);
+
+  const hiddenCount = turmas.length - TURMAS_LIMIT;
+
+  const displayedContents: ContentItem[] = [
+    ...baseContents,
+    ...(selectedTurma?.hasExtras ? extraContents : []),
   ];
 
-  const conteudosList = [
-    { type: 'Tópico', title: 'Módulo 1: Fundamentos', icon: <Folder size={14} /> },
-    { type: 'Vídeos', title: 'Introdução ao Pensamento Jurídico Brasileiro', icon: <PlaySquare size={14} /> },
-    { type: 'Documentos', title: 'Material de Apoio (PDF)', icon: <FileText size={14} /> },
-    { type: 'Gravado', title: 'Aula Magna Gravada', icon: <Video size={14} /> },
-    { type: 'Aula presencial', title: 'Encontro Presencial - Polo SP', icon: <Users size={14} /> },
-    { type: 'Webconferência', title: 'Tira-dúvidas ao vivo', icon: <MonitorPlay size={14} /> },
-    { type: 'Scorm', title: 'Módulo Interativo SCORM', icon: <Box size={14} /> },
-    { type: 'Entrega de atividade', title: 'Trabalho de Conclusão de Módulo', icon: <UploadCloud size={14} /> },
-    { type: 'Avaliação', title: 'Prova de Conhecimentos', icon: <CheckSquare size={14} /> },
-    { type: 'Avaliação de reação/pesquisa', title: 'Pesquisa de Satisfação', icon: <Star size={14} /> },
-    { type: 'Certificado', title: 'Emissão do Certificado', icon: <Award size={14} /> }
-  ];
+  const handleCardMouseEnter = useCallback((id: number) => {
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    if (clearPanelTimerRef.current) clearTimeout(clearPanelTimerRef.current);
 
-  const selectedTurma = selectedTurmaId ? turmas.find(t => t.id === selectedTurmaId) : null;
-  const mainButtonText = selectedTurma?.price === "Gratuito" ? "Fazer inscrição" : `Comprar ${selectedTurma?.price}`;
+    showTimerRef.current = setTimeout(() => {
+      const card = cardRefsMap.current.get(id);
+      const sidebar = sidebarRef.current;
+      if (card && sidebar) {
+        const cardRect = card.getBoundingClientRect();
+        const sidebarRect = sidebar.getBoundingClientRect();
+        setPanelTop(Math.max(0, cardRect.top - sidebarRect.top - 10));
+      }
+      setPanelTurmaId(id);
+      setPanelVisible(true);
+    }, 80);
+  }, []);
+
+  const handleCardMouseLeave = useCallback(() => {
+    if (showTimerRef.current) clearTimeout(showTimerRef.current);
+
+    hideTimerRef.current = setTimeout(() => {
+      setPanelVisible(false);
+      clearPanelTimerRef.current = setTimeout(() => setPanelTurmaId(null), 180);
+    }, 120);
+  }, []);
+
+  const handleTurmaClick = (id: number) => {
+    if (enrollmentStatus !== 'default') return;
+    setSelectedTurmaId(selectedTurmaId === id ? null : id);
+  };
 
   const handleMainAction = () => {
     if (!selectedTurmaId) return;
@@ -135,385 +197,778 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
     }
   };
 
-  const tabContent: Record<string, React.ReactNode> = {
-    conteudos: (
-      <div className="flex flex-col">
-        {/* Desktop Table Header */}
-        <div className="hidden lg:flex items-center justify-between pb-2 mb-1 border-b border-gray-200 pr-2">
-          <div className="w-[260px] flex-shrink-0 pl-1">
-            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Tipo</span>
-          </div>
-          <div className="flex-1 text-left pl-4">
-            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Conteúdo</span>
-          </div>
-        </div>
-        
-        {/* Table Body / Mobile List */}
-        <div className="flex flex-col pb-4 gap-2 lg:gap-0">
-          {conteudosList.map((item, index) => (
-            <div 
-              key={index} 
-              className="flex flex-col lg:flex-row lg:items-center lg:justify-between py-3 px-4 lg:px-0 border lg:border-0 border-gray-100 rounded-xl lg:rounded-none lg:border-b border-gray-100 last:border-0 transition-colors hover:bg-gray-50/50 group"
-            >
-              {/* Type - Desktop: Fixed Width, Mobile: Part of the card header */}
-              <div className="flex items-center gap-3 lg:w-[260px] lg:flex-shrink-0 mb-1 lg:mb-0">
-                <div className="w-6 h-6 rounded bg-brand/10 flex items-center justify-center text-brand flex-shrink-0">
-                  {item.icon}
-                </div>
-                <span className="text-[10px] lg:text-[11px] font-black lg:font-bold text-brand uppercase tracking-widest lg:tracking-wide truncate">
-                  {item.type}
-                </span>
-              </div>
-              
-              {/* Title - Mobile: Larger font, Desktop: Part of table */}
-              <div className="flex-1 text-left lg:pl-4">
-                <span className="text-sm lg:text-xs font-semibold lg:font-medium text-gray-700 lg:text-gray-600 group-hover:text-gray-900 transition-colors line-clamp-2 lg:line-clamp-1">
-                  {item.title}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    ),
-    resumo: (
-      <div className="px-1 py-2">
-        <p className="text-sm lg:text-xs text-gray-500 leading-relaxed italic">
-          "Uma jornada intelectual que conecta o passado jurídico do Brasil com os desafios do presente, focando na construção de uma consciência crítica sobre nossas instituições."
-        </p>
-      </div>
-    ),
-    autor: (
-      <div className="flex items-center gap-4 px-1 py-2">
-        <div className="w-14 h-14 lg:w-12 lg:h-12 rounded-full bg-gray-200 overflow-hidden shadow-sm border border-white">
-          <img src="https://picsum.photos/seed/professor/100/100" alt="Autor" referrerPolicy="no-referrer" />
-        </div>
-        <div>
-          <h4 className="text-sm lg:text-xs font-bold text-[#003366]">Dr. Roberto Silva</h4>
-          <p className="text-[11px] lg:text-[10.5px] text-gray-500">Doutor em Teoria do Direito e Pesquisador Sênior.</p>
-        </div>
-      </div>
-    )
-  };
+  const mainButtonLabel = !selectedTurmaId
+    ? 'Selecione uma turma'
+    : selectedTurma?.price === 'Gratuito'
+      ? 'Fazer inscrição'
+      : `Inscrever por ${selectedTurma?.price}`;
+
+  const panelTurma = panelTurmaId ? turmas.find(t => t.id === panelTurmaId) ?? null : null;
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="p-4 font-sans pb-32 lg:pb-4"
-    >
-      {/* Breadcrumbs */}
-      <nav className="text-[10.5px] mb-6 flex items-center gap-2 text-gray-400 uppercase tracking-[0.15em] font-bold">
-        <span className="hover:text-gray-600 cursor-pointer transition-colors">Treinamentos</span>
-        <span className="text-gray-300">/</span>
-        <span className="text-brand">Todos</span>
+    <div className="flex flex-col h-[100dvh] bg-white font-sans">
+
+      {/* ── Topbar ── */}
+      <nav
+        className="flex-none flex items-center border-b border-gray-100"
+        style={{ height: 40, padding: '0 20px' }}
+      >
+        <div className="flex items-center gap-1.5" style={{ fontSize: 11, color: '#9ca3af' }}>
+          <span className="cursor-pointer hover:text-gray-600 transition-colors">Treinamentos</span>
+          <span style={{ color: '#e5e7eb' }}>/</span>
+          <span className="cursor-pointer hover:text-gray-600 transition-colors">Jurídico</span>
+          <span style={{ color: '#e5e7eb' }}>/</span>
+          <span style={{ color: 'var(--brand-color)' }}>Teoria Geral do Direito</span>
+        </div>
       </nav>
 
-      {/* Main Content Card */}
-      <div className="bg-white rounded-2xl p-0 lg:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 mb-6 transition-all duration-300 overflow-hidden lg:overflow-visible">
-        <div className="flex flex-col lg:flex-row lg:flex-nowrap lg:gap-12">
-          {/* Left Sidebar / Top Hero on Mobile */}
-          <div className="flex-none w-full lg:w-64 flex flex-col lg:gap-6">
-            {/* Mobile Title Header (Above Image) */}
-            <div className="lg:hidden p-6 pb-2">
-              <span className="text-[13px] font-medium text-gray-500 mb-1 block">Curso de Extensão</span>
-              <h3 className="text-[22px] font-bold text-[#003366] leading-tight">
-                Teoria Geral do Direito
-              </h3>
-            </div>
+      {/* ── Main grid ── */}
+      <div className="flex flex-1 overflow-hidden">
 
-            {/* Banner/Thumbnail */}
-            <div className="relative w-full h-[220px] lg:h-auto lg:aspect-square overflow-hidden group">
-              <img 
-                src="https://picsum.photos/seed/law/600/400" 
-                alt="Course Thumbnail" 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                referrerPolicy="no-referrer"
-              />
-              {/* Overlay with Title on Desktop (Hidden on Mobile) */}
-              <div className="hidden lg:flex absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex-col items-center justify-end p-4 text-center">
-                <span className="text-[9.5px] text-white/70 uppercase tracking-[0.2em] mb-1 font-black">Curso de Extensão</span>
-                <h3 className="text-sm font-bold text-white leading-tight uppercase tracking-tight">
-                  Teoria Geral do Direito
-                </h3>
-              </div>
-            </div>
-
-            <div className="p-6 lg:p-0 flex flex-col gap-6">
-              <div className="flex flex-col gap-1 pb-4 border-b border-gray-100">
-                <span className="text-[9.5px] font-bold text-gray-400 uppercase tracking-widest">Carga Horária</span>
-                <span className="text-xs font-semibold text-[#003366]">36 horas e 00 minuto</span>
-              </div>
-
-              {/* Selection Turmas - Horizontal Carousel on Mobile */}
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10.5px] font-bold text-[#003366] uppercase tracking-widest">
-                    {enrollmentStatus === 'default' ? 'Selecionar Turma' : 'Turma Selecionada'}
-                  </span>
-                </div>
-                
-                <div className="relative">
-                  <div className="lg:hidden flex justify-center py-1 absolute -top-4 w-full text-gray-300 z-10 pointer-events-none">
-                    <ChevronUp size={16} />
-                  </div>
-                  {/* Container: Flex col with scroll on mobile (max 300px for explicit hard cut of 3rd item) and desktop */}
-                  <div className="flex flex-col max-h-[300px] lg:max-h-[320px] overflow-y-auto pr-2 custom-scrollbar gap-3 lg:gap-2 pb-2 lg:pb-0">
-                    {turmas.length === 0 ? (
-                      <div className="w-full text-center p-8 border border-dashed border-gray-200 rounded-lg text-gray-400 text-xs font-medium">
-                        Nenhuma turma cadastrada
-                      </div>
-                    ) : (
-                      turmas
-                        .filter(t => enrollmentStatus === 'default' || t.id === selectedTurmaId)
-                        .map((turma) => (
-                        <button
-                          key={turma.id}
-                          onClick={(e) => {
-                            if (enrollmentStatus === 'default') {
-                              const isCurrentlySelected = selectedTurmaId === turma.id;
-                              setSelectedTurmaId(isCurrentlySelected ? null : turma.id);
-                              if (!isCurrentlySelected) {
-                                e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                              }
-                            }
-                          }}
-                          className={`w-full text-left p-4 lg:p-3 rounded-2xl lg:rounded-lg transition-all duration-200 cursor-pointer shadow-sm ${
-                            selectedTurmaId === turma.id 
-                              ? 'border-2 border-brand bg-brand/5 shadow-md scale-[0.98] lg:scale-100' 
-                              : 'border border-gray-200 hover:border-gray-300 bg-white hover:shadow-md'
-                          } ${enrollmentStatus !== 'default' ? 'cursor-default opacity-90' : ''}`}
-                        >
-                          <div className="flex items-start gap-3">
-                            <div className={`mt-0.5 w-[18px] h-[18px] rounded-full flex-shrink-0 border-[1.5px] flex items-center justify-center transition-all duration-300 ${
-                              selectedTurmaId === turma.id ? 'border-brand bg-brand' : 'border-gray-300 bg-white'
-                            }`}>
-                              <motion.div
-                                initial={false}
-                                animate={{ scale: selectedTurmaId === turma.id ? 1 : 0 }}
-                                className="w-2 h-2 rounded-full bg-white"
-                              />
-                            </div>
-                            <div className="flex-1">
-                              <div className={`text-[12px] lg:text-[11px] font-black lg:font-bold leading-tight uppercase tracking-tight mb-3 ${
-                                selectedTurmaId === turma.id ? 'text-brand' : 'text-[#003366]'
-                              }`}>
-                                {turma.title}
-                              </div>
-                              
-                              <div className="flex items-start gap-1.5 mb-4 lg:mb-3">
-                                <Calendar size={13} className="text-gray-400 mt-0.5 flex-shrink-0" />
-                                <div className="flex flex-col">
-                                  <span className="text-[9px] lg:text-[8.5px] font-bold text-gray-400 uppercase tracking-[0.1em] leading-none mb-1">Prazo de inscrição</span>
-                                  <span className="text-[11px] lg:text-[10px] text-gray-600 font-medium leading-none">{turma.period}</span>
-                                </div>
-                              </div>
-  
-                              <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                                <span className="text-[10px] lg:text-[9.5px] font-black text-brand bg-brand/10 px-2 py-0.5 rounded uppercase tracking-tighter">{turma.vagas}</span>
-                                <span className="text-sm lg:text-[11px] font-black text-gray-700">{turma.price}</span>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          {enrollmentStatus === 'pending' && selectedTurmaId === turma.id && (
-                            <div className="mt-4 border-t border-brand/10 bg-brand/5 -mx-4 lg:-mx-3 -mb-4 lg:-mb-3 p-4 lg:p-3 rounded-b-2xl lg:rounded-b-lg flex items-start gap-3 text-left">
-                              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand shadow-sm flex-shrink-0">
-                                <Clock size={16} />
-                              </div>
-                              <div className="flex flex-col gap-1 mt-0.5">
-                                <span className="text-[10px] font-black text-brand uppercase tracking-widest">Aguardando aprovação</span>
-                                <p className="text-[10.5px] text-brand/80 leading-relaxed font-medium pr-2">
-                                  Sua solicitação de vaga foi enviada. Agora, basta aguardar a liberação do responsável.
-                                </p>
-                              </div>
-                            </div>
-                          )}
-                        </button>
-                      ))
-                    )}
-                  </div>
-                  <div className="lg:hidden flex justify-center py-1 absolute -bottom-4 w-full text-gray-300 z-10 pointer-events-none">
-                    <ChevronDown size={16} />
-                  </div>
-                  {/* Visual fade effect for scrolling (Hidden on mobile for a hard cut indicator, visible on Desktop) */}
-                  <div className="hidden lg:block absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none rounded-b-2xl" />
-                </div>
-  
-                {/* Desktop Action Buttons */}
-                <div className="hidden lg:flex flex-col gap-2 pt-2 border-t border-gray-100">
-                  {enrollmentStatus === 'default' && (
-                    <>
-                      <button 
-                        onClick={handleMainAction}
-                        disabled={selectedTurmaId === null}
-                        className={`w-full py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] transition-all flex items-center justify-center gap-2 ${selectedTurmaId === null ? 'bg-gray-100 text-gray-400 cursor-not-allowed shadow-none' : 'bg-brand text-white hover:bg-brand-dark shadow-lg shadow-brand/10 active:scale-95 cursor-pointer'}`}
-                      >
-                        {selectedTurmaId === null ? "SELECIONE UMA TURMA" : mainButtonText.toUpperCase()}
-                      </button>
-                      <button 
-                        disabled={selectedTurmaId === null}
-                        className={`w-full py-3.5 rounded-xl text-[11.5px] font-bold transition-all flex items-center justify-center gap-2 tracking-[0.1em] ${selectedTurmaId === null ? 'bg-white text-gray-300 border border-gray-100 cursor-not-allowed' : 'bg-white text-brand border border-brand/20 hover:bg-brand/5 active:scale-95 cursor-pointer'}`}
-                      >
-                        Registrar interesse
-                      </button>
-                    </>
-                  )}
-  
-                  {enrollmentStatus === 'payment' && (
-                    <button 
-                      onClick={() => setIsBoletoModalOpen(true)}
-                      className="w-full bg-brand text-white py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                      <CreditCard size={14} />
-                      Efetuar pagamento
-                    </button>
-                  )}
-  
-                  <AnimatePresence mode="wait">
-                    {enrollmentStatus === 'rejected' && (
-                      <motion.div 
-                        initial={{ opacity: 0, height: 0, y: -10 }}
-                        animate={{ opacity: 1, height: 'auto', y: 0 }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="flex flex-col gap-3 overflow-hidden"
-                      >
-                        <div className="bg-red-50 border border-red-100 p-3.5 rounded-xl flex items-start gap-3">
-                          <AlertCircle size={16} className="text-red-500 flex-shrink-0 mt-0.5" />
-                          <div className="flex flex-col gap-1">
-                            <span className="text-xs font-bold text-red-700 tracking-wide uppercase">Matrícula Recusada</span>
-                            <span className="text-[11px] text-red-600 leading-relaxed font-medium">
-                              Sua matrícula não foi aprovada pelo gestor. Verifique os dados e tente novamente.
-                            </span>
-                          </div>
-                        </div>
-                        <button 
-                          onClick={() => setIsModalOpen(true)}
-                          className="w-full bg-brand text-white py-3.5 rounded-xl text-[11.5px] font-bold tracking-[0.15em] hover:bg-brand-dark shadow-lg shadow-brand/10 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
-                        >
-                          <RefreshCw size={14} />
-                          Reenviar campos
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-  
-                  {/* Removed separate pending block */}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Content / Bottom Content on Mobile */}
-          <div className="flex-1 flex flex-col p-6 lg:p-0">
-            <h1 className="hidden lg:block text-2xl font-bold text-brand uppercase mb-6 leading-tight tracking-tight">
-              2º CURSO DE EXTENSÃO EM TEORIA GERAL DO DIREITO: FORMAÇÃO DO PENSAMENTO INTELECTUAL BRASILEIRO
-            </h1>
-
-            <div className="mb-4 lg:hidden">
-              <span className="text-[13px] font-bold text-[#003366] uppercase tracking-widest block border-b border-gray-100 pb-2">
-                Descrição
-              </span>
-            </div>
-
-            <div className="relative">
-              <motion.div 
-                initial={false}
-                animate={{ height: isExpanded ? 'auto' : '13.5em' }}
-                className="overflow-hidden relative"
-              >
-                <div className="prose prose-sm text-gray-600 max-w-none">
-                  <p className="leading-relaxed text-sm lg:text-[13px] mb-4">
-                    Este curso propõe uma análise profunda das bases do pensamento intelectual brasileiro através da Teoria Geral do Direito. 
-                    Exploramos as conexões entre a formação jurídica e o desenvolvimento social do país, abordando temas fundamentais 
-                    para a compreensão da nossa estrutura institucional contemporânea.
-                  </p>
-                  <p className="leading-relaxed text-sm lg:text-[13px] mb-4">
-                    Durante os encontros, debateremos as obras dos principais juristas e sociólogos que moldaram a compreensão do Estado brasileiro. A metodologia inclui análise de jurisprudência histórica, debates guiados e seminários de pesquisa, exigindo do aluno uma postura ativa e crítica em relação ao material bibliográfico.
-                  </p>
-                  <p className="leading-relaxed text-sm lg:text-[13px] mb-4">
-                    Além disso, o programa aborda a evolução do pensamento constitucional e as transformações nas relações entre o poder público e a sociedade civil. Serão analisados documentos históricos inéditos e textos clássicos sob uma nova ótica, permitindo que os participantes desenvolvam competências de interpretação sistêmica e argumentação jurídica sofisticada.
-                  </p>
-                  <p className="leading-relaxed text-sm lg:text-[13px] mb-4">
-                    O curso também se propõe a ser um espaço de troca de experiências entre profissionais de diferentes áreas, enriquecendo o debate com perspectivas multidisciplinares sobre a eficácia das normas e o papel do jurista na contemporaneidade brasileira.
-                  </p>
-                  <img src="https://picsum.photos/seed/law/800/400" alt="Biblioteca jurídica" className="w-full rounded-2xl my-6 object-cover max-h-[240px] lg:max-h-[300px] shadow-lg" referrerPolicy="no-referrer" />
-                  <p className="leading-relaxed text-sm lg:text-[13px]">
-                    O objetivo central é fornecer um arcabouço teórico robusto que permita aos profissionais do direito não apenas aplicar a norma, mas compreender sua gênese, sua função social e suas limitações dentro do contexto histórico e cultural do Brasil.
-                  </p>
-                </div>
-                {!isExpanded && (
-                  <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white to-transparent pointer-events-none" />
-                )}
-              </motion.div>
-              
-              <button 
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="mt-4 flex items-center gap-1 text-[11px] font-black text-brand uppercase tracking-widest hover:text-brand-dark transition-colors cursor-pointer"
-              >
-                {isExpanded ? (
-                  <>Ver menos <ChevronUp size={16} /></>
-                ) : (
-                  <>Ler descrição completa <ChevronDown size={16} /></>
-                )}
-              </button>
-            </div>
-
-            {/* Responsive interactive tabs */}
-            <div className="relative flex items-center mt-10 mb-6 border-b border-gray-100 w-full overflow-x-auto no-scrollbar scroll-smooth">
-              {[
-                { id: 'conteudos', label: 'Conteúdos' },
-                { id: 'resumo', label: 'Resumo' },
-                { id: 'autor', label: 'Sobre o Autor' }
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`relative flex-1 lg:flex-none px-6 py-4 text-[11px] font-black uppercase tracking-widest transition-all cursor-pointer whitespace-nowrap min-w-[120px] lg:min-w-0 ${
-                    activeTab === tab.id ? 'text-brand' : 'text-gray-400 hover:text-gray-600'
-                  }`}
+        {/* ──────────── SIDEBAR ──────────── */}
+        <aside
+          ref={sidebarRef}
+          className="relative flex-none flex flex-col border-r border-gray-100"
+          style={{ width: 210 }}
+        >
+          {/* Top: pills + cover */}
+          <div
+            className="flex-none border-b border-gray-100"
+            style={{ padding: '12px 12px 10px' }}
+          >
+            <div className="flex gap-[5px]" style={{ marginBottom: 7 }}>
+              {['Extensão', '36h 00min'].map(label => (
+                <span
+                  key={label}
+                  style={{
+                    fontSize: 11,
+                    color: '#9ca3af',
+                    background: '#f9fafb',
+                    border: '0.5px solid #f3f4f6',
+                    borderRadius: 4,
+                    padding: '2px 6px',
+                    lineHeight: 1.4,
+                  }}
                 >
-                  {tab.label}
-                  {activeTab === tab.id && (
-                    <motion.div
-                      layoutId="activeTabIndicator"
-                      className="absolute bottom-0 left-0 right-0 h-[3px] bg-brand rounded-t-full"
-                      initial={false}
-                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                    />
-                  )}
-                </button>
+                  {label}
+                </span>
               ))}
             </div>
 
-            {/* Tab Content Area */}
+            <div
+              className="w-full overflow-hidden"
+              style={{
+                aspectRatio: '3/2',
+                borderRadius: 8,
+                border: '0.5px solid #f3f4f6',
+              }}
+            >
+              <img
+                src="https://picsum.photos/seed/law/300/200"
+                alt=""
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+          </div>
+
+          {/* Middle: turma selection */}
+          <div
+            className="flex-1 overflow-y-auto custom-scrollbar"
+            style={{ padding: '10px 12px' }}
+          >
+            <div
+              className="font-medium uppercase"
+              style={{
+                fontSize: 10,
+                color: '#9ca3af',
+                letterSpacing: '0.07em',
+                marginBottom: 4,
+              }}
+            >
+              Escolha sua turma
+            </div>
+
+            {/* Contextual instruction */}
+            <div
+              className="flex items-center"
+              style={{
+                gap: 4,
+                marginBottom: 10,
+                opacity: selectedTurmaId ? 0 : 1,
+                pointerEvents: selectedTurmaId ? 'none' : 'auto',
+                transition: 'opacity 0.2s ease',
+              }}
+            >
+              <Info size={12} style={{ color: '#9ca3af', flexShrink: 0 }} />
+              <span style={{ fontSize: 11, color: '#9ca3af' }}>
+                Selecione uma turma para continuar
+              </span>
+            </div>
+
+            {/* Turma cards */}
+            {visibleTurmas.map(turma => {
+              const isSelected = selectedTurmaId === turma.id;
+              const isHovered = hoveredCardId === turma.id && !isSelected;
+
+              const prazoShort = turma.prazo === 'Indeterminado'
+                ? 'Indeterminado'
+                : turma.prazo.split(' ')[0];
+              const meta = `${prazoShort} · ${turma.vagas}`;
+
+              return (
+                <div
+                  key={turma.id}
+                  ref={el => {
+                    if (el) cardRefsMap.current.set(turma.id, el);
+                    else cardRefsMap.current.delete(turma.id);
+                  }}
+                  onClick={() => handleTurmaClick(turma.id)}
+                  onMouseEnter={() => {
+                    setHoveredCardId(turma.id);
+                    handleCardMouseEnter(turma.id);
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredCardId(null);
+                    handleCardMouseLeave();
+                  }}
+                  className="flex items-center"
+                  style={{
+                    gap: 7,
+                    padding: '6px 8px',
+                    borderRadius: 6,
+                    marginBottom: 3,
+                    cursor: enrollmentStatus !== 'default' ? 'default' : 'pointer',
+                    transition: 'border-color 0.13s, background 0.13s',
+                    border: isSelected
+                      ? '1.5px solid var(--brand-color)'
+                      : isHovered
+                        ? '0.5px solid #d1d5db'
+                        : '0.5px solid #f3f4f6',
+                    background: isSelected
+                      ? 'color-mix(in srgb, var(--brand-color) 10%, transparent)'
+                      : isHovered
+                        ? '#f9fafb'
+                        : '#ffffff',
+                  }}
+                >
+                  {/* Radio */}
+                  <div
+                    className="flex-shrink-0 flex items-center justify-center rounded-full"
+                    style={{
+                      width: 12,
+                      height: 12,
+                      border: `1.5px solid ${isSelected ? 'var(--brand-color)' : '#d1d5db'}`,
+                      transition: 'border-color 0.13s',
+                    }}
+                  >
+                    {isSelected && (
+                      <div
+                        className="rounded-full"
+                        style={{
+                          width: 5,
+                          height: 5,
+                          background: 'var(--brand-color)',
+                        }}
+                      />
+                    )}
+                  </div>
+
+                  {/* Center column */}
+                  <div className="flex-1 min-w-0">
+                    <div
+                      className="whitespace-nowrap overflow-hidden text-ellipsis font-medium"
+                      style={{
+                        fontSize: 11,
+                        lineHeight: 1.3,
+                        color: isSelected ? 'var(--brand-color-dark)' : '#111827',
+                      }}
+                    >
+                      {turma.title}
+                    </div>
+                    <div
+                      className="whitespace-nowrap overflow-hidden text-ellipsis"
+                      style={{ fontSize: 10, color: '#9ca3af', marginTop: 1 }}
+                    >
+                      {meta}
+                    </div>
+                  </div>
+
+                  {/* Right column */}
+                  <div className="flex-shrink-0 flex flex-col items-end" style={{ gap: 2 }}>
+                    <span
+                      className="font-medium"
+                      style={{
+                        fontSize: 11,
+                        color: isSelected ? 'var(--brand-color-dark)' : '#4b5563',
+                      }}
+                    >
+                      {turma.price}
+                    </span>
+                    {turma.recomendada && (
+                      <span
+                        className="font-medium"
+                        style={{
+                          fontSize: 9,
+                          padding: '1px 4px',
+                          borderRadius: 3,
+                          background: '#FAEEDA',
+                          color: '#854F0B',
+                        }}
+                      >
+                        recomendada
+                      </span>
+                    )}
+                    {turma.hasExtras && turma.extrasCount && (
+                      <span
+                        className="font-medium"
+                        style={{
+                          fontSize: 9,
+                          padding: '1px 4px',
+                          borderRadius: 3,
+                          background: '#E1F5EE',
+                          color: '#0F6E56',
+                        }}
+                      >
+                        +{turma.extrasCount} extras
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Ver mais / Mostrar menos */}
+            {turmas.length > TURMAS_LIMIT && (
+              <button
+                onClick={() => setIsTurmasExpanded(v => !v)}
+                className="w-full flex items-center justify-center"
+                style={{
+                  gap: 5,
+                  padding: 6,
+                  marginTop: 4,
+                  borderRadius: 6,
+                  border: '0.5px dashed #d1d5db',
+                  background: 'transparent',
+                  fontSize: 11,
+                  color: '#9ca3af',
+                  cursor: 'pointer',
+                  transition: 'background 0.13s, color 0.13s',
+                }}
+                onMouseEnter={e => {
+                  const el = e.currentTarget;
+                  el.style.background = '#f9fafb';
+                  el.style.color = '#111827';
+                }}
+                onMouseLeave={e => {
+                  const el = e.currentTarget;
+                  el.style.background = 'transparent';
+                  el.style.color = '#9ca3af';
+                }}
+              >
+                {isTurmasExpanded
+                  ? <><ChevronUp size={11} /> Mostrar menos</>
+                  : <><ChevronDown size={11} /> Ver mais {hiddenCount} turma{hiddenCount !== 1 ? 's' : ''}</>
+                }
+              </button>
+            )}
+          </div>
+
+          {/* Footer: CTAs */}
+          <div
+            className="flex-none border-t border-gray-100 flex flex-col"
+            style={{ padding: '10px 12px', gap: 5 }}
+          >
+            {enrollmentStatus === 'default' && (
+              <>
+                <button
+                  onClick={selectedTurmaId ? handleMainAction : undefined}
+                  disabled={!selectedTurmaId}
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 500,
+                    width: '100%',
+                    padding: '9px',
+                    borderRadius: 8,
+                    background: selectedTurmaId ? 'var(--brand-color)' : '#f3f4f6',
+                    color: selectedTurmaId ? '#ffffff' : '#9ca3af',
+                    border: `0.5px solid ${selectedTurmaId ? 'var(--brand-color)' : '#e5e7eb'}`,
+                    cursor: selectedTurmaId ? 'pointer' : 'not-allowed',
+                    transition: 'background 0.18s ease, color 0.18s ease, border-color 0.18s ease',
+                  }}
+                  onMouseEnter={e => {
+                    if (selectedTurmaId) (e.currentTarget as HTMLButtonElement).style.background = 'var(--brand-color-dark)';
+                  }}
+                  onMouseLeave={e => {
+                    if (selectedTurmaId) (e.currentTarget as HTMLButtonElement).style.background = 'var(--brand-color)';
+                  }}
+                >
+                  {mainButtonLabel}
+                </button>
+
+                <button
+                  style={{
+                    fontSize: 11,
+                    width: '100%',
+                    padding: '7px',
+                    borderRadius: 8,
+                    background: 'transparent',
+                    color: '#4b5563',
+                    border: '0.5px solid #d1d5db',
+                    cursor: 'pointer',
+                    transition: 'color 0.13s, border-color 0.13s',
+                  }}
+                  onMouseEnter={e => {
+                    const el = e.currentTarget as HTMLButtonElement;
+                    el.style.color = '#111827';
+                    el.style.borderColor = '#9ca3af';
+                  }}
+                  onMouseLeave={e => {
+                    const el = e.currentTarget as HTMLButtonElement;
+                    el.style.color = '#4b5563';
+                    el.style.borderColor = '#d1d5db';
+                  }}
+                >
+                  Registrar interesse
+                </button>
+              </>
+            )}
+
+            {enrollmentStatus === 'pending' && (
+              <div
+                className="w-full flex items-center justify-center font-medium"
+                style={{
+                  gap: 6,
+                  fontSize: 12,
+                  padding: '9px',
+                  borderRadius: 8,
+                  color: 'var(--brand-color)',
+                  background: 'color-mix(in srgb, var(--brand-color) 8%, white)',
+                  border: '0.5px solid color-mix(in srgb, var(--brand-color) 25%, transparent)',
+                }}
+              >
+                <Clock size={13} />
+                Aguardando aprovação
+              </div>
+            )}
+
+            {enrollmentStatus === 'payment' && (
+              <button
+                onClick={() => setIsBoletoModalOpen(true)}
+                className="w-full flex items-center justify-center font-medium"
+                style={{
+                  gap: 6,
+                  fontSize: 12,
+                  padding: '9px',
+                  borderRadius: 8,
+                  background: 'var(--brand-color)',
+                  color: '#ffffff',
+                  border: '0.5px solid var(--brand-color)',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = 'var(--brand-color-dark)'}
+                onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = 'var(--brand-color)'}
+              >
+                <CreditCard size={13} />
+                Efetuar pagamento
+              </button>
+            )}
+
+            {enrollmentStatus === 'rejected' && (
+              <div className="flex flex-col" style={{ gap: 5 }}>
+                <div
+                  className="flex items-start"
+                  style={{
+                    gap: 7,
+                    padding: '8px',
+                    borderRadius: 8,
+                    background: '#fef2f2',
+                    border: '0.5px solid #fecaca',
+                    fontSize: 11,
+                  }}
+                >
+                  <AlertCircle size={13} style={{ color: '#ef4444', flexShrink: 0, marginTop: 1 }} />
+                  <span style={{ color: '#b91c1c' }}>Matrícula recusada pelo gestor</span>
+                </div>
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="w-full flex items-center justify-center font-medium"
+                  style={{
+                    gap: 6,
+                    fontSize: 12,
+                    padding: '9px',
+                    borderRadius: 8,
+                    background: 'var(--brand-color)',
+                    color: '#ffffff',
+                    border: '0.5px solid var(--brand-color)',
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = 'var(--brand-color-dark)'}
+                  onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = 'var(--brand-color)'}
+                >
+                  <RefreshCw size={13} />
+                  Reenviar campos
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* ── Hover panel ── */}
+          {panelTurma && (
+            <div
+              style={{
+                position: 'absolute',
+                left: 210,
+                top: panelTop,
+                width: 220,
+                zIndex: 10,
+                pointerEvents: 'none',
+                opacity: panelVisible ? 1 : 0,
+                transition: 'opacity 0.15s ease',
+                background: '#ffffff',
+                border: '0.5px solid #e5e7eb',
+                borderLeft: 'none',
+                borderRadius: '0 12px 12px 0',
+                padding: 14,
+              }}
+            >
+              <div
+                className="uppercase font-medium"
+                style={{
+                  fontSize: 9,
+                  color: '#9ca3af',
+                  letterSpacing: '0.07em',
+                  marginBottom: 6,
+                }}
+              >
+                Detalhes da turma
+              </div>
+
+              <div
+                className="font-medium"
+                style={{
+                  fontSize: 12,
+                  lineHeight: 1.4,
+                  color: '#111827',
+                  marginBottom: 10,
+                }}
+              >
+                {panelTurma.title}
+              </div>
+
+              <div style={{ height: 0.5, background: '#f3f4f6', marginBottom: 10 }} />
+
+              {[
+                { key: 'Prazo', value: panelTurma.prazo },
+                { key: 'Vagas', value: panelTurma.vagas },
+                { key: 'Valor', value: panelTurma.price },
+                { key: 'Modo', value: panelTurma.modo },
+              ].map(({ key, value }) => (
+                <div key={key} className="flex" style={{ gap: 6, marginBottom: 6 }}>
+                  <span
+                    style={{ fontSize: 11, color: '#9ca3af', width: 52, flexShrink: 0 }}
+                  >
+                    {key}
+                  </span>
+                  <span className="font-medium" style={{ fontSize: 11, color: '#111827' }}>
+                    {value}
+                  </span>
+                </div>
+              ))}
+
+              {(panelTurma.recomendada || panelTurma.hasExtras) && (
+                <>
+                  <div style={{ height: 0.5, background: '#f3f4f6', marginBottom: 8, marginTop: 4 }} />
+                  <div className="flex flex-wrap" style={{ gap: 4 }}>
+                    {panelTurma.recomendada && (
+                      <span
+                        className="font-medium"
+                        style={{
+                          fontSize: 9,
+                          padding: '1px 4px',
+                          borderRadius: 3,
+                          background: '#FAEEDA',
+                          color: '#854F0B',
+                        }}
+                      >
+                        recomendada
+                      </span>
+                    )}
+                    {panelTurma.hasExtras && panelTurma.extrasCount && (
+                      <span
+                        className="font-medium"
+                        style={{
+                          fontSize: 9,
+                          padding: '1px 4px',
+                          borderRadius: 3,
+                          background: '#E1F5EE',
+                          color: '#0F6E56',
+                        }}
+                      >
+                        +{panelTurma.extrasCount} conteúdos extras
+                      </span>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+        </aside>
+
+        {/* ──────────── MAIN CONTENT ──────────── */}
+        <main
+          className="flex-1 overflow-y-auto custom-scrollbar"
+          style={{ padding: '20px 28px' }}
+        >
+          {/* Title */}
+          <h1
+            className="font-medium"
+            style={{
+              fontSize: 16,
+              lineHeight: 1.4,
+              color: '#111827',
+              marginBottom: 8,
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+            }}
+          >
+            2º Curso de Extensão em Teoria Geral do Direito: Formação do Pensamento Intelectual Brasileiro
+          </h1>
+
+          {/* Description */}
+          <p
+            style={{
+              fontSize: 12,
+              color: '#4b5563',
+              lineHeight: 1.6,
+              marginBottom: 5,
+              display: isDescExpanded ? 'block' : '-webkit-box',
+              WebkitLineClamp: isDescExpanded ? undefined : 2,
+              WebkitBoxOrient: isDescExpanded ? undefined : 'vertical',
+              overflow: isDescExpanded ? 'visible' : 'hidden',
+            }}
+          >
+            Este curso propõe uma análise profunda das bases do pensamento intelectual
+            brasileiro através da Teoria Geral do Direito. Exploramos as conexões entre a
+            formação jurídica e o desenvolvimento social do país, abordando temas fundamentais
+            para a compreensão da nossa estrutura institucional contemporânea. Durante os encontros,
+            debateremos as obras dos principais juristas e sociólogos que moldaram a compreensão
+            do Estado brasileiro — com metodologia que inclui análise de jurisprudência histórica,
+            debates guiados e seminários de pesquisa.
+          </p>
+
+          <button
+            onClick={() => setIsDescExpanded(v => !v)}
+            className="flex items-center"
+            style={{
+              gap: 3,
+              marginBottom: 14,
+              fontSize: 11,
+              color: '#3b82f6',
+              cursor: 'pointer',
+              background: 'none',
+              border: 'none',
+              padding: 0,
+            }}
+          >
+            {isDescExpanded
+              ? <>Recolher <ChevronUp size={10} /></>
+              : <>Ler descrição completa <ChevronDown size={10} /></>
+            }
+          </button>
+
+          {/* Divider */}
+          <div style={{ height: 0.5, background: '#f3f4f6', margin: '10px 0' }} />
+
+          {/* Tabs – sangradas */}
+          <div
+            className="flex border-b border-gray-100"
+            style={{ margin: '0 -28px', padding: '0 28px' }}
+          >
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                style={{
+                  fontSize: 12,
+                  padding: '9px 16px',
+                  marginBottom: -1,
+                  color: activeTab === tab.id ? 'var(--brand-color)' : '#6b7280',
+                  borderTop: 'none',
+                  borderLeft: 'none',
+                  borderRight: 'none',
+                  borderBottom: `2px solid ${activeTab === tab.id ? 'var(--brand-color)' : 'transparent'}`,
+                  fontWeight: activeTab === tab.id ? 500 : 400,
+                  background: 'transparent',
+                  cursor: 'pointer',
+                  transition: 'color 0.13s, border-color 0.13s',
+                  whiteSpace: 'nowrap',
+                }}
+                onMouseEnter={e => {
+                  if (activeTab !== tab.id)
+                    (e.currentTarget as HTMLButtonElement).style.color = '#111827';
+                }}
+                onMouseLeave={e => {
+                  if (activeTab !== tab.id)
+                    (e.currentTarget as HTMLButtonElement).style.color = '#6b7280';
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Tab content */}
+          <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
-              className="min-h-[160px] pb-10"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
             >
-              {tabContent[activeTab]}
+              {activeTab === 'conteudos' && (
+                <div className="flex flex-col" style={{ paddingTop: 8 }}>
+                  {displayedContents.map((item, index) => {
+                    const isExtra = index >= baseContents.length;
+                    const isLast = index === displayedContents.length - 1;
+                    return (
+                      <motion.div
+                        key={item.title}
+                        initial={isExtra ? { opacity: 0 } : false}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.2 }}
+                        className="flex items-center"
+                        style={{
+                          gap: 10,
+                          padding: '11px 4px',
+                          borderBottom: isLast ? 'none' : '0.5px solid #f3f4f6',
+                          borderRadius: 4,
+                          cursor: 'pointer',
+                          transition: 'background 0.13s',
+                        }}
+                        onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = '#f9fafb'}
+                        onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = 'transparent'}
+                      >
+                        {/* Type icon */}
+                        <div
+                          className="flex-shrink-0 flex items-center justify-center"
+                          style={{
+                            width: 16,
+                            height: 16,
+                            borderRadius: 3,
+                            background: 'color-mix(in srgb, var(--brand-color) 10%, transparent)',
+                            border: '0.5px solid color-mix(in srgb, var(--brand-color) 30%, transparent)',
+                            color: 'var(--brand-color)',
+                          }}
+                        >
+                          {CONTENT_ICONS[item.type] ?? <FileText size={8} />}
+                        </div>
+
+                        {/* Text column */}
+                        <div className="flex-1">
+                          <div style={{ fontSize: 10, color: '#9ca3af', marginBottom: 1 }}>
+                            {item.type}
+                          </div>
+                          <div className="flex items-center">
+                            <span
+                              className="font-medium"
+                              style={{ fontSize: 13, lineHeight: 1.3, color: '#111827' }}
+                            >
+                              {item.title}
+                            </span>
+                            {item.exclusive && (
+                              <span
+                                className="font-medium"
+                                style={{
+                                  fontSize: 10,
+                                  padding: '1px 5px',
+                                  borderRadius: 3,
+                                  background: '#E1F5EE',
+                                  color: '#0F6E56',
+                                  marginLeft: 5,
+                                }}
+                              >
+                                exclusivo
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {activeTab === 'resumo' && (
+                <p
+                  className="italic"
+                  style={{
+                    fontSize: 12,
+                    color: '#6b7280',
+                    lineHeight: 1.7,
+                    paddingTop: 16,
+                  }}
+                >
+                  Uma jornada intelectual que conecta o passado jurídico do Brasil com os
+                  desafios do presente, focando na construção de uma consciência crítica sobre
+                  nossas instituições.
+                </p>
+              )}
+
+              {activeTab === 'autor' && (
+                <div
+                  className="flex items-center"
+                  style={{ gap: 14, paddingTop: 16 }}
+                >
+                  <div
+                    className="flex-shrink-0 overflow-hidden rounded-full border border-gray-100"
+                    style={{ width: 40, height: 40 }}
+                  >
+                    <img
+                      src="https://picsum.photos/seed/professor/100/100"
+                      alt="Autor"
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div>
+                    <div
+                      className="font-medium"
+                      style={{ fontSize: 12, color: '#111827' }}
+                    >
+                      Dr. Roberto Silva
+                    </div>
+                    <div style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>
+                      Doutor em Teoria do Direito e Pesquisador Sênior
+                    </div>
+                  </div>
+                </div>
+              )}
             </motion.div>
-          </div>
-        </div>
+          </AnimatePresence>
+        </main>
       </div>
-      {/* Custom Fields Modal */}
-      <CustomFieldsModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+
+      {/* Modals */}
+      <CustomFieldsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         onConfirm={() => {
           setIsModalOpen(false);
           setEnrollmentStatus('pending');
-        }} 
+        }}
       />
 
-      <PaymentModalV2 
+      <PaymentModalV2
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
         itemName="TEORIA GERAL DO DIREITO"
-        itemPrice={parseFloat(selectedTurma?.price.replace('R$ ', '').replace('.', '').replace(',', '.') || '1000')}
+        itemPrice={parseFloat(
+          selectedTurma?.price.replace('R$ ', '').replace('.', '').replace(',', '.') ?? '1000'
+        )}
         onSuccess={() => {
           setIsPaymentModalOpen(false);
           setEnrollmentStatus('payment');
@@ -521,71 +976,26 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
         }}
       />
 
-      <BoletoModal 
+      <BoletoModal
         isOpen={isBoletoModalOpen}
         onClose={() => setIsBoletoModalOpen(false)}
-        price={parseFloat(selectedTurma?.price.replace('R$ ', '').replace('.', '').replace(',', '.') || '1000')}
+        price={parseFloat(
+          selectedTurma?.price.replace('R$ ', '').replace('.', '').replace(',', '.') ?? '1000'
+        )}
       />
 
-      <PaymentModal 
+      <PaymentModal
         isOpen={isOldPaymentModalOpen}
         onClose={() => setIsOldPaymentModalOpen(false)}
-        itemName={selectedTurma?.title || "TEORIA GERAL DO DIREITO"}
-        itemPrice={parseFloat(selectedTurma?.price.replace('R$ ', '').replace('.', '').replace(',', '.') || '1000')}
+        itemName={selectedTurma?.title ?? 'TEORIA GERAL DO DIREITO'}
+        itemPrice={parseFloat(
+          selectedTurma?.price.replace('R$ ', '').replace('.', '').replace(',', '.') ?? '1000'
+        )}
         onSuccess={() => {
           setIsOldPaymentModalOpen(false);
           onNavigate('view');
         }}
       />
-
-      {/* Mobile Sticky Action Bar */}
-      <AnimatePresence>
-        {(selectedTurmaId !== null || enrollmentStatus !== 'default') && (
-          <motion.div 
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="lg:hidden fixed bottom-0 left-0 right-0 z-50 p-4 pb-8 bg-white border-t border-gray-100 flex gap-3 shadow-[0_-12px_40px_rgba(0,0,0,0.08)]"
-          >
-            {enrollmentStatus === 'default' && (
-              <button 
-                onClick={handleMainAction}
-                className="flex-1 bg-brand text-white h-[56px] rounded-xl text-[16px] font-bold shadow-lg shadow-brand/20 active:scale-95 flex items-center justify-center gap-2 transition-transform"
-              >
-                {mainButtonText}
-              </button>
-            )}
-
-            {enrollmentStatus === 'payment' && (
-              <button 
-                onClick={() => setIsBoletoModalOpen(true)}
-                className="flex-1 bg-brand text-white h-[56px] rounded-xl text-[15px] font-bold shadow-lg shadow-brand/20 active:scale-95 flex items-center justify-center gap-2"
-              >
-                <CreditCard size={18} />
-                Efetuar Pagamento
-              </button>
-            )}
-
-            {enrollmentStatus === 'pending' && (
-              <div className="flex-1 bg-white border border-brand/20 text-brand h-[56px] rounded-xl text-[13px] font-bold uppercase tracking-wide flex items-center justify-center gap-2">
-                <Clock size={16} className="animate-spin-slow" />
-                Em Análise
-              </div>
-            )}
-
-            {enrollmentStatus === 'rejected' && (
-              <button 
-                onClick={() => setIsModalOpen(true)}
-                className="flex-1 bg-red-600 text-white h-[56px] rounded-xl text-[15px] font-bold shadow-lg shadow-red-500/10 active:scale-95 flex items-center justify-center gap-2"
-              >
-                <RefreshCw size={18} />
-                Reenviar Dados
-              </button>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
+    </div>
   );
 };

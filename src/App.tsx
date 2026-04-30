@@ -132,24 +132,22 @@ export default function App() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -10 }}
           transition={{ duration: 0.2 }}
-          className={currentScreen === 'view' || currentScreen === 'trilhaView' || currentScreen === 'treinamentoTrilha' ? 'h-[100dvh] overflow-hidden' : 'min-h-[100dvh]'}
+          className={['view', 'trilhaView', 'treinamentoTrilha', 'catalog'].includes(currentScreen) ? 'h-[100dvh] overflow-hidden' : 'min-h-[100dvh]'}
         >
           {currentScreen === 'catalog' && (
-            <div className="pb-32">
-              <CourseCatalog 
-                onNavigate={setCurrentScreen} 
-                enrollmentStatus={courseEnrollmentStatus}
-                setEnrollmentStatus={setCourseEnrollmentStatus}
-                selectedTurmaId={selectedCourseTurmaId}
-                setSelectedTurmaId={setSelectedCourseTurmaId}
-                isPaymentModalOpen={isCoursePaymentOpen}
-                setIsPaymentModalOpen={setIsCoursePaymentOpen}
-                isBoletoModalOpen={isCourseBoletoOpen}
-                setIsBoletoModalOpen={setIsCourseBoletoOpen}
-                isOldPaymentModalOpen={isCourseOldPaymentOpen}
-                setIsOldPaymentModalOpen={setIsCourseOldPaymentOpen}
-              />
-            </div>
+            <CourseCatalog
+              onNavigate={setCurrentScreen}
+              enrollmentStatus={courseEnrollmentStatus}
+              setEnrollmentStatus={setCourseEnrollmentStatus}
+              selectedTurmaId={selectedCourseTurmaId}
+              setSelectedTurmaId={setSelectedCourseTurmaId}
+              isPaymentModalOpen={isCoursePaymentOpen}
+              setIsPaymentModalOpen={setIsCoursePaymentOpen}
+              isBoletoModalOpen={isCourseBoletoOpen}
+              setIsBoletoModalOpen={setIsCourseBoletoOpen}
+              isOldPaymentModalOpen={isCourseOldPaymentOpen}
+              setIsOldPaymentModalOpen={setIsCourseOldPaymentOpen}
+            />
           )}
           {currentScreen === 'trilha' && (
             <div className="pb-32">
